@@ -1,0 +1,12 @@
+package nl.kolkos.cryptoManager.controller;
+
+import org.springframework.data.repository.CrudRepository;
+
+import nl.kolkos.cryptoManager.controller.User;
+
+//This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
+//CRUD refers Create, Read, Update, Delete
+
+public interface UserRepository extends CrudRepository<User, Long> {
+
+}

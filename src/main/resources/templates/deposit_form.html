@@ -1,45 +1,47 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-<title>Add deposit</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
-<body>
-	<h1>Add deposit</h1>
-	<form action="#" th:action="@{/deposit/add}" th:object="${deposit}"
-		method="post">
-		<table>
-			<thead>
-				<tr>
-					<th colspan="2">Add deposit form</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>Deposit date:</td>
-					<td><input type="date" th:field="*{depositDate}" /></td>
-				</tr>
-				<tr>
-					<td>Wallet:</td>
-					<td><input type="number" th:field="*{walletId}" /></td>
-				</tr>
-				<tr>
-					<td>Amount:</td>
-					<td><input type="number" th:field="*{amount}" step="0.00000001"/></td>
-				</tr>
-				<tr>
-					<td>Value on purchase:</td>
-					<td><input type="number" th:field="*{purchaseValue}" step="0.01"/></td>
-				</tr>
-				<tr>
-					<td>Remarks:</td>
-					<td><input type="text" th:field="*{remarks}" /></td>
-				</tr>
-				<tr>
-                    <td colspan="2"><button type="submit">Submit</button></td>
-                </tr>
-			</tbody>
-		</table>
-	</form>
-</body>
+	<head>
+		<title>Add deposit</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	</head>
+	<body>
+		<h1>Add deposit</h1>
+		<form action="#" th:action="@{/deposit/add}" th:object="${deposit}"
+			method="post">
+			<table>
+				<thead>
+					<tr>
+						<th colspan="2">Add deposit form</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Deposit date:</td>
+						<td><input type="date" th:field="*{depositDate}" /></td>
+					</tr>
+					<tr>
+						<td>Wallet:</td>
+						<td><input type="number" th:field="*{walletId}" /></td>
+					</tr>
+					<tr>
+						<td>Amount:</td>
+						<td><input type="number" th:field="*{amount}"
+							step="0.00000001" /></td>
+					</tr>
+					<tr>
+						<td>Value on purchase:</td>
+						<td><input type="number" th:field="*{purchaseValue}"
+							step="0.01" /></td>
+					</tr>
+					<tr>
+						<td>Remarks:</td>
+						<td><input type="text" th:field="*{remarks}" /></td>
+					</tr>
+					<tr>
+						<td colspan="2"><button type="submit">Submit</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</body>
 </html>

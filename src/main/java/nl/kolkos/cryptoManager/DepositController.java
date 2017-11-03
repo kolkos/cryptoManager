@@ -29,18 +29,14 @@ public class DepositController {
         return "deposit_form";
     }
 	
-	@PostMapping(path="/add") // Map ONLY GET Requests
+	@PostMapping(path="/add") // Map ONLY POST Requests
 	public @ResponseBody String addNewDeposit (
 			@RequestParam Date depositDate,
 			@RequestParam int walletId,
 			@RequestParam double amount,
 			@RequestParam double purchaseValue,
 			@RequestParam String remarks) {
-		// @ResponseBody means the returned String is the response, not a view name
-		// @RequestParam means it is a parameter from the GET or POST request
 
-		System.out.println(String.format("depositDate=%s, walletId=%d, amount=%f, purchaseValue=%f, remarks=%s", depositDate, walletId, amount, purchaseValue, remarks));
-		
 				
 		Deposit deposit = new Deposit();
 		deposit.setDepositDate(depositDate);
@@ -52,7 +48,7 @@ public class DepositController {
 		depositRepository.save(deposit);
 		
 		
-		return "Saved";
+		return "Deposit saved";
 	}
 
 	@GetMapping(path="/list")

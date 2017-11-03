@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Add Wallet</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	</head>
+	<body>
+		<h1>Add wallet</h1>
+		<form action="#" th:action="@{/wallet/add}" th:object="${wallet}"
+			method="post">
+			<table>
+				<thead>
+					<tr>
+						<th colspan="2">Add wallet form</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Coin:</td>
+						<td><input type="number" th:field="*{coinId}" /></td>
+					</tr>
+					<tr>
+						<td>Portfolio name:</td>
+						<td><input type="text" th:field="*{name}" /></td>
+					</tr>
+					<tr>
+						<td>Description:</td>
+						<td><input type="text" th:field="*{description}" /></td>
+					</tr>
+					<tr>
+						<td colspan="2"><button type="submit">Submit</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</body>
+</html>

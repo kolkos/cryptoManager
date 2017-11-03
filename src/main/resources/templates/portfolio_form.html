@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Add deposit</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	</head>
+	<body>
+		<h1>Add deposit</h1>
+		<form action="#" th:action="@{/portfolio/add}" th:object="${portfolio}"
+			method="post">
+			<table>
+				<thead>
+					<tr>
+						<th colspan="2">Add portfolio form</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Portfolio name:</td>
+						<td><input type="text" th:field="*{name}" /></td>
+					</tr>
+					<tr>
+						<td>Description:</td>
+						<td><input type="text" th:field="*{description}" /></td>
+					</tr>
+					<tr>
+						<td colspan="2"><button type="submit">Submit</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</body>
+</html>

@@ -1,4 +1,4 @@
-package nl.kolkos.cryptoManager.controller;
+package nl.kolkos.cryptoManager;
 
 import java.sql.Date;
 

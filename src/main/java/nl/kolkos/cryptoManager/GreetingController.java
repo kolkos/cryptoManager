@@ -1,4 +1,4 @@
-package nl.kolkos.cryptoManager.controller;
+package nl.kolkos.cryptoManager;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,4 +1,4 @@
-package nl.kolkos.cryptoManager.controller;
+package nl.kolkos.cryptoManager;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

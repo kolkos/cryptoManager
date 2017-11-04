@@ -8,5 +8,5 @@ import nl.kolkos.cryptoManager.Wallet;
 //CRUD refers Create, Read, Update, Delete
 
 public interface WalletRepository extends CrudRepository<Wallet, Long> {
-		
+	
 }

@@ -17,15 +17,19 @@
 				<tbody>
 					<tr>
 						<td>Coin:</td>
-						<td><input type="number" th:field="*{coinId}" /></td>
+						<td>
+							<select th:field="${coinList}">
+								<option th:each="coin : ${coinList}" th:value="${coin.id}" th:text="${coin.coinName}">coinName</option>
+							</select>
+						</td>
 					</tr>
 					<tr>
 						<td>Portfolio name:</td>
-						<td><input type="text" th:field="*{name}" /></td>
+						<td><input type="text" th:field="${name}" /></td>
 					</tr>
 					<tr>
 						<td>Description:</td>
-						<td><input type="text" th:field="*{description}" /></td>
+						<td><input type="text" th:field="${description}" /></td>
 					</tr>
 					<tr>
 						<td colspan="2"><button type="submit">Submit</button></td>

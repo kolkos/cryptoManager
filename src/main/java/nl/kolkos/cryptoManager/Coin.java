@@ -33,4 +33,7 @@ public class Coin {
 		this.description = description;
 	}
 	
+	
+	
+	
 }

@@ -9,21 +9,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+
+
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/wallet") // This means URL's start with /demo (after Application path)
 public class WalletController {
 	@Autowired
 	private WalletRepository walletRepository;
-	
+
 	@GetMapping("/")
     public String forwardWalletList(Model model) {
         model.addAttribute("wallet", new Wallet());
         return "redirect:/wallet/list";
     }
 	
+	
 	@GetMapping("/add")
     public String walletForm(Model model) {
 		model.addAttribute("wallet", new Wallet());
+		model.addAttribute("coin", new Coin());
+		
         return "wallet_form";
     }
 	

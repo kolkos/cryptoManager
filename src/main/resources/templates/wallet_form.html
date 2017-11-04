@@ -3,23 +3,33 @@
 	<head>
 		<title>Add Wallet</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
 	</head>
 	<body>
-		<h1>Add wallet</h1>
 		<form action="#" th:action="@{/wallet/add}" th:object="${wallet}"
 			method="post">
-			<table>
+			<table class="form">
 				<thead>
 					<tr>
-						<th colspan="2">Add wallet form</th>
+						<th colspan="2">Add wallet</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td>Coin:</td>
 						<td>
-							<select th:field="${coinList}">
+							<select name="coinId" id="coinId">
 								<option th:each="coin : ${coinList}" th:value="${coin.id}" th:text="${coin.coinName + ' (' + coin.description + ')'}">coinName (description)</option>
+							</select>
+						</td>
+					</tr>
+					
+					<tr>
+						<td>Portfolio:</td>
+						<td>
+							<select name="portfolioId" id="portfolioId">
+								<option th:each="portfolio : ${portfolioList}" th:value="${portfolio.id}" th:text="${portfolio.name}">name</option>
 							</select>
 						</td>
 					</tr>

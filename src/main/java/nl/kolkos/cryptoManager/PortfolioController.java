@@ -15,18 +15,20 @@ public class PortfolioController {
 	@Autowired
 	private PortfolioRepository portfolioRepository;
 	
+	// forward to list
 	@GetMapping("/")
     public String forwardRepositoryList(Model model) {
-        model.addAttribute("portfolio", new Portfolio());
         return "redirect:/portfolio/list";
     }
 	
+	// send the form
 	@GetMapping("/add")
     public String portfolioForm(Model model) {
 		model.addAttribute("portfolio", new Portfolio());
         return "portfolio_form";
     }
 	
+	// handle the form
 	@PostMapping(path="/add") // Map ONLY Post Requests
 	public @ResponseBody String addNewPortfolio (
 			@RequestParam String description,
@@ -44,6 +46,7 @@ public class PortfolioController {
 		
 	}
 	
+	// list all 
 	@GetMapping(path="/list")
 	public @ResponseBody Iterable<Portfolio> getAllPortfolios() {
 		// This returns a JSON or XML with the users

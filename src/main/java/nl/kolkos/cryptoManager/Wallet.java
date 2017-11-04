@@ -1,8 +1,5 @@
 package nl.kolkos.cryptoManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -47,14 +44,6 @@ public class Wallet {
 	}
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	
-	public List<Coin> createCoinList(){
-		List<Coin> coins = new ArrayList<>();
-		
-		
-		
-		return coins;
 	}
 	
 	

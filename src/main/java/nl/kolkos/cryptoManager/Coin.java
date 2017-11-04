@@ -1,22 +1,30 @@
 package nl.kolkos.cryptoManager;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.io.Serializable;
+
+import javax.persistence.*;
+import org.hibernate.validator.constraints.NotBlank;
 
 @Entity // This tells Hibernate to make a table out of this class
-public class Coin {
+@Table(name = "coin")
+@EntityListeners(AuditingEntityListener.class)
+public class Coin implements Serializable{
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-	private int id;
+	private Long id;
+	
+	@NotBlank
 	private String coinName;
+	
 	private String description;
 	
-	public int getId() {
+
+	public Long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getCoinName() {
@@ -33,7 +41,6 @@ public class Coin {
 		this.description = description;
 	}
 	
-	
-	
+
 	
 }

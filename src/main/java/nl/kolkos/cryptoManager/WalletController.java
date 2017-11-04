@@ -19,6 +19,14 @@ public class WalletController {
 	@Qualifier(value = "walletRepository")
 	private WalletRepository walletRepository;
 	
+	@Autowired
+	@Qualifier(value = "coinRepository")
+	private CoinRepository coinRepository;
+	
+	@Autowired
+	@Qualifier(value = "portfolioRepository")
+	private PortfolioRepository portfolioRepository;
+	
 	@GetMapping("/")
     public String forwardWalletList(Model model) {
         model.addAttribute("wallet", new Wallet());
@@ -29,7 +37,12 @@ public class WalletController {
 	@GetMapping("/add")
     public String walletForm(Model model) {
 		model.addAttribute("wallet", new Wallet());
-
+		model.addAttribute("coin", new Coin());
+		model.addAttribute("portfolio", new Portfolio());
+		
+		model.addAttribute("coinList", coinRepository.findAll());
+		model.addAttribute("portfolioList", portfolioRepository.findAll());
+		
         return "wallet_form";
     }
 	

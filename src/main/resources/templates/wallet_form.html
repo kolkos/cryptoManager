@@ -20,7 +20,8 @@
 					<tr>
 						<td>Coin:</td>
 						<td>
-							<select th:field="*{coin}">
+							<select th:field="*{coin}" required="required">
+								<option value="">-Select coin-</option>
 								<option th:each="coin : ${coinList}" th:value="${coin.id}" th:text="${coin.coinName + ' (' + coin.description + ')'}">coinName (description)</option>
 							</select>
 						</td>
@@ -29,7 +30,8 @@
 					<tr>
 						<td>Portfolio:</td>
 						<td>
-							<select th:field="*{portfolio}">
+							<select th:field="*{portfolio}" required="required">
+								<option value="">-Select portfolio-</option>
 								<option th:each="portfolio : ${portfolioList}" th:value="${portfolio.id}" th:text="${portfolio.name}">name</option>
 							</select>
 						</td>

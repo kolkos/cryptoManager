@@ -3,15 +3,17 @@
 	<head>
 		<title>Add coin</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
 	</head>
 	<body>
-		<h1>Add coin</h1>
 		<form action="#" th:action="@{/coin/add}" th:object="${coin}"
 			method="post">
-			<table>
+			<table class="form">
 				<thead>
 					<tr>
-						<th colspan="2">Add coin form</th>
+						<th colspan="2">Add coin</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -29,5 +31,7 @@
 				</tbody>
 			</table>
 		</form>
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
 	</body>
 </html>

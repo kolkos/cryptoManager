@@ -37,8 +37,8 @@ public class WalletController {
 	@GetMapping("/add")
     public String walletForm(Model model) {
 		model.addAttribute("wallet", new Wallet());
-		model.addAttribute("coin", new Coin());
-		model.addAttribute("portfolio", new Portfolio());
+		//model.addAttribute("coin", new Coin());
+		//model.addAttribute("portfolio", new Portfolio());
 		
 		model.addAttribute("coinList", coinRepository.findAll());
 		model.addAttribute("portfolioList", portfolioRepository.findAll());
@@ -48,18 +48,19 @@ public class WalletController {
 	
 	@PostMapping(path="/add") // Map ONLY GET Requests
 	public @ResponseBody String addNewWallet (
-			@RequestParam int portfolioId,
-			@RequestParam int coinId,
+			@RequestParam Portfolio portfolio,
+			@RequestParam Coin coin,
 			@RequestParam String address,
 			@RequestParam String description) {
 		// @ResponseBody means the returned String is the response, not a view name
 		// @RequestParam means it is a parameter from the GET or POST request
 				
 		Wallet wallet = new Wallet();
-		wallet.setPortfolioId(portfolioId);
-		wallet.setCoinId(coinId);
+
 		wallet.setAddress(address);
 		wallet.setDescription(description);
+		wallet.setPortfolio(portfolio);
+		wallet.setCoin(coin);
 		walletRepository.save(wallet);
 				
 		String message = String.format("Wallet '%s' created", address);

@@ -3,6 +3,7 @@ package nl.kolkos.cryptoManager;
 import java.sql.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(path="/deposit") // This means URL's start with /demo (after Application path)
 public class DepositController {
 	@Autowired
+	@Qualifier(value = "depositRepository")
 	private DepositRepository depositRepository;
+	
+	@Autowired
+	@Qualifier(value = "walletRepository")
+	private WalletRepository walletRepository;
+	
 	
 	@GetMapping("/")
     public String forwardDepositForm(Model model) {
@@ -26,6 +33,9 @@ public class DepositController {
 	@GetMapping("/add")
     public String depositForm(Model model) {
         model.addAttribute("deposit", new Deposit());
+        model.addAttribute("wallet", new Wallet());
+        
+        
         return "deposit_form";
     }
 	

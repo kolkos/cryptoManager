@@ -1,3 +1,5 @@
+@import url("menu.css");
+@import url("header.css");
 body{
 	font-family: 'Raleway', sans-serif;
 	color: #333;
@@ -5,10 +7,13 @@ body{
 	font-size: 1.1vw;
 }
 table.form{
-	min-width: 500px;
-    margin: 10px auto;
+	min-width: 400px;
+	max-width: 700px;
+	width: 100%;
+    margin-top: 10px;
     padding: 16px;
     background: #F7F7F7;
+    font-size: 0.9vw;
 }
 table.form thead tr th{
 	background: #43D1AF;
@@ -50,6 +55,7 @@ table.form tbody tr td select
     border: 1px solid #ccc;
     padding: 3%;
     color: #555;
+    font-size: 0.8vw;
 }
 
 table.form tbody tr td input[type="text"]:focus,

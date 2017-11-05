@@ -5,6 +5,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
 		<link href="/css/style.css" rel="stylesheet" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
 	</head>
 	<body>
 		<form action="#" th:action="@{/wallet/add}" th:object="${wallet}"
@@ -19,7 +20,7 @@
 					<tr>
 						<td>Coin:</td>
 						<td>
-							<select name="coinId" id="coinId">
+							<select th:field="*{coin}">
 								<option th:each="coin : ${coinList}" th:value="${coin.id}" th:text="${coin.coinName + ' (' + coin.description + ')'}">coinName (description)</option>
 							</select>
 						</td>
@@ -28,7 +29,7 @@
 					<tr>
 						<td>Portfolio:</td>
 						<td>
-							<select name="portfolioId" id="portfolioId">
+							<select th:field="*{portfolio}">
 								<option th:each="portfolio : ${portfolioList}" th:value="${portfolio.id}" th:text="${portfolio.name}">name</option>
 							</select>
 						</td>
@@ -49,5 +50,7 @@
 				</tbody>
 			</table>
 		</form>
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
 	</body>
 </html>

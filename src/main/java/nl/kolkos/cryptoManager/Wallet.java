@@ -1,19 +1,32 @@
 package nl.kolkos.cryptoManager;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Wallet {
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer id;
-	private int coinId;
-	private int portfolioId;
+
 	private String address;
 	private String description;
+	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name = "coin_id")
+	private Coin coin;
+	
+	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name = "portfolio_id")
+	private Portfolio portfolio;
+	
+	
 	
 	public Integer getId() {
 		return id;
@@ -21,18 +34,7 @@ public class Wallet {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public int getCoinId() {
-		return coinId;
-	}
-	public void setCoinId(int coinId) {
-		this.coinId = coinId;
-	}
-	public int getPortfolioId() {
-		return portfolioId;
-	}
-	public void setPortfolioId(int portfolioId) {
-		this.portfolioId = portfolioId;
-	}
+
 	public String getAddress() {
 		return address;
 	}
@@ -44,6 +46,22 @@ public class Wallet {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	
+	
+	public void setCoin(Coin coin) {
+		this.coin = coin;
+	}
+	public Coin getCoin() {
+		return this.coin;
+	}
+	
+	public Portfolio getPortfolio() {
+		return portfolio;
+	}
+	public void setPortfolio(Portfolio portfolio) {
+		this.portfolio = portfolio;
 	}
 	
 	

@@ -42,7 +42,7 @@ public class DepositController {
 	@PostMapping(path="/add") // Map ONLY POST Requests
 	public @ResponseBody String addNewDeposit (
 			@RequestParam Date depositDate,
-			@RequestParam int walletId,
+			@RequestParam Wallet wallet,
 			@RequestParam double amount,
 			@RequestParam double purchaseValue,
 			@RequestParam String remarks) {
@@ -50,7 +50,7 @@ public class DepositController {
 				
 		Deposit deposit = new Deposit();
 		deposit.setDepositDate(depositDate);
-		deposit.setWalletId(walletId);
+		deposit.setWallet(wallet);
 		deposit.setAmount(amount);
 		deposit.setPurchaseValue(purchaseValue);
 		deposit.setRemarks(remarks);

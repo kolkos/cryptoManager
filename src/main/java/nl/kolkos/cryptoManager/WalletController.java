@@ -52,6 +52,18 @@ public class WalletController {
         return "wallet_form";
     }
 	
+	@GetMapping("/results")
+    public String walletResults(Model model) {
+		model.addAttribute("wallet", new Wallet());
+		model.addAttribute("coin", new Coin());
+		model.addAttribute("portfolio", new Portfolio());
+		
+
+		model.addAttribute("walletList", walletRepository.findAll());
+		
+        return "wallet_results";
+    }
+	
 	@PostMapping(path="/add") // Map ONLY Post Requests
 	public String addNewWallet (
 			@RequestParam Portfolio portfolio,

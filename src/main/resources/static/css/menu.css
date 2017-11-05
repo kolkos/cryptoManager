@@ -1,85 +1,86 @@
 div.menuHolder{
-		background: #F7F7F7;
-		width: 100%;
-		height: 50px;
-	}
-	/*Strip the ul of padding and list styling*/
-	div.menuHolder ul {
-	    list-style-type:none;
-	    margin:0;
-	    padding:0;
-	    position: absolute;
-	}
-	/*Create a horizontal list with spacing*/
-	div.menuHolder li {
-	    display:inline-block;
-	    float: left;
-	    margin-right: 1px;
-	}
-	/*Style for menu links*/
-	div.menuHolder li a {
-	    display:block;
-	    min-width:140px;
-	    height: 50px;
-	    text-align: center;
-	    line-height: 50px;
-	    color: #fff;
-	    background: #43D1AF;
-	    text-decoration: none;
-	    font-size: 0.9vw;
-	}
-	/*Hover state for top level links*/
-	div.menuHolder li:hover a {
-	    background: #2EBC99;
-	}
-	/*Style for dropdown links*/
-	div.menuHolder li:hover ul a {
-	    background: #F7F7F7;
-	    color: #2f3036;
-	    height: 40px;
-	    line-height: 40px;
-	}
-	/*Hover state for dropdown links*/
-	div.menuHolder li:hover ul a:hover {
-	    background: #2EBC99;
-	    color: #fff;
-	}
-	/*Hide dropdown links until they are needed*/
-	div.menuHolder li ul {
-	    display: none;
-	}
-	/*Make dropdown links vertical*/
-	div.menuHolder li ul li {
-	    display: block;
-	    float: none;
-	}
-	/*Prevent text wrapping*/
-	div.menuHolder li ul li a {
-	    width: auto;
-	    min-width: 100px;
-	    padding: 0 20px;
-	}
-	/*Display the dropdown on hover*/
-	div.menuHolder ul li a:hover + .hidden, .hidden:hover {
-	    display: block;
-	}
-	/*Responsive Styles*/
-	@media screen and (max-width : 760px){
-	    /*Make dropdown links appear inline*/
-	    div.menuHolder ul {
-	        position: static;
-	        display: none;
-	    }
-	    /*Create vertical spacing*/
-	    div.menuHolder li {
-	        margin-bottom: 1px;
-	    }
-	    /*Make all menu links full width*/
-	    div.menuHolder ul li, li a {
-	        width: 100%;
-	    }
-	    /*Display 'show menu' link*/
-	    div.menuHolder .show-menu {
-	        display:block;
-	    }
-	}
+	background: #F7F7F7;
+	width: 100%;
+	height: 50px;
+	margin-bottom: 5px;
+}
+/*Strip the ul of padding and list styling*/
+div.menuHolder ul {
+    list-style-type:none;
+    margin:0;
+    padding:0;
+    position: absolute;
+}
+/*Create a horizontal list with spacing*/
+div.menuHolder li {
+    display:inline-block;
+    float: left;
+    margin-right: 1px;
+}
+/*Style for menu links*/
+div.menuHolder li a {
+    display:block;
+    min-width:140px;
+    height: 50px;
+    text-align: center;
+    line-height: 50px;
+    color: #fff;
+    background: #43D1AF;
+    text-decoration: none;
+    font-size: 0.9vw;
+}
+/*Hover state for top level links*/
+div.menuHolder li:hover a {
+    background: #2EBC99;
+}
+/*Style for dropdown links*/
+div.menuHolder li:hover ul a {
+    background: #F7F7F7;
+    color: #2f3036;
+    height: 40px;
+    line-height: 40px;
+}
+/*Hover state for dropdown links*/
+div.menuHolder li:hover ul a:hover {
+    background: #2EBC99;
+    color: #fff;
+}
+/*Hide dropdown links until they are needed*/
+div.menuHolder li ul {
+    display: none;
+}
+/*Make dropdown links vertical*/
+div.menuHolder li ul li {
+    display: block;
+    float: none;
+}
+/*Prevent text wrapping*/
+div.menuHolder li ul li a {
+    width: auto;
+    min-width: 100px;
+    padding: 0 20px;
+}
+/*Display the dropdown on hover*/
+div.menuHolder ul li a:hover + .hidden, .hidden:hover {
+    display: block;
+}
+/*Responsive Styles*/
+@media screen and (max-width : 760px){
+    /*Make dropdown links appear inline*/
+    div.menuHolder ul {
+        position: static;
+        display: none;
+    }
+    /*Create vertical spacing*/
+    div.menuHolder li {
+        margin-bottom: 1px;
+    }
+    /*Make all menu links full width*/
+    div.menuHolder ul li, li a {
+        width: 100%;
+    }
+    /*Display 'show menu' link*/
+    div.menuHolder .show-menu {
+        display:block;
+    }
+}

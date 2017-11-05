@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Wallets</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
+	</head>
+	<body>
+		<table class="results">
+			<thead>
+				<tr>
+					<th>Wallet</th>
+					<th>Description</th>
+					<th>Coin</th>
+					<th>Portfolio</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="wallet : ${walletList}">
+					<td th:text="${wallet.address}">walletAddress</td>
+					<td th:text="${wallet.description}">description</td>
+					<td th:text="${wallet.coin.coinName}">coinName</td>
+					<td th:text="${wallet.portfolio.name}">portfolioName</td>
+				</tr>
+			</tbody>
+		
+		</table>
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
+	</body>
+</html>

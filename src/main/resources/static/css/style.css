@@ -1,95 +1,10 @@
 @import url("menu.css");
 @import url("header.css");
+@import url("form.css");
+@import url("results.css");
 body{
 	font-family: 'Raleway', sans-serif;
 	color: #333;
 	font-size: 11pt;
 	font-size: 1.1vw;
-}
-table.form{
-	min-width: 400px;
-	max-width: 700px;
-	width: 100%;
-    margin-top: 10px;
-    padding: 16px;
-    background: #F7F7F7;
-    font-size: 0.9vw;
-}
-table.form thead tr th{
-	background: #43D1AF;
-    padding: 20px 0;
-    font-size: 140%;
-    font-weight: 300;
-    text-align: center;
-    color: #fff;
-    margin: -16px -16px 16px -16px;
-}
-
-table.form tbody tr td select {
-	display:inline-block;
-}
-
-
-table.form tbody tr td input[type="text"],
-table.form tbody tr td input[type="date"],
-table.form tbody tr td input[type="datetime"],
-table.form tbody tr td input[type="email"],
-table.form tbody tr td input[type="number"],
-table.form tbody tr td input[type="search"],
-table.form tbody tr td input[type="time"],
-table.form tbody tr td input[type="url"],
-table.form tbody tr td textarea,
-table.form tbody tr td select 
-{
-    -webkit-transition: all 0.30s ease-in-out;
-    -moz-transition: all 0.30s ease-in-out;
-    -ms-transition: all 0.30s ease-in-out;
-    -o-transition: all 0.30s ease-in-out;
-    outline: none;
-    box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    width: 100%;
-    background: #fff;
-    margin-bottom: 4%;
-    border: 1px solid #ccc;
-    padding: 3%;
-    color: #555;
-    font-size: 0.8vw;
-}
-
-table.form tbody tr td input[type="text"]:focus,
-table.form tbody tr td input[type="date"]:focus,
-table.form tbody tr td input[type="datetime"]:focus,
-table.form tbody tr td input[type="email"]:focus,
-table.form tbody tr td input[type="number"]:focus,
-table.form tbody tr td input[type="search"]:focus,
-table.form tbody tr td input[type="time"]:focus,
-table.form tbody tr td input[type="url"]:focus,
-table.form tbody tr td textarea:focus,
-table.form tbody tr td select:focus
-{
-    box-shadow: 0 0 5px #43D1AF;
-    padding: 3%;
-    border: 1px solid #43D1AF;
-}
-table.form tbody tr td input[type="submit"],
-table.form tbody tr td button,
-table.form tbody tr td input[type="button"]{
-    box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    width: 100%;
-    padding: 3%;
-    background: #43D1AF;
-    border-bottom: 2px solid #30C29E;
-    border-top-style: none;
-    border-right-style: none;
-    border-left-style: none;    
-    color: #fff;
-}
-table.form tbody tr td input[type="submit"]:hover,
-table.form tbody tr td button:hover,
-table.form tbody tr td input[type="button"]:hover{
-    background: #2EBC99;
 }

@@ -1,6 +1,7 @@
 package nl.kolkos.cryptoManager;
 
 import java.util.Arrays;
+import java.sql.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,6 +28,15 @@ public class Application {
 	@Autowired
 	@Qualifier(value = "portfolioRepository")
 	private PortfolioRepository portfolioRepository;
+	
+	@Autowired
+	@Qualifier(value = "settingsRepository")
+	private SettingsRepository settingsRepository;
+	
+	@Autowired
+	@Qualifier(value = "depositRepository")
+	private DepositRepository depositRepository;
+	
 	
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -99,6 +109,47 @@ public class Application {
         // save the wallets
         walletRepository.save(walletBTC);
         walletRepository.save(walletLTC);
+        
+        
+        // create deposits
+        Date date = new Date(1489186800000L);
+        Deposit deposit1 = new Deposit();
+        deposit1.setDepositDate(date);
+        deposit1.setAmount(0.51000327);
+        deposit1.setPurchaseValue(43.66);
+        deposit1.setRemarks("Fake BTC deposit 1");
+        deposit1.setWallet(walletBTC);
+        
+        Deposit deposit2 = new Deposit();
+        deposit2.setDepositDate(date);
+        deposit2.setAmount(6.666);
+        deposit2.setPurchaseValue(43.66);
+        deposit2.setRemarks("Fake LTC deposit 1");
+        deposit2.setWallet(walletLTC);
+        
+        // save the deposits
+        depositRepository.save(deposit1);
+        depositRepository.save(deposit2);
+        
+        
+        
+        // create the settings
+        Settings settingCurrency = new Settings();
+        settingCurrency.setOption("currency");
+        settingCurrency.setValue("EUR");
+        
+        Settings settingBotToken = new Settings();
+        settingBotToken.setOption("bot_token");
+        settingBotToken.setValue("429491716:AAHJIRsPvRkRzpYRIdznxZEXgIJtYZm77M0");
+        
+        Settings settingBotUsername = new Settings();
+        settingBotUsername.setOption("bot_username");
+        settingBotUsername.setValue("geenGezeikIedereenRijkBot");
+               
+        // save the settings
+        settingsRepository.save(settingCurrency);
+        settingsRepository.save(settingBotToken);
+        settingsRepository.save(settingBotUsername);
         
     }
     

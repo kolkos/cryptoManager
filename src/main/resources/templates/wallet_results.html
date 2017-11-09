@@ -5,6 +5,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
 		<link href="/css/style.css" rel="stylesheet" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 		<script src="/js/jquery-3.2.1.min.js"></script>
 	</head>
 	<body>
@@ -15,6 +16,7 @@
 					<th>Description</th>
 					<th>Coin</th>
 					<th>Portfolio</th>
+					<th>&nbsp;</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -23,6 +25,11 @@
 					<td th:text="${wallet.description}">description</td>
 					<td th:text="${wallet.coin.coinName}">coinName</td>
 					<td th:text="${wallet.portfolio.name}">portfolioName</td>
+					<td>
+						<a th:href="@{/wallet/showWallet/{id}(id=${wallet.id})}">
+							<i class="fa fa-folder-open-o" style="font-size:24px;"></i>
+						</a>
+					</td>
 				</tr>
 			</tbody>
 		

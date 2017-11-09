@@ -24,7 +24,7 @@ public class CoinValue {
 	
 	private double value;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name = "coin_id")
 	private Coin coin;
 
@@ -59,7 +59,6 @@ public class CoinValue {
 	public void setCoin(Coin coin) {
 		this.coin = coin;
 	}
-	
 		
 	
 }

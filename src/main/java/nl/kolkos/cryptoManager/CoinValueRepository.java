@@ -1,5 +1,7 @@
 package nl.kolkos.cryptoManager;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 
 import nl.kolkos.cryptoManager.CoinValue;
@@ -8,5 +10,5 @@ import nl.kolkos.cryptoManager.CoinValue;
 //CRUD refers Create, Read, Update, Delete
 
 public interface CoinValueRepository extends CrudRepository<CoinValue, Long> {
-
+	List<CoinValue> findByCoin_Id(Long coinId);
 }

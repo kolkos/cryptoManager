@@ -139,11 +139,15 @@ public class Application {
         // create fake coin values
         CoinValue coinValue1 = new CoinValue();
         coinValue1.setCoin(coinBTC);
-        coinValue1.setValue(1.666);
+        coinValue1.setValue(7170.36);
+        
+        CoinValue coinValue2 = new CoinValue();
+        coinValue2.setCoin(coinLTC);
+        coinValue2.setValue(62.54);
         
         // save the values
         coinValueRepository.save(coinValue1);
-        
+        coinValueRepository.save(coinValue2);
         
         // create the settings
         Settings settingCurrency = new Settings();

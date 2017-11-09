@@ -20,3 +20,11 @@ table.results tbody tr td{
 table.results tbody tr:hover{
 	background: #2EBC99;
 }
+table.results a,
+table.results a:link,
+table.results a:visited,
+table.results a:hover,
+table.results a:active{
+	text-decoration: none;
+	color: #000;
+}

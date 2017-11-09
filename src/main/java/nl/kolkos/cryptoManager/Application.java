@@ -37,6 +37,10 @@ public class Application {
 	@Qualifier(value = "depositRepository")
 	private DepositRepository depositRepository;
 	
+	@Autowired
+	@Qualifier(value = "coinValueRepository")
+	private CoinValueRepository coinValueRepository;
+	
 	
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -131,6 +135,14 @@ public class Application {
         depositRepository.save(deposit1);
         depositRepository.save(deposit2);
         
+        
+        // create fake coin values
+        CoinValue coinValue1 = new CoinValue();
+        coinValue1.setCoin(coinBTC);
+        coinValue1.setValue(1.666);
+        
+        // save the values
+        coinValueRepository.save(coinValue1);
         
         
         // create the settings

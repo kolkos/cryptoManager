@@ -3,6 +3,7 @@ package nl.kolkos.cryptoManager;
 import javax.persistence.*;
 import org.hibernate.validator.constraints.NotBlank;
 
+
 @Entity // This tells Hibernate to make a table out of this class
 @Table(name = "coin")
 public class Coin {
@@ -15,7 +16,6 @@ public class Coin {
 	
 	private String description;
 		
-	
 	public Long getId() {
 		return id;
 	}
@@ -35,4 +35,8 @@ public class Coin {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	
+	
+	
 }

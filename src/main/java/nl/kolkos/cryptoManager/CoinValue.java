@@ -2,7 +2,6 @@ package nl.kolkos.cryptoManager;
 
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -10,8 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class CoinValue {
@@ -19,8 +19,7 @@ public class CoinValue {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer id;
 	
-	@Column(name = "request_date", insertable = false, updatable = false)
-	@Temporal(TemporalType.TIMESTAMP)
+	@CreationTimestamp
 	private Date requestDate;
 	
 	private double value;
@@ -61,5 +60,6 @@ public class CoinValue {
 		this.coin = coin;
 	}
 	
+		
 	
 }

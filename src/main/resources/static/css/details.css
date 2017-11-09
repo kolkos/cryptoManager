@@ -1,6 +1,6 @@
 table.details tbody tr td:nth-child(1){
 	width: 20%;
 }
-table.results tbody tr:hover{
+table.details tbody tr:hover{
 	background: #F7F7F7;
 }

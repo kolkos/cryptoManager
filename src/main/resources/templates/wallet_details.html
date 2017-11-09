@@ -55,7 +55,7 @@
 				</tr>
 				<tr>
 					<td>Profit/Loss:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(profitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
+					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(profitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
 				</tr>
 			</tbody>
 		
@@ -79,7 +79,7 @@
 					<td th:text="${#numbers.formatDecimal(deposit.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
 					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.purchaseValue, 1, 'POINT', 2, 'COMMA')}">purchaseValue</td>
 					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
+					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
 					<td th:text="${deposit.remarks}">remarks</td>
 				</tr>
 			</tbody>
@@ -88,5 +88,6 @@
 		
 		<script src="/js/LoadMenu.js"></script>
 		<script src="/js/LoadHeader.js"></script>
+		<script src="/js/profitLossFix.js"></script>
 	</body>
 </html>

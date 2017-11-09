@@ -39,23 +39,23 @@
 				</tr>
 				<tr>
 					<td>Current value:</td>
-					<td th:text="${#numbers.formatDecimal(currentValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(currentValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
 				</tr>
 				<tr>
 					<td>Total deposited:</td>
-					<td th:text="${#numbers.formatDecimal(totalDeposited, 1, 'POINT', 2, 'COMMA')}">totalDeposited</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(totalDeposited, 1, 'POINT', 2, 'COMMA')}">totalDeposited</td>
 				</tr>
 				<tr>
 					<td>Total withdrawn:</td>
-					<td th:text="${#numbers.formatDecimal(totalWithdrawn, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(totalWithdrawn, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
 				</tr>
 				<tr>
 					<td>Total invested:</td>
-					<td th:text="${#numbers.formatDecimal(totalInvested, 1, 'POINT', 2, 'COMMA')}">totalInvested</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(totalInvested, 1, 'POINT', 2, 'COMMA')}">totalInvested</td>
 				</tr>
 				<tr>
 					<td>Profit/Loss:</td>
-					<td th:text="${#numbers.formatDecimal(profitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(profitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
 				</tr>
 			</tbody>
 		
@@ -75,11 +75,11 @@
 			</thead>
 			<tbody>
 				<tr th:each="deposit : ${deposits}">
-					<td th:text="${#dates.format(deposit.depositDate, 'dd-MM-yyyy HH:mm:ss')}">depositDate</td>
+					<td th:text="${#dates.format(deposit.depositDate, 'dd-MM-yyyy')}">depositDate</td>
 					<td th:text="${#numbers.formatDecimal(deposit.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
-					<td th:text="${#numbers.formatDecimal(deposit.purchaseValue, 1, 'POINT', 2, 'COMMA')}">purchaseValue</td>
-					<td th:text="${#numbers.formatDecimal(deposit.currentDepositValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
-					<td th:text="${#numbers.formatDecimal(deposit.currentDepositDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.purchaseValue, 1, 'POINT', 2, 'COMMA')}">purchaseValue</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
 					<td th:text="${deposit.remarks}">remarks</td>
 				</tr>
 			</tbody>

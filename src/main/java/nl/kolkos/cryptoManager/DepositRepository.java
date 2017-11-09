@@ -14,9 +14,9 @@ public interface DepositRepository extends CrudRepository<Deposit, Long> {
 	List<Deposit> findByWallet(Wallet wallet);
 	
 	
-	@Query(value="SELECT SUM(amount) FROM deposit WHERE wallet_id = ?1", nativeQuery = true)
+	@Query(value="SELECT COALESCE((SELECT SUM(amount) FROM deposit WHERE wallet_id = ?1), 0) AS aantal", nativeQuery = true)
 	double getSumOfAmountForWalletId(long walletId);
 	
-	@Query(value="SELECT SUM(purchase_value) FROM deposit WHERE wallet_id = ?1", nativeQuery = true)
+	@Query(value="SELECT COALESCE((SELECT SUM(purchase_value) FROM deposit WHERE wallet_id = ?1), 0) AS aantal", nativeQuery = true)
 	double getSumOfPurchaseValueForWalletId(long walletId);
 }

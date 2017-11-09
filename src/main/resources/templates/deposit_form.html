@@ -3,12 +3,15 @@
 	<head>
 		<title>Add deposit</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
 	</head>
 	<body>
 		<h1>Add deposit</h1>
 		<form action="#" th:action="@{/deposit/add}" th:object="${deposit}"
 			method="post">
-			<table>
+			<table class="form">
 				<thead>
 					<tr>
 						<th colspan="2">Add deposit form</th>
@@ -20,8 +23,13 @@
 						<td><input type="date" th:field="*{depositDate}" /></td>
 					</tr>
 					<tr>
-						<td>Wallet:</td>
-						<td><input type="number" th:field="*{walletId}" /></td>
+						<td>Coin:</td>
+						<td>
+							<select th:field="*{wallet}" required="required">
+								<option value="">-Select wallet-</option>
+								<option th:each="wallet : ${walletList}" th:value="${wallet.id}" th:text="${wallet.address + ' (' + wallet.coin.coinName + ')'}">address (coinName)</option>
+							</select>
+						</td>
 					</tr>
 					<tr>
 						<td>Amount:</td>
@@ -43,5 +51,7 @@
 				</tbody>
 			</table>
 		</form>
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
 	</body>
 </html>

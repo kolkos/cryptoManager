@@ -95,7 +95,7 @@ public class WalletController {
 		
 		
 		//return message;
-		return "redirect:/wallet/list";
+		return "redirect:/wallet/results";
 		
 	}
 	
@@ -120,7 +120,7 @@ public class WalletController {
 	}
 	
 	// get wallet details
-	@RequestMapping(value = "/getWallet/{walletId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/showWallet/{walletId}", method = RequestMethod.GET)
 	public String getWalletsByPortfolioId(@PathVariable("walletId") long walletId, Model model) {
 		Wallet wallet = walletRepository.findById(walletId);
 		

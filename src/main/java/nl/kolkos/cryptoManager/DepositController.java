@@ -34,20 +34,23 @@ public class DepositController {
     public String depositForm(Model model) {
         model.addAttribute("deposit", new Deposit());
         model.addAttribute("wallet", new Wallet());
-        
+        model.addAttribute("walletList", walletRepository.findAll());
         
         return "deposit_form";
     }
 	
 	@PostMapping(path="/add") // Map ONLY POST Requests
-	public @ResponseBody String addNewDeposit (
+	public String addNewDeposit (
 			@RequestParam Date depositDate,
 			@RequestParam Wallet wallet,
 			@RequestParam double amount,
 			@RequestParam double purchaseValue,
-			@RequestParam String remarks) {
+			@RequestParam String remarks,
+			Model model) {
 
-				
+		
+		model.addAttribute("deposit", new Deposit());
+		
 		Deposit deposit = new Deposit();
 		deposit.setDepositDate(depositDate);
 		deposit.setWallet(wallet);
@@ -58,7 +61,7 @@ public class DepositController {
 		depositRepository.save(deposit);
 		
 		
-		return "Deposit saved";
+		return "redirect:/deposit/add";
 	}
 
 	@GetMapping(path="/list")

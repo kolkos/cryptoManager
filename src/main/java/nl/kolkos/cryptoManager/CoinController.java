@@ -62,7 +62,7 @@ public class CoinController {
 	}
 	
 	// get coin details
-	@RequestMapping(value = "/getCoin/{coinId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/showCoin/{coinId}", method = RequestMethod.GET)
 	public String getWalletsByPortfolioId(@PathVariable("coinId") long coinId, Model model) {
 		Coin coin = coinRepository.findById(coinId);
 		

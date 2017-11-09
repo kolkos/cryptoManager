@@ -59,7 +59,7 @@ public class Application {
             }
             
             
-            this.populateDB();
+            //this.populateDB();
 
         };
     }
@@ -119,15 +119,15 @@ public class Application {
         Date date = new Date(1489186800000L);
         Deposit deposit1 = new Deposit();
         deposit1.setDepositDate(date);
-        deposit1.setAmount(0.51000327);
-        deposit1.setPurchaseValue(43.66);
+        deposit1.setAmount(0.05395255);
+        deposit1.setPurchaseValue(198.45);
         deposit1.setRemarks("Fake BTC deposit 1");
         deposit1.setWallet(walletBTC);
         
         Deposit deposit2 = new Deposit();
         deposit2.setDepositDate(date);
-        deposit2.setAmount(6.666);
-        deposit2.setPurchaseValue(43.66);
+        deposit2.setAmount(4.38873316);
+        deposit2.setPurchaseValue(194.46);
         deposit2.setRemarks("Fake LTC deposit 1");
         deposit2.setWallet(walletLTC);
         

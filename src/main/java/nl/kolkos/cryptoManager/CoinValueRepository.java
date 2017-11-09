@@ -13,4 +13,5 @@ public interface CoinValueRepository extends CrudRepository<CoinValue, Long> {
 	List<CoinValue> findByCoin_Id(Long coinId);
 	
 	List<CoinValue> findTop10ByCoinOrderByRequestDateDesc(Coin coin);
+	
 }

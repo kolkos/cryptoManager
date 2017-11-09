@@ -30,8 +30,16 @@ public class WalletController {
 	private CoinRepository coinRepository;
 	
 	@Autowired
+	@Qualifier(value = "coinValueRepository")
+	private CoinValueRepository coinValueRepository;	
+	
+	@Autowired
 	@Qualifier(value = "portfolioRepository")
 	private PortfolioRepository portfolioRepository;
+	
+	@Autowired
+	@Qualifier(value = "depositRepository")
+	private DepositRepository depositRepository;
 	
 	@GetMapping("/")
     public String forwardWalletList(Model model) {
@@ -39,7 +47,7 @@ public class WalletController {
         return "redirect:/wallet/list";
     }
 	
-	
+		
 	@GetMapping("/add")
     public String walletForm(Model model) {
 		model.addAttribute("wallet", new Wallet());
@@ -109,5 +117,91 @@ public class WalletController {
         return new ResponseEntity<List<Wallet>>(wallets, HttpStatus.OK);
 		
 
+	}
+	
+	// get wallet details
+	@RequestMapping(value = "/getWallet/{walletId}", method = RequestMethod.GET)
+	public String getWalletsByPortfolioId(@PathVariable("walletId") long walletId, Model model) {
+		Wallet wallet = walletRepository.findById(walletId);
+		
+		// add this wallet to the model
+		model.addAttribute("wallet", wallet);
+		
+		// get the coin from the wallet
+		Coin coin = wallet.getCoin();
+		
+		// receive the current value
+		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
+		double currentCoinValue;
+		try {
+			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(coin.getCoinName(), "EUR");
+			currentCoinValue = Double.parseDouble((String) json.get("last"));
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			currentCoinValue = 0;
+		}
+		
+		// register this result
+		CoinValue coinValue = new CoinValue();
+		coinValue.setCoin(coin);
+		coinValue.setValue(currentCoinValue);
+		
+		coinValueRepository.save(coinValue);
+		
+		// get the sum of all the deposited coins (amount) for this wallet
+		double currentBalance = depositRepository.getSumOfAmountForWalletId(wallet.getId());
+		// add to the model
+		model.addAttribute("currentBalance", currentBalance);
+		
+		
+		// get the total value for this wallet
+		double currentValue = currentBalance * currentCoinValue;
+		// add to the model
+		model.addAttribute("currentValue", currentValue);
+		
+		// get the sum of all deposits (value) for this wallet
+		double totalDeposited = depositRepository.getSumOfPurchaseValueForWalletId(wallet.getId());
+		// add to the model
+		model.addAttribute("totalDeposited", totalDeposited);
+		
+		// withdrawn is not implemented yet
+		double totalWithdrawn = 0;
+		// add to the model
+		model.addAttribute("totalWithdrawn", totalWithdrawn);
+		
+		double totalInvested = totalDeposited - totalWithdrawn;
+		// add to the model
+		model.addAttribute("totalInvested", totalInvested);
+		
+		double profitLoss = currentValue - totalInvested;
+		// add to the model
+		model.addAttribute("profitLoss", profitLoss);
+		
+		
+		// get the deposits for this wallet
+		List<Deposit> deposits = depositRepository.findByWallet(wallet);
+		
+		// loop through the deposits
+		for(Deposit deposit : deposits) {
+			// calculate the current value of the deposit
+			double currentDepositValue = deposit.getAmount() * currentCoinValue;
+			// set this value
+			deposit.setCurrentDepositValue(currentDepositValue);
+			
+			double currentDepositDifference = currentDepositValue - deposit.getPurchaseValue();
+			// set this value
+			deposit.setCurrentDepositDifference(currentDepositDifference);
+						
+		}
+		
+		// add the deposits to the model
+		model.addAttribute("deposits", deposits);
+		
+		
+		
+		return "wallet_details";
 	}
 }

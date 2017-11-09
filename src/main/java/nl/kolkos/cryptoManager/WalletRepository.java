@@ -15,4 +15,7 @@ import nl.kolkos.cryptoManager.Wallet;
 @EnableJpaRepositories("nl.kolkos.cryptoManager")
 public interface WalletRepository extends CrudRepository<Wallet, Long> {
 	List<Wallet> findByPortfolio_Id(Long portfolioId);
+	
+	Wallet findById(Long id);
+	
 }

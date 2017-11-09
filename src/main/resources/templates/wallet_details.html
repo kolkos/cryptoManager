@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Wallets</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
+	</head>
+	<body>
+		
+		<table class="results details">
+			<thead>
+				<tr>
+					<th colspan="2">Wallet details</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Address:</td>
+					<td th:text="${wallet.address}">walletAddress</td>
+				</tr>
+				<tr>
+					<td>Description:</td>
+					<td th:text="${wallet.description}">description</td>
+				</tr>
+				<tr>
+					<td>Portfolio:</td>
+					<td th:text="${wallet.portfolio.name}">portfolioName</td>
+				</tr>
+				<tr>
+					<td>Coin:</td>
+					<td th:text="${wallet.coin.coinName}">coinName</td>
+				</tr>
+				<tr>
+					<td>Current balance:</td>
+					<td th:text="${#numbers.formatDecimal(currentBalance, 1, 'POINT', 8, 'COMMA')}">currentBalance</td>
+				</tr>
+				<tr>
+					<td>Current value:</td>
+					<td th:text="${#numbers.formatDecimal(currentValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
+				</tr>
+				<tr>
+					<td>Total deposited:</td>
+					<td th:text="${#numbers.formatDecimal(totalDeposited, 1, 'POINT', 2, 'COMMA')}">totalDeposited</td>
+				</tr>
+				<tr>
+					<td>Total withdrawn:</td>
+					<td th:text="${#numbers.formatDecimal(totalWithdrawn, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
+				</tr>
+				<tr>
+					<td>Total invested:</td>
+					<td th:text="${#numbers.formatDecimal(totalInvested, 1, 'POINT', 2, 'COMMA')}">totalInvested</td>
+				</tr>
+				<tr>
+					<td>Profit/Loss:</td>
+					<td th:text="${#numbers.formatDecimal(profitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
+				</tr>
+			</tbody>
+		
+		</table>
+		<br />
+		<h2>Deposits</h2>
+		<table class="results">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Amount</th>
+					<th>Purchase value</th>
+					<th>Current value</th>
+					<th>Difference</th>
+					<th>Remarks</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="deposit : ${deposits}">
+					<td th:text="${#dates.format(deposit.depositDate, 'dd-MM-yyyy HH:mm:ss')}">depositDate</td>
+					<td th:text="${#numbers.formatDecimal(deposit.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
+					<td th:text="${#numbers.formatDecimal(deposit.purchaseValue, 1, 'POINT', 2, 'COMMA')}">purchaseValue</td>
+					<td th:text="${#numbers.formatDecimal(deposit.currentDepositValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
+					<td th:text="${#numbers.formatDecimal(deposit.currentDepositDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
+					<td th:text="${deposit.remarks}">remarks</td>
+				</tr>
+			</tbody>
+		
+		</table>
+		
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
+	</body>
+</html>

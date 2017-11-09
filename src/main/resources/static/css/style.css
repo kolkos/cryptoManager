@@ -2,6 +2,7 @@
 @import url("header.css");
 @import url("form.css");
 @import url("results.css");
+@import url("details.css");
 body{
 	font-family: 'Raleway', sans-serif;
 	color: #333;

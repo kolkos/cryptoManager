@@ -8,6 +8,6 @@ import nl.kolkos.cryptoManager.Coin;
 
 @Repository
 public interface CoinRepository extends CrudRepository<Coin, Long> {
-
+	Coin findById(Long id);
 }
 

@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Wallets</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
+	</head>
+	<body>
+		
+		<table class="results details">
+			<thead>
+				<tr>
+					<th colspan="2">Details</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Coin name:</td>
+					<td th:text="${coin.coinName}">walletAddress</td>
+				</tr>
+				<tr>
+					<td>Description:</td>
+					<td th:text="${coin.description}">walletAddress</td>
+				</tr>
+				<tr>
+					<td>Current value:</td>
+					<td th:text="${#numbers.formatDecimal(currentCoinValue, 0, 'POINT', 2, 'COMMA')}">walletAddress</td>
+				</tr>
+			</tbody>
+		
+		</table>
+		<br />
+		<table class="results">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Value</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="coinValue : ${coinValues}">
+					<td th:text="${#dates.format(coinValue.requestDate, 'dd-MM-yyyy HH:mm:ss')}">request_date</td>
+					<td th:text="${#numbers.formatDecimal(coinValue.value, 0, 'POINT', 2, 'COMMA')}">value</td>
+				</tr>
+			</tbody>
+		
+		</table>
+		
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
+	</body>
+</html>

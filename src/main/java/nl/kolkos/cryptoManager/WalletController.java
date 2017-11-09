@@ -84,7 +84,6 @@ public class WalletController {
 		wallet.setCoin(coin);
 		walletRepository.save(wallet);
 				
-		String message = String.format("Wallet '%s' created", address);
 		
 		
 		//return message;

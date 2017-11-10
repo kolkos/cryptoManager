@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
@@ -21,6 +22,7 @@ import nl.kolkos.cryptoManager.repositories.WalletRepository;
 
 
 @SpringBootApplication
+@EnableScheduling
 @EnableJpaAuditing
 public class Application {
 	

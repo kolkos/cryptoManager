@@ -1,8 +1,9 @@
 div.menuHolder{
-	background: #F7F7F7;
+	background: #43D1AF;
 	width: 100%;
 	height: 50px;
 	margin-bottom: 5px;
+	border-top: 1px solid #f7f7f7;
 }
 /*Strip the ul of padding and list styling*/
 div.menuHolder ul {
@@ -15,7 +16,7 @@ div.menuHolder ul {
 div.menuHolder li {
     display:inline-block;
     float: left;
-    margin-right: 1px;
+    border-right: 1px solid #f7f7f7;
 }
 /*Style for menu links*/
 div.menuHolder li a {
@@ -63,6 +64,9 @@ div.menuHolder li ul li a {
 /*Display the dropdown on hover*/
 div.menuHolder ul li a:hover + .hidden, .hidden:hover {
     display: block;
+    border-left: 1px solid #43D1AF;
+    border-right: 1px solid #43D1AF;
+    border-bottom: 1px solid #43D1AF;
 }
 /*Responsive Styles*/
 @media screen and (max-width : 760px){

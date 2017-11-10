@@ -85,3 +85,44 @@ table.form tbody tr td button:hover,
 table.form tbody tr td input[type="button"]:hover{
     background: #2EBC99;
 }
+/* styling of the checkbox */
+div.checkboxDiv{
+	width: 25px;
+	margin-bottom: 10px;
+	position: relative;
+}
+
+div.checkboxDiv label {
+	cursor: pointer;
+	position: absolute;
+	width: 25px;
+	height: 25px;
+	top: 0;
+	left: 0;
+	background: #fff;
+	border:1px solid #ccc;
+}
+div.checkboxDiv label:after {
+	opacity: 0.2;
+	content: '';
+	position: absolute;
+	width: 9px;
+	height: 5px;
+	background: transparent;
+	top: 6px;
+	left: 7px;
+	border: 3px solid #333;
+	border-top: none;
+	border-right: none;
+	-webkit-transform: rotate(-45deg);
+	-moz-transform: rotate(-45deg);
+	-o-transform: rotate(-45deg);
+	-ms-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+}
+div.checkboxDiv label:hover::after {
+	opacity: 0.5;
+}
+div.checkboxDiv input[type=checkbox]:checked + label:after {
+	opacity: 1;
+}

@@ -51,6 +51,7 @@ public class DepositController {
 			@RequestParam double amount,
 			@RequestParam double purchaseValue,
 			@RequestParam String remarks,
+			@RequestParam(value="addAnotherDeposit", required=false) boolean addAnotherDeposit,
 			Model model) {
 
 		
@@ -65,8 +66,15 @@ public class DepositController {
 		
 		depositRepository.save(deposit);
 		
+		String redirect;
+		if(addAnotherDeposit) {
+			redirect = "redirect:/deposit/add";
+		}else {
+			redirect = "redirect:/deposit/list";
+		}
 		
-		return "redirect:/deposit/add";
+		
+		return redirect;
 	}
 
 	@GetMapping(path="/list")

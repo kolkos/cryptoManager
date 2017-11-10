@@ -45,6 +45,19 @@
 						<td><input type="text" th:field="*{remarks}" /></td>
 					</tr>
 					<tr>
+						<td>Add another deposit</td>
+						<td>
+							<div class="checkboxDiv">
+								<!--
+								
+								<input type="checkbox" th:field="${addAnotherDeposit}" value="1"/>
+								-->
+								<input type="checkbox" name="addAnotherDeposit" id="addAnotherDeposit" value="true"/>
+								<label for="addAnotherDeposit"></label>
+							</div>
+						</td>
+					</tr>
+					<tr>
 						<td colspan="2"><button type="submit">Submit</button></td>
 					</tr>
 				</tbody>

@@ -23,6 +23,7 @@ a.button {
     border-left-style: none;    
 	
 	padding: 5px 15px 5px 15px;
+	font-size: 0.8vw;
 
 }
 a.button:hover{

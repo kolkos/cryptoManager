@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Wallets</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
+	</head>
+	<body>
+		<table class="results">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Wallet</th>
+					<th>Coin</th>
+					<th>Portfolio</th>
+					<th>Amount</th>
+					<th>Purchase value</th>
+					<th>Current value</th>
+					<th>Difference</th>
+					<th>Remarks</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="deposit : ${deposits}">
+					<td th:text="${#dates.format(deposit.depositDate, 'dd-MM-yyyy')}">depositDate</td>
+					<td th:text="${deposit.wallet.address}">address</td>
+					<td th:text="${deposit.wallet.coin.coinName}">coinName</td>
+					<td th:text="${deposit.wallet.portfolio.name}">portfolioName</td>
+					<td th:text="${#numbers.formatDecimal(deposit.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.purchaseValue, 1, 'POINT', 2, 'COMMA')}">purchaseValue</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
+					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
+					<td th:text="${deposit.remarks}">remarks</td>
+				</tr>
+			</tbody>
+		</table>
+		<p><a href="/deposit/add" class="button">Add a deposit</a></p>
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
+		<script src="/js/profitLossFix.js"></script>
+	</body>
+</html>

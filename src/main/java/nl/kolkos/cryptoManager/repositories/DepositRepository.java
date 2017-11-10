@@ -14,6 +14,7 @@ import nl.kolkos.cryptoManager.Wallet;
 public interface DepositRepository extends CrudRepository<Deposit, Long> {
 	List<Deposit> findByWallet(Wallet wallet);
 	
+	List<Deposit> findAllByOrderByDepositDateAsc();
 	
 	@Query(value="SELECT COALESCE((SELECT SUM(amount) FROM deposit WHERE wallet_id = ?1), 0) AS aantal", nativeQuery = true)
 	double getSumOfAmountForWalletId(long walletId);

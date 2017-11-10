@@ -12,6 +12,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import nl.kolkos.cryptoManager.repositories.CoinRepository;
+import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
+import nl.kolkos.cryptoManager.repositories.DepositRepository;
+import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
+import nl.kolkos.cryptoManager.repositories.SettingsRepository;
+import nl.kolkos.cryptoManager.repositories.WalletRepository;
+
 
 @SpringBootApplication
 @EnableJpaAuditing

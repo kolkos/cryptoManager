@@ -1,4 +1,4 @@
-package nl.kolkos.cryptoManager;
+package nl.kolkos.cryptoManager.repositories;
 
 
 import org.springframework.stereotype.Repository;

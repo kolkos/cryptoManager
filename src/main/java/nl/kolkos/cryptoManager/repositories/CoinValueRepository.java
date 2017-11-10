@@ -1,9 +1,10 @@
-package nl.kolkos.cryptoManager;
+package nl.kolkos.cryptoManager.repositories;
 
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
+import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinValue;
 
 //This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository

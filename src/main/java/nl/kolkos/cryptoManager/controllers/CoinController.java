@@ -1,4 +1,4 @@
-package nl.kolkos.cryptoManager;
+package nl.kolkos.cryptoManager.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import nl.kolkos.cryptoManager.ApiRequestHandler;
+import nl.kolkos.cryptoManager.Coin;
+import nl.kolkos.cryptoManager.CoinValue;
+import nl.kolkos.cryptoManager.repositories.CoinRepository;
+import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 
 
 @Controller    // This means that this class is a Controller

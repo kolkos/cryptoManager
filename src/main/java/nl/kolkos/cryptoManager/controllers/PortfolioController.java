@@ -1,4 +1,4 @@
-package nl.kolkos.cryptoManager;
+package nl.kolkos.cryptoManager.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import nl.kolkos.cryptoManager.Portfolio;
+import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/portfolio") // This means URL's start with /demo (after Application path)

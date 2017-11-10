@@ -1,4 +1,4 @@
-package nl.kolkos.cryptoManager;
+package nl.kolkos.cryptoManager.controllers;
 
 import java.util.List;
 
@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import nl.kolkos.cryptoManager.CoinValue;
+import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/coinValue") // This means URL's start with /demo (after Application path)

@@ -22,7 +22,8 @@
 					<td th:text="${coin.coinName}">coinName</td>
 					<td th:text="${coin.description}">description</td>
 					<td>
-						<a th:href="@{/coin/showCoin/{id}(id=${coin.id})}">
+						<a th:href="@{/coin/showCoin/{id}(id=${coin.id})}" class="tooltip">
+							<span class="tooltiptext">Open details for this coin</span>
 							<i class="fa fa-folder-open-o" style="font-size:24px;"></i>
 						</a>
 					</td>

@@ -3,6 +3,7 @@
 @import url("form.css");
 @import url("results.css");
 @import url("details.css");
+@import url("tooltip.css");
 body{
 	font-family: 'Raleway', sans-serif;
 	color: #333;

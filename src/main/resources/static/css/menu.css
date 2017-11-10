@@ -64,9 +64,6 @@ div.menuHolder li ul li a {
 /*Display the dropdown on hover*/
 div.menuHolder ul li a:hover + .hidden, .hidden:hover {
     display: block;
-    border-left: 1px solid #43D1AF;
-    border-right: 1px solid #43D1AF;
-    border-bottom: 1px solid #43D1AF;
 }
 /*Responsive Styles*/
 @media screen and (max-width : 760px){

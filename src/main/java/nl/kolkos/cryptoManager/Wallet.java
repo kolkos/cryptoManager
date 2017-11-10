@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Wallet {
@@ -26,7 +27,12 @@ public class Wallet {
 	@JoinColumn(name = "portfolio_id")
 	private Portfolio portfolio;
 	
+	// these fields don't need to be in the database since there are calculated
+	@Transient
+	private double currentWalletValue;
 	
+	@Transient
+	private double currentWalletAmount;
 	
 	public Long getId() {
 		return id;
@@ -62,6 +68,19 @@ public class Wallet {
 	}
 	public void setPortfolio(Portfolio portfolio) {
 		this.portfolio = portfolio;
+	}
+	
+	public double getCurrentWalletValue() {
+		return currentWalletValue;
+	}
+	public void setCurrentWalletValue(double currentWalletValue) {
+		this.currentWalletValue = currentWalletValue;
+	}
+	public double getCurrentWalletAmount() {
+		return currentWalletAmount;
+	}
+	public void setCurrentWalletAmount(double currentWalletAmount) {
+		this.currentWalletAmount = currentWalletAmount;
 	}
 	
 	

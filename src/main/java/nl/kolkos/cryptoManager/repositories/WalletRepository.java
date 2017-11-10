@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Wallet;
 
 
@@ -15,6 +16,8 @@ import nl.kolkos.cryptoManager.Wallet;
 @EnableJpaRepositories("nl.kolkos.cryptoManager")
 public interface WalletRepository extends CrudRepository<Wallet, Long> {
 	List<Wallet> findByPortfolio_Id(Long portfolioId);
+	
+	List<Wallet> findByPortfolio(Portfolio portfolio);
 	
 	Wallet findById(Long id);
 	

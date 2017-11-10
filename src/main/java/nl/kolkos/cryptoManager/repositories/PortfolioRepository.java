@@ -8,6 +8,6 @@ import nl.kolkos.cryptoManager.Portfolio;
 //CRUD refers Create, Read, Update, Delete
 
 public interface PortfolioRepository extends CrudRepository<Portfolio, Long> {
-		
+	Portfolio findById(Long id);	
 	
 }

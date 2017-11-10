@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Wallets</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
+	</head>
+	<body>
+		
+		<table class="results details">
+			<thead>
+				<tr>
+					<th colspan="2">Coin Details</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Portfolio name:</td>
+					<td th:text="${portfolio.name}">walletAddress</td>
+				</tr>
+				<tr>
+					<td>Description:</td>
+					<td th:text="${portfolio.description}">walletAddress</td>
+				</tr>
+				<tr>
+					<td>Total attached wallets:</td>
+					<td th:text="${countWallets}">countWallets</td>
+				</tr>
+				<tr>
+					<td>Total portfolio value:</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(totalPortfolioValue, 1, 'POINT', 2, 'COMMA')}">totalPortfolioValue</td>
+				</tr>
+			</tbody>
+		</table>
+		<br />
+		<h2>Wallets</h2>
+		<table class="results">
+			<thead>
+				<tr>
+					<th>Wallet</th>
+					<th>Description</th>
+					<th>Coin</th>
+					<th>Balance</th>
+					<th>Value</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="wallet : ${wallets}">
+					<td th:text="${wallet.address}">walletAddress</td>
+					<td th:text="${wallet.description}">description</td>
+					<td th:text="${wallet.coin.coinName}">coinName</td>
+					<td th:text="${#numbers.formatDecimal(wallet.currentWalletAmount, 1, 'POINT', 8, 'COMMA')}">currentWalletAmount</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletValue, 1, 'POINT', 2, 'COMMA')}">currentWalletValue</td>
+					<td>
+						<a th:href="@{/wallet/showWallet/{id}(id=${wallet.id})}" class="tooltip">
+							<span class="tooltiptext">Open details for this wallet</span>
+							<i class="fa fa-folder-open-o" style="font-size:24px;"></i>
+						</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
+	</body>
+</html>

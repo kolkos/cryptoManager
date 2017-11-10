@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Wallets</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
+	</head>
+	<body>
+		<table class="results">
+			<thead>
+				<tr>
+					<th>Coin name</th>
+					<th>Description</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="portfolio : ${portfolioList}">
+					<td th:text="${portfolio.name}">name</td>
+					<td th:text="${portfolio.description}">description</td>
+					<td>
+						<a th:href="@{/portfolio/showPortfolio/{id}(id=${portfolio.id})}" class="tooltip">
+							<span class="tooltiptext">Open details for this portfolio</span>
+							<i class="fa fa-folder-open-o" style="font-size:24px;"></i>
+						</a>
+					</td>
+				</tr>
+			</tbody>
+		
+		</table>
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
+	</body>
+</html>

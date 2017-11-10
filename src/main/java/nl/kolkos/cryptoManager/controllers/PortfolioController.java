@@ -49,6 +49,14 @@ public class PortfolioController {
 		
 	}
 	
+	@GetMapping("/results")
+    public String portfolioResults(Model model) {
+		//model.addAttribute("coin", new Coin());
+		model.addAttribute("portfolioList", portfolioRepository.findAll());
+		
+        return "portfolio_results";
+    }
+	
 	// list all 
 	@GetMapping(path="/list")
 	public @ResponseBody Iterable<Portfolio> getAllPortfolios() {

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinValue;
+import nl.kolkos.cryptoManager.Portfolio;
+import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 
@@ -66,6 +68,14 @@ public class CoinController {
 		
 		return coinRepository.findAll();
 	}
+	
+	@GetMapping("/results")
+    public String coinResults(Model model) {
+		//model.addAttribute("coin", new Coin());
+		model.addAttribute("coinList", coinRepository.findAll());
+		
+        return "coin_results";
+    }
 	
 	// get coin details
 	@RequestMapping(value = "/showCoin/{coinId}", method = RequestMethod.GET)

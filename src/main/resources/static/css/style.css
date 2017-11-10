@@ -10,3 +10,21 @@ body{
 	font-size: 11pt;
 	font-size: 1.1vw;
 }
+a.button {
+	text-decoration: none;
+	background-color: #43D1AF;
+    color: #fff;
+	box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+	border-bottom: 2px solid #30C29E;
+    border-top-style: none;
+    border-right-style: none;
+    border-left-style: none;    
+	
+	padding: 5px 15px 5px 15px;
+
+}
+a.button:hover{
+	background: #2EBC99;
+}

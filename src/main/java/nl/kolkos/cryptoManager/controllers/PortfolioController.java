@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
+import nl.kolkos.cryptoManager.CoinMarketCapCoin;
 import nl.kolkos.cryptoManager.CoinValue;
 import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
@@ -114,6 +115,9 @@ public class PortfolioController {
 			// get the coin from this wallet
 			Coin coin = wallet.getCoin();
 			
+			// get the cmc coin
+			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
+			
 			// get the total number of coins
 			double currentWalletAmount = depositRepository.getSumOfAmountForWalletId(wallet.getId());
 			
@@ -121,8 +125,8 @@ public class PortfolioController {
 			double currentCoinValue = 0;
 			
 			try {
-				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(coin.getCoinName(), "EUR");
-				currentCoinValue = Double.parseDouble((String) json.get("last"));
+				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
+				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

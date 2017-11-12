@@ -10,6 +10,26 @@
 	</head>
 	<body>
 		<h1>Deposits</h1>
+		<!-- 
+			Create filter form
+		 -->
+		<form action="" method="GET">
+			<table class="form">
+				<thead>
+					<tr>
+						<th colspan="2">Filter deposits</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Date:</td>
+						<td>
+							<input type="date" id="filterDate" name="filterDate" />
+						</td>
+					</tr>
+				</tbody>
+			</table> 
+		</form>
 		<table class="results">
 			<thead>
 				<tr>
@@ -28,7 +48,7 @@
 				<tr th:each="deposit : ${deposits}">
 					<td th:text="${#dates.format(deposit.depositDate, 'dd-MM-yyyy')}">depositDate</td>
 					<td th:text="${deposit.wallet.address}">address</td>
-					<td th:text="${deposit.wallet.coin.coinName}">coinName</td>
+					<td th:text="${deposit.wallet.coin.coinMarketCapCoin.symbol}">coinName</td>
 					<td th:text="${deposit.wallet.portfolio.name}">portfolioName</td>
 					<td th:text="${#numbers.formatDecimal(deposit.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
 					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.purchaseValue, 1, 'POINT', 2, 'COMMA')}">purchaseValue</td>

@@ -22,11 +22,11 @@
 						<td><input type="date" th:field="*{depositDate}" /></td>
 					</tr>
 					<tr>
-						<td>Coin:</td>
+						<td>Wallet:</td>
 						<td>
 							<select th:field="*{wallet}" required="required">
 								<option value="">-Select wallet-</option>
-								<option th:each="wallet : ${walletList}" th:value="${wallet.id}" th:text="${wallet.address + ' (' + wallet.coin.coinName + ')'}">address (coinName)</option>
+								<option th:each="wallet : ${walletList}" th:value="${wallet.id}" th:text="${wallet.address + ' (' + wallet.coin.coinMarketCapCoin.symbol + ')'}">address (coinName)</option>
 							</select>
 						</td>
 					</tr>

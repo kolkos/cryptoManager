@@ -18,7 +18,7 @@ public class ScheduledTasks {
 	private CoinValueRepository coinValueRepository;
 	
 	
-	@Scheduled(fixedRate = 300000)
+	@Scheduled(fixedRate = 60_000)
     public void reportCurrentTime() {
         // get all the coins from the database
 		Iterable<Coin> coins = coinRepository.findAll();
@@ -28,11 +28,15 @@ public class ScheduledTasks {
 		
 		// loop through the coins
 		for(Coin coin : coins) {
+			// get the CMC coin for this coin
+			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
+			
+			
 			double currentCoinValue = 0;
 			// get the current coin value from API
 			try {
-				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(coin.getCoinName(), "EUR");
-				currentCoinValue = Double.parseDouble((String) json.get("last"));				
+				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
+				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

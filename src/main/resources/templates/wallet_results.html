@@ -24,7 +24,7 @@
 				<tr th:each="wallet : ${walletList}">
 					<td th:text="${wallet.address}">walletAddress</td>
 					<td th:text="${wallet.description}">description</td>
-					<td th:text="${wallet.coin.coinName}">coinName</td>
+					<td th:text="${wallet.coin.coinMarketCapCoin.symbol}">coinName</td>
 					<td th:text="${wallet.portfolio.name}">portfolioName</td>
 					<td>
 						<a th:href="@{/wallet/showWallet/{id}(id=${wallet.id})}" class="tooltip">

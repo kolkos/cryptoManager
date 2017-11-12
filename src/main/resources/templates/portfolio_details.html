@@ -53,7 +53,7 @@
 				<tr th:each="wallet : ${wallets}">
 					<td th:text="${wallet.address}">walletAddress</td>
 					<td th:text="${wallet.description}">description</td>
-					<td th:text="${wallet.coin.coinName}">coinName</td>
+					<td th:text="${wallet.coin.coinMarketCapCoin.symbol}">coinName</td>
 					<td th:text="${#numbers.formatDecimal(wallet.currentWalletAmount, 1, 'POINT', 8, 'COMMA')}">currentWalletAmount</td>
 					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletValue, 1, 'POINT', 2, 'COMMA')}">currentWalletValue</td>
 					<td>

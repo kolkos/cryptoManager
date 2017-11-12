@@ -19,15 +19,19 @@
 			<tbody>
 				<tr>
 					<td>Coin name:</td>
-					<td th:text="${coin.coinName}">walletAddress</td>
+					<td th:text="${coin.coinMarketCapCoin.name}">name</td>
 				</tr>
 				<tr>
-					<td>Description:</td>
-					<td th:text="${coin.description}">walletAddress</td>
+					<td>Symbol:</td>
+					<td th:text="${coin.coinMarketCapCoin.symbol}">symbol</td>
+				</tr>
+				<tr>
+					<td>id:</td>
+					<td th:text="${coin.coinMarketCapCoin.id}">id</td>
 				</tr>
 				<tr>
 					<td>Current value:</td>
-					<td th:text="${#numbers.formatDecimal(currentCoinValue, 0, 'POINT', 2, 'COMMA')}">walletAddress</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(currentCoinValue, 1, 'POINT', 2, 'COMMA')}">walletAddress</td>
 				</tr>
 			</tbody>
 		
@@ -45,7 +49,7 @@
 			<tbody>
 				<tr th:each="coinValue : ${coinValues}">
 					<td th:text="${#dates.format(coinValue.requestDate, 'dd-MM-yyyy HH:mm:ss')}">request_date</td>
-					<td th:text="${#numbers.formatDecimal(coinValue.value, 0, 'POINT', 2, 'COMMA')}">value</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(coinValue.value, 1, 'POINT', 2, 'COMMA')}">value</td>
 				</tr>
 			</tbody>
 		

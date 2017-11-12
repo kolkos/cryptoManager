@@ -15,10 +15,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
+import nl.kolkos.cryptoManager.CoinMarketCapCoin;
 import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Wallet;
+import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.DepositRepository;
+import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 
 @Controller    // This means that this class is a Controller
@@ -32,6 +35,13 @@ public class DepositController {
 	@Qualifier(value = "walletRepository")
 	private WalletRepository walletRepository;
 	
+	@Autowired
+	@Qualifier(value = "coinRepository")
+	private CoinRepository coinRepository;
+	
+	@Autowired
+	@Qualifier(value = "portfolioRepository")
+	private PortfolioRepository portfolioRepository;
 	
 	@GetMapping("/")
     public String forwardDepositForm(Model model) {
@@ -46,6 +56,19 @@ public class DepositController {
         model.addAttribute("walletList", walletRepository.findAll());
         
         return "deposit_form";
+    }
+	
+	@GetMapping("/testForm")
+    public String filterForm(Model model) {
+		model.addAttribute("portfolio", new Portfolio());
+        model.addAttribute("wallet", new Wallet());
+        model.addAttribute("coin", new Coin());
+		
+		model.addAttribute("coinList", coinRepository.findAllByOrderByCoinMarketCapCoinSymbol());
+        model.addAttribute("walletList", walletRepository.findAll());
+        model.addAttribute("portfolioList", portfolioRepository.findAll());
+        
+        return "deposit_temp_filter_form";
     }
 	
 	@PostMapping(path="/add") // Map ONLY POST Requests
@@ -74,7 +97,7 @@ public class DepositController {
 		if(addAnotherDeposit) {
 			redirect = "redirect:/deposit/add";
 		}else {
-			redirect = "redirect:/deposit/list";
+			redirect = "redirect:/deposit/results";
 		}
 		
 		
@@ -103,11 +126,14 @@ public class DepositController {
 			// get the coin for this wallet
 			Coin coin = wallet.getCoin();
 			
+			// get the cmc coin
+			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
+			
 			// get the current value for this coin
 			double currentCoinValue = 0;
 			try {
-				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(coin.getCoinName(), "EUR");
-				currentCoinValue = Double.parseDouble((String) json.get("last"));
+				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
+				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

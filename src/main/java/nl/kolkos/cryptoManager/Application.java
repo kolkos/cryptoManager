@@ -1,8 +1,12 @@
 package nl.kolkos.cryptoManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.sql.Date;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
@@ -13,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import nl.kolkos.cryptoManager.repositories.CoinMarketCapCoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.repositories.DepositRepository;
@@ -50,6 +55,10 @@ public class Application {
 	@Qualifier(value = "coinValueRepository")
 	private CoinValueRepository coinValueRepository;
 	
+	@Autowired
+	@Qualifier(value = "coinMarketCapCoinRepository")
+	private CoinMarketCapCoinRepository coinMarketCapCoinRepository;
+	
 	
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -67,37 +76,77 @@ public class Application {
                 System.out.println(beanName);
             }
             
-            
+            //this.getAllCoinsFromCMC();
             //this.populateDB();
 
         };
     }
     
+    public void getAllCoinsFromCMC() {
+		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
+    		
+		try {
+			// get the data from the API as a JSON array
+			JSONArray jsonArray = apiRequestHandler.getAllCMCCoins();
+			
+			// loop through the array items
+			for(int i = 0; i < jsonArray.length(); i++){
+				JSONObject jsonObject = jsonArray.getJSONObject(i);
+				
+				// get the id
+				String id = jsonObject.getString("id");
+				
+				// get the name
+				String name = jsonObject.getString("name");
+				
+				// get the symbol
+				String symbol = jsonObject.getString("symbol");
+				
+				// check if this id already exist
+				
+				if(coinMarketCapCoinRepository.findById(id) == null) {
+					// cmc coin does not exist, create it
+					CoinMarketCapCoin cmcCoin = new CoinMarketCapCoin();
+					cmcCoin.setId(id);
+					cmcCoin.setName(name);
+					cmcCoin.setSymbol(symbol);
+					
+					// save this coin
+					coinMarketCapCoinRepository.save(cmcCoin);
+				}
+				
+				
+				
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+    
     public void populateDB() {
-    		// create the coins
-        Coin coinBTC = new Coin();
-        coinBTC.setCoinName("BTC");
-        coinBTC.setDescription("Bitcoin");
-        
-        Coin coinLTC = new Coin();
-        coinLTC.setCoinName("LTC");
-        coinLTC.setDescription("Litecoin");
-        
-        Coin coinETH = new Coin();
-        coinETH.setCoinName("ETH");
-        coinETH.setDescription("Ethereum");
-        
-        Coin coinXRP = new Coin();
-        coinXRP.setCoinName("XRP");
-        coinXRP.setDescription("Ripple");
-        
-        // save coins
-        coinRepository.save(coinBTC);
-        coinRepository.save(coinLTC);
-        coinRepository.save(coinETH);
-        coinRepository.save(coinXRP);
-        
-        
+    		// first add some basic symbols
+    		List<String> symbols = new ArrayList<>();
+    		symbols.add("BTC");
+    		symbols.add("LTC");
+    		symbols.add("ETH");
+    		symbols.add("XRP");
+    		symbols.add("BCH");
+    		
+    		// loop through the symbols
+    		for(String symbol : symbols) {
+    			// get the CMC coin for this symbol
+    			CoinMarketCapCoin cmcCoin = coinMarketCapCoinRepository.findBySymbol(symbol);
+    			
+    			// create the coin for this symbol
+    			Coin coin = new Coin();
+    			coin.setCoinMarketCapCoin(cmcCoin);
+    			
+    			// save the coin
+    			coinRepository.save(coin);
+    		}
+    	
         // create the portfolios
         Portfolio portfolio1 = new Portfolio();
         portfolio1.setName("Geen gezeik iedereen rijk");
@@ -106,58 +155,7 @@ public class Application {
         // save the portfolios
         portfolioRepository.save(portfolio1);
         
-        // add fake wallets
-        Wallet walletBTC = new Wallet();
-        walletBTC.setAddress("FAKE-BTC-ADDRESS");
-        walletBTC.setDescription("Fake Bitcoin wallet");
-        walletBTC.setCoin(coinBTC);
-        walletBTC.setPortfolio(portfolio1);
-        
-        Wallet walletLTC = new Wallet();
-        walletLTC.setAddress("FAKE-LTC-ADDRESS");
-        walletLTC.setDescription("Fake Litecoin wallet");
-        walletLTC.setCoin(coinLTC);
-        walletLTC.setPortfolio(portfolio1);
-        
-        // save the wallets
-        walletRepository.save(walletBTC);
-        walletRepository.save(walletLTC);
-        
-        
-        // create deposits
-        Date date = new Date(1489186800000L);
-        Deposit deposit1 = new Deposit();
-        deposit1.setDepositDate(date);
-        deposit1.setAmount(0.05395255);
-        deposit1.setPurchaseValue(198.45);
-        deposit1.setRemarks("Fake BTC deposit 1");
-        deposit1.setWallet(walletBTC);
-        
-        Deposit deposit2 = new Deposit();
-        deposit2.setDepositDate(date);
-        deposit2.setAmount(4.38873316);
-        deposit2.setPurchaseValue(194.46);
-        deposit2.setRemarks("Fake LTC deposit 1");
-        deposit2.setWallet(walletLTC);
-        
-        // save the deposits
-        depositRepository.save(deposit1);
-        depositRepository.save(deposit2);
-        
-        
-        // create fake coin values
-        CoinValue coinValue1 = new CoinValue();
-        coinValue1.setCoin(coinBTC);
-        coinValue1.setValue(6210.01);
-        
-        CoinValue coinValue2 = new CoinValue();
-        coinValue2.setCoin(coinLTC);
-        coinValue2.setValue(55.14);
-        
-        // save the values
-        coinValueRepository.save(coinValue1);
-        coinValueRepository.save(coinValue2);
-        
+                
         // create the settings
         Settings settingCurrency = new Settings();
         settingCurrency.setOption("currency");

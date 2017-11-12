@@ -14,14 +14,14 @@
 			<thead>
 				<tr>
 					<th>Coin name</th>
-					<th>Description</th>
+					<th>Symbol</th>
 					<th>&nbsp;</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr th:each="coin : ${coinList}">
-					<td th:text="${coin.coinName}">coinName</td>
-					<td th:text="${coin.description}">description</td>
+					<td th:text="${coin.coinMarketCapCoin.name}">name</td>
+					<td th:text="${coin.coinMarketCapCoin.symbol}">symbol</td>
 					<td>
 						<a th:href="@{/coin/showCoin/{id}(id=${coin.id})}" class="tooltip">
 							<span class="tooltiptext">Open details for this coin</span>

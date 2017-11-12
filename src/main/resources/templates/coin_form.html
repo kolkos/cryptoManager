@@ -18,12 +18,13 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td>Coin name:</td>
-						<td><input type="text" th:field="*{coinName}" /></td>
-					</tr>
-					<tr>
-						<td>Description:</td>
-						<td><input type="text" th:field="*{description}" /></td>
+						<td>CoinMarketCap coin:</td>
+						<td>
+							<select th:field="*{coinMarketCapCoin}" required="required">
+								<option value="">-Select coin-</option>
+								<option th:each="cmcCoin : ${cmcCoinList}" th:value="${cmcCoin.id}" th:text="${cmcCoin.symbol + ' (' + cmcCoin.name + ')'}">symbol (name)</option>
+							</select>
+						</td>
 					</tr>
 					<tr>
 						<td colspan="2"><button type="submit">Submit</button></td>

@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
+import nl.kolkos.cryptoManager.CoinMarketCapCoin;
 import nl.kolkos.cryptoManager.CoinValue;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Wallet;
+import nl.kolkos.cryptoManager.repositories.CoinMarketCapCoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 
@@ -36,6 +38,10 @@ public class CoinController {
 	@Qualifier(value = "coinValueRepository")
 	private CoinValueRepository coinValueRepository;
 	
+	@Autowired
+	@Qualifier(value = "coinMarketCapCoinRepository")
+	private CoinMarketCapCoinRepository coinMarketCapCoinRepository;
+	
 	@GetMapping("/")
     public String forwardRepositoryList(Model model) {
         return "redirect:/portfolio/list";
@@ -44,25 +50,26 @@ public class CoinController {
 	// send the form
 	@GetMapping("/add")
     public String coinForm(Model model) {
+		
+		// find all the cmc coins
 		model.addAttribute("coin", new Coin());
+		model.addAttribute("cmcCoinList", coinMarketCapCoinRepository.findAllByOrderBySymbolAsc());
         return "coin_form";
     }
 	
 	// handle the form
 	@PostMapping(path="/add") // Map ONLY Post Requests
-	public @ResponseBody String addNewCoin (
-			@RequestParam String description,
-			@RequestParam String coinName) {
+	public String addNewCoin (
+			@RequestParam CoinMarketCapCoin coinMarketCapCoin,
+			Model model) {
 				
 		Coin coin = new Coin();
-		coin.setDescription(description);
-		coin.setCoinName(coinName);
+		coin.setCoinMarketCapCoin(coinMarketCapCoin);
+		
 		coinRepository.save(coin);
 				
-		String message = String.format("Coin '%s' created", coinName);
 		
-		
-		return message;
+		return "redirect:/coin/results";
 		
 	}
 	
@@ -77,7 +84,7 @@ public class CoinController {
 	@GetMapping("/results")
     public String coinResults(Model model) {
 		//model.addAttribute("coin", new Coin());
-		model.addAttribute("coinList", coinRepository.findAll());
+		model.addAttribute("coinList", coinRepository.findAllByOrderByCoinMarketCapCoinSymbol());
 		
         return "coin_results";
     }
@@ -87,11 +94,14 @@ public class CoinController {
 	public String getWalletsByPortfolioId(@PathVariable("coinId") long coinId, Model model) {
 		Coin coin = coinRepository.findById(coinId);
 		
+		// get the cmc coin
+		CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
+		
 		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
 		double currentCoinValue;
 		try {
-			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(coin.getCoinName(), "EUR");
-			currentCoinValue = Double.parseDouble((String) json.get("last"));
+			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
+			currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
 			
 			
 		} catch (Exception e) {

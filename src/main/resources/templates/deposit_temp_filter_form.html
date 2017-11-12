@@ -1,22 +1,31 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 	<head>
-		<title>Add Wallet</title>
+		<title>Deposits</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
 		<link href="/css/style.css" rel="stylesheet" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 		<script src="/js/jquery-3.2.1.min.js"></script>
 	</head>
 	<body>
-		<form action="#" th:action="@{/wallet/add}" th:object="${wallet}"
-			method="post">
+		<!-- 
+			Create filter form
+		 -->
+		<form action="" method="GET">
 			<table class="form">
 				<thead>
 					<tr>
-						<th colspan="2">Add wallet</th>
+						<th colspan="2">Filter deposits</th>
 					</tr>
 				</thead>
 				<tbody>
+					<tr>
+						<td>Date:</td>
+						<td>
+							<input type="date" id="filterDate" name="filterDate" />
+						</td>
+					</tr>
 					<tr>
 						<td>Coin:</td>
 						<td>
@@ -26,7 +35,15 @@
 							</select>
 						</td>
 					</tr>
-					
+					<tr>
+						<td>Wallet:</td>
+						<td>
+							<select th:field="*{wallet}" required="required">
+								<option value="">-Select wallet-</option>
+								<option th:each="wallet : ${walletList}" th:value="${wallet.id}" th:text="${wallet.address + ' (' + wallet.coin.coinMarketCapCoin.symbol + ')'}">address (coinName)</option>
+							</select>
+						</td>
+					</tr>
 					<tr>
 						<td>Portfolio:</td>
 						<td>
@@ -36,21 +53,8 @@
 							</select>
 						</td>
 					</tr>
-
-					<tr>
-						<td>Wallet address:</td>
-						<td><input type="text" th:field="*{address}" /></td>
-					</tr>
-					<tr>
-						<td>Description:</td>
-						<td><input type="text" th:field="*{description}" /></td>
-					</tr>
-					<tr>
-						<td colspan="2"><button type="submit">Submit</button></td>
-					</tr>
-
 				</tbody>
-			</table>
+			</table> 
 		</form>
 		<script src="/js/LoadMenu.js"></script>
 		<script src="/js/LoadHeader.js"></script>

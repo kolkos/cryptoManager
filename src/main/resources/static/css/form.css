@@ -127,3 +127,88 @@ div.checkboxDiv label:hover::after {
 div.checkboxDiv input[type=checkbox]:checked + label:after {
 	opacity: 1;
 }
+
+/* Single line form */
+table.single_line_form{
+	width: 100%;
+    margin-top: 10px;
+    padding: 5px;
+    background: #F7F7F7;
+    font-size: 0.9vw;
+}
+table.single_line_form thead tr th{
+	background: #43D1AF;
+    padding: 10px 0;
+    font-size: 1.0vw;
+    font-weight: 300;
+    text-align: center;
+    color: #fff;
+    margin: -5px -5px 5px -5px;
+}
+table.single_line_form tbody tr td.autoFit{
+	width:1%;
+    white-space:nowrap;
+}
+table.single_line_form tbody tr td input[type="text"],
+table.single_line_form tbody tr td input[type="date"],
+table.single_line_form tbody tr td input[type="datetime"],
+table.single_line_form tbody tr td input[type="email"],
+table.single_line_form tbody tr td input[type="number"],
+table.single_line_form tbody tr td input[type="search"],
+table.single_line_form tbody tr td input[type="time"],
+table.single_line_form tbody tr td input[type="url"],
+table.single_line_form tbody tr td textarea,
+table.single_line_form tbody tr td select 
+{
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
+    outline: none;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 2px;
+    color: #555;
+    font-size: 0.9vw;
+}
+
+table.single_line_form tbody tr td input[type="text"]:focus,
+table.single_line_form tbody tr td input[type="date"]:focus,
+table.single_line_form tbody tr td input[type="datetime"]:focus,
+table.single_line_form tbody tr td input[type="email"]:focus,
+table.single_line_form tbody tr td input[type="number"]:focus,
+table.single_line_form tbody tr td input[type="search"]:focus,
+table.single_line_form tbody tr td input[type="time"]:focus,
+table.single_line_form tbody tr td input[type="url"]:focus,
+table.single_line_form tbody tr td textarea:focus,
+table.single_line_form tbody tr td select:focus
+{
+    box-shadow: 0 0 5px #43D1AF;
+    padding: 2px;
+    border: 1px solid #43D1AF;
+}
+table.single_line_form tbody tr td input[type="submit"],
+table.single_line_form tbody tr td button,
+table.single_line_form tbody tr td input[type="button"]{
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    width: 150px;
+    padding: 3%;
+    background: #43D1AF;
+    border-bottom: 2px solid #30C29E;
+    border-top-style: none;
+    border-right-style: none;
+    border-left-style: none;    
+    color: #fff;
+    font-size: 0.9vw;
+}
+table.single_line_form tbody tr td input[type="submit"]:hover,
+table.single_line_form tbody tr td button:hover,
+table.single_line_form tbody tr td input[type="button"]:hover{
+    background: #2EBC99;
+}

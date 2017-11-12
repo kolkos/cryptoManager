@@ -28,8 +28,9 @@
 					        rows.push(row);
 					        
 					    }
-					
+				    var formatter = new google.visualization.DateFormat({pattern: 'dd-MM-yyyy HH:mm'});
 					var data = google.visualization.arrayToDataTable(rows);
+					formatter.format(data, 0);
 	
 					var options = {
 						title: [[${coinName}]] + ' value over time',
@@ -54,7 +55,7 @@
 	</head>
 	<body>
 		<form action="#" method="get">
-			<table class="form" style="width: 100% !important; min-width: 100% !important; max-width: 100% !important;">
+			<table class="single_line_form">
 				<thead>
 					<tr>
 						<th colspan="5">Change chart</th>
@@ -62,15 +63,15 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td>Number of hours in the past:</td>
+						<td class="autoFit">Number of hours in the past:</td>
 						<td>
 							<input type="number" name="lastHours" id="lastHours" th:value="${lastHours}"/>
 						</td>
-						<td>Interval in minutes:</td>
+						<td class="autoFit">Interval in minutes:</td>
 						<td>
 							<input type="number" name="intervalInMinutes" id="intervalInMinutes" th:value="${intervalInMinutes}"/>
 						</td>
-						<td><button type="submit">Update</button></td>
+						<td class="autoFit"><button type="submit">Update</button></td>
 					</tr>
 				</tbody>
 			</table>

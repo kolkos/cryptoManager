@@ -32,8 +32,7 @@
 					var data = google.visualization.arrayToDataTable(rows);
 	
 					var options = {
-						title: 'Coin value over time',
-						width: 900,
+						title: [[${coinName}]] + ' value over time',
 						height: 500,
 						curveType: 'function',
 						legend: {
@@ -45,7 +44,7 @@
 						pointSize: 5,
 			        };
 	
-					var chart = new google.visualization.LineChart(document.getElementById('bla'));
+					var chart = new google.visualization.LineChart(document.getElementById('chart'));
 	
 			        chart.draw(data, options);
 				}
@@ -54,7 +53,30 @@
 		</script>
 	</head>
 	<body>
-		<div id="bla"></div>
-
+		<form action="#" method="get">
+			<table class="form" style="width: 100% !important; min-width: 100% !important; max-width: 100% !important;">
+				<thead>
+					<tr>
+						<th colspan="5">Change chart</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Number of hours in the past:</td>
+						<td>
+							<input type="number" name="lastHours" id="lastHours" th:value="${lastHours}"/>
+						</td>
+						<td>Interval in minutes:</td>
+						<td>
+							<input type="number" name="intervalInMinutes" id="intervalInMinutes" th:value="${intervalInMinutes}"/>
+						</td>
+						<td><button type="submit">Update</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<div id="chart"></div>
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
 	</body>
 </html>

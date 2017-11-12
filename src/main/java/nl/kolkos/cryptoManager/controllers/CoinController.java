@@ -119,6 +119,7 @@ public class CoinController {
 		
 		
 		model.addAttribute("coin", coin);
+		model.addAttribute("coinId", coinId);
 		model.addAttribute("currentCoinValue", currentCoinValue);
 		model.addAttribute("coinValues", coinValueRepository.findTop10ByCoinOrderByRequestDateDesc(coin));
 		
@@ -129,15 +130,26 @@ public class CoinController {
 	@RequestMapping(value = "/chart/{coinId}", method = RequestMethod.GET)
     public String coinChart(
     		@PathVariable("coinId") long coinId,
-    		@RequestParam(value="lastHours", required=true) int lastHours,
-    		@RequestParam(value="intervalInMinutes", required=true) int intervalInMinutes,
+    		@RequestParam(value="lastHours", required=false) Integer lastHours,
+    		@RequestParam(value="intervalInMinutes", required=false) Integer intervalInMinutes,
     		Model model) {
         
-		// now get a list for this coin
-		//List<CoinValue> coinValues = coinValueRepository.findTop10ByCoinOrderByRequestDateDesc(coin);
-        
+		// check if the values are null
+		if(lastHours == null) {
+			lastHours = 1;
+		}
+		if(intervalInMinutes == null) {
+			intervalInMinutes = 5;
+		}
 		
-		//model.addAttribute("coinValues", coinValues);
+		// get the name of the coin
+		Coin coin = coinRepository.findById(coinId);
+		CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
+		model.addAttribute("coinName",cmcCoin.getName());
+		
+		// set the get parameters
+		model.addAttribute("lastHours", lastHours);
+		model.addAttribute("intervalInMinutes", intervalInMinutes);
 		
 		Calendar start = Calendar.getInstance();
 		start.add(Calendar.HOUR_OF_DAY, -lastHours);

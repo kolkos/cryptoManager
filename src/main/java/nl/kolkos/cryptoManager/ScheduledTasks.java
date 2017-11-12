@@ -18,7 +18,7 @@ public class ScheduledTasks {
 	private CoinValueRepository coinValueRepository;
 	
 	
-	@Scheduled(fixedRate = 60_000)
+	@Scheduled(fixedRate = 300_000)
     public void reportCurrentTime() {
         // get all the coins from the database
 		Iterable<Coin> coins = coinRepository.findAll();

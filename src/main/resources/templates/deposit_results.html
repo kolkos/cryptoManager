@@ -9,12 +9,15 @@
 		<script src="/js/jquery-3.2.1.min.js"></script>
 	</head>
 	<body>
-		<h1>Deposits</h1>
+		<p>
+			<a href="/deposit/add" class="button">Add a deposit</a>
+			<a href="#" id="showHideFilter" class="button">Show filter</a>
+		</p>
 		<!-- 
 			Create filter form
 		 -->
-		<form action="" method="GET">
-			<table class="form">
+		<form action="#" th:action="@{/deposit/results}" method="GET">
+			<table class="form" id="filter" style="display: none;">
 				<thead>
 					<tr>
 						<th colspan="2">Filter deposits</th>
@@ -22,14 +25,46 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td>Date:</td>
+						<td>Coin:</td>
 						<td>
-							<input type="date" id="filterDate" name="filterDate" />
+							<select name="filterByCoin" id="filterByCoin" >
+								<option value="">-Select coin-</option>
+								<option th:each="coin : ${coinList}" 
+										th:value="${coin.id}" 
+										th:text="${coin.coinMarketCapCoin.symbol + ' (' + coin.coinMarketCapCoin.name + ')'}"
+										th:selected="(${coin.id} == *{selectedCoin})">symbol (name)</option>
+							</select>
 						</td>
+					</tr>
+					<tr>
+						<td>Wallet:</td>
+						<td>
+							<select name="filterByWallet" id="filterByWallet" >
+								<option value="">-Select wallet-</option>
+								<option th:each="wallet : ${walletList}" 
+								th:value="${wallet.id}" th:text="${wallet.address + ' (' + wallet.coin.coinMarketCapCoin.symbol + ')'}"
+								th:selected="(${wallet.id} == *{selectedWallet})">address (coinName)</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>Portfolio:</td>
+						<td>
+							<select name="filterByPortfolio" id="filterByPortfolio" >
+								<option value="">-Select portfolio-</option>
+								<option th:each="portfolio : ${portfolioList}" 
+								th:value="${portfolio.id}" th:text="${portfolio.name}"
+								th:selected="(${portfolio.id} == *{selectedPortfolio})">name</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2"><button type="submit">Filter</button></td>
 					</tr>
 				</tbody>
 			</table> 
 		</form>
+		<br />
 		<table class="results">
 			<thead>
 				<tr>
@@ -58,9 +93,9 @@
 				</tr>
 			</tbody>
 		</table>
-		<p><a href="/deposit/add" class="button">Add a deposit</a></p>
 		<script src="/js/LoadMenu.js"></script>
 		<script src="/js/LoadHeader.js"></script>
 		<script src="/js/profitLossFix.js"></script>
+		<script src="/js/showHideFilter.js"></script>
 	</body>
 </html>

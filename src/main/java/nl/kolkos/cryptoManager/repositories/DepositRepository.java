@@ -21,4 +21,17 @@ public interface DepositRepository extends CrudRepository<Deposit, Long> {
 	
 	@Query(value="SELECT COALESCE((SELECT SUM(purchase_value) FROM deposit WHERE wallet_id = ?1), 0) AS aantal", nativeQuery = true)
 	double getSumOfPurchaseValueForWalletId(long walletId);
+	
+	
+	@Query(value="SELECT * FROM deposit WHERE id IN( " + 
+			"    SELECT deposit.id FROM deposit, wallet, portfolio, coin " + 
+			"	WHERE deposit.wallet_id = wallet.id " + 
+			"	AND wallet.coin_id = coin.id " + 
+			"	AND wallet.portfolio_id = portfolio.id " + 
+			"	AND coin.id LIKE ?1 " + 
+			"	AND wallet.id LIKE ?2 " + 
+			"	AND portfolio.id LIKE ?3)", nativeQuery = true)
+	List<Deposit> filterResults(String coinId, String walletId, String PortfolioId);
+	
+	
 }

@@ -1,12 +1,10 @@
 $(function() {
 	$(".profitLoss").each(function() {
 		var valueHtml = $(this).html();
-		console.log(valueHtml);
 		
 		var fixedNrStr = valueHtml.replace(/€ /i, "");
 		fixedNrStr = fixedNrStr.replace(/,/i, ".");
 		
-		console.log(fixedNrStr);
 		
 		var fixedNrInt = parseInt(fixedNrStr);
 		

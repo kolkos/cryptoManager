@@ -58,18 +58,7 @@ public class DepositController {
         return "deposit_form";
     }
 	
-	@GetMapping("/testForm")
-    public String filterForm(Model model) {
-		model.addAttribute("portfolio", new Portfolio());
-        model.addAttribute("wallet", new Wallet());
-        model.addAttribute("coin", new Coin());
-		
-		model.addAttribute("coinList", coinRepository.findAllByOrderByCoinMarketCapCoinSymbol());
-        model.addAttribute("walletList", walletRepository.findAll());
-        model.addAttribute("portfolioList", portfolioRepository.findAll());
-        
-        return "deposit_temp_filter_form";
-    }
+	
 	
 	@PostMapping(path="/add") // Map ONLY POST Requests
 	public String addNewDeposit (
@@ -111,50 +100,82 @@ public class DepositController {
 	}
 	
 	@GetMapping("/results")
-    public String depositResults(Model model) {
-		// get all the deposits
-		List<Deposit> deposits = depositRepository.findAllByOrderByDepositDateAsc();
+    public String depositResults(
+    		@RequestParam(value="filterByCoin", required=false) Coin coinFilter,
+    		@RequestParam(value="filterByWallet", required=false) Wallet walletFilter,
+    		@RequestParam(value="filterByPortfolio", required=false) Portfolio portfolioFilter,
+    		Model model) {
+		//model.addAttribute("portfolio", new Portfolio());
+        //model.addAttribute("wallet", new Wallet());
+        //model.addAttribute("coin", new Coin());
 		
-		// create the Api Handler object
-		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
 		
-		// loop through the deposits
-		for(Deposit deposit : deposits) {
-			// get the wallet for this deposit
-			Wallet wallet = deposit.getWallet();
-			
-			// get the coin for this wallet
-			Coin coin = wallet.getCoin();
-			
-			// get the cmc coin
-			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
-			
-			// get the current value for this coin
-			double currentCoinValue = 0;
-			try {
-				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
-				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			// calculate the current value of this deposit
-			double currentDepositValue = deposit.getAmount() * currentCoinValue;
-			// add this to this deposit
-			deposit.setCurrentDepositValue(currentDepositValue);
-			
-			// calculate the difference between the current value and the purchase value
-			double currentDepositDifference = currentDepositValue - deposit.getPurchaseValue();
-			// add this to this deposit
-			deposit.setCurrentDepositDifference(currentDepositDifference);
-			
-			
-		}
-		// now add the deposits to the model
-		model.addAttribute("deposits", deposits);
 		
-        return "deposit_results";
+		model.addAttribute("coinList", coinRepository.findAllByOrderByCoinMarketCapCoinSymbol());
+        model.addAttribute("walletList", walletRepository.findAll());
+        model.addAttribute("portfolioList", portfolioRepository.findAll());
+        
+        String filterCoinId = "%";
+        String filterWalletId = "%";
+        String filterPortfolioId = "%";
+        
+        if(coinFilter != null) {
+        		model.addAttribute("selectedCoin", coinFilter.getId());
+        		filterCoinId = coinFilter.getId().toString();
+        }
+        if(walletFilter != null) {
+	    		model.addAttribute("selectedWallet", walletFilter.getId());
+	    		filterWalletId = walletFilter.getId().toString();
+	    }
+        if(portfolioFilter != null) {
+	    		model.addAttribute("selectedPortfolio", portfolioFilter.getId());
+	    		filterPortfolioId = portfolioFilter.getId().toString();
+	    }
+        
+        // get all the deposits
+ 		List<Deposit> deposits = depositRepository.filterResults(filterCoinId, filterWalletId, filterPortfolioId);
+ 		
+ 		// create the Api Handler object
+ 		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
+ 		
+ 		// loop through the deposits
+ 		for(Deposit deposit : deposits) {
+ 			// get the wallet for this deposit
+ 			Wallet wallet = deposit.getWallet();
+ 			
+ 			// get the coin for this wallet
+ 			Coin coin = wallet.getCoin();
+ 			
+ 			// get the cmc coin
+ 			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
+ 			
+ 			// get the current value for this coin
+ 			double currentCoinValue = 0;
+ 			try {
+ 				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
+ 				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
+ 			} catch (Exception e) {
+ 				// TODO Auto-generated catch block
+ 				e.printStackTrace();
+ 			}
+ 			
+ 			// calculate the current value of this deposit
+ 			double currentDepositValue = deposit.getAmount() * currentCoinValue;
+ 			// add this to this deposit
+ 			deposit.setCurrentDepositValue(currentDepositValue);
+ 			
+ 			// calculate the difference between the current value and the purchase value
+ 			double currentDepositDifference = currentDepositValue - deposit.getPurchaseValue();
+ 			// add this to this deposit
+ 			deposit.setCurrentDepositDifference(currentDepositDifference);
+ 			
+ 			
+ 		}
+ 		// now add the deposits to the model
+ 		model.addAttribute("deposits", deposits);
+        
+        
+ 		return "deposit_results";
     }
 	
 }

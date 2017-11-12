@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Home</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript" th:inline="javascript">
+		    /*<![CDATA[*/
+				google.charts.load('current', {'packages':['corechart']});
+	      		google.charts.setOnLoadCallback(drawChart);
+				var rows = [];
+				var header = ['Date', 'value'];
+				rows.push(header);
+
+				function drawChart() {
+				    var theList = [[${coinValues}]]
+					    for (i = 0; i < theList.length; i++) {
+					        
+					        var date = new Date(theList[i]['requestDate']);
+					        console.log(date);
+			
+					        var value = theList[i]['value'];
+			
+					        var row = [date, value];
+					        rows.push(row);
+					        
+					    }
+					
+					var data = google.visualization.arrayToDataTable(rows);
+	
+					var options = {
+						title: 'Coin value over time',
+						width: 900,
+						height: 500,
+						curveType: 'function',
+						legend: {
+							position: 'bottom'
+						},
+						hAxis: {
+							format: 'dd-MM-yyyy HH:mm',
+						},
+						pointSize: 5,
+			        };
+	
+					var chart = new google.visualization.LineChart(document.getElementById('bla'));
+	
+			        chart.draw(data, options);
+				}
+		
+		    /*]]>*/
+		</script>
+	</head>
+	<body>
+		<div id="bla"></div>
+
+	</body>
+</html>

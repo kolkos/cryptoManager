@@ -22,8 +22,8 @@ a.button {
     border-right-style: none;
     border-left-style: none;    
 	
-	padding: 5px 15px 5px 15px;
-	font-size: 0.8vw;
+	padding: 10px 20px 10px 20px;
+	font-size: 1.0vw;
 
 }
 a.button:hover{

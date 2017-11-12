@@ -1,5 +1,10 @@
 package nl.kolkos.cryptoManager.controllers;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -110,5 +115,74 @@ public class CoinController {
 		
 		return "coin_details";
 	}
+	
+	@RequestMapping(value = "/chart/{coinId}", method = RequestMethod.GET)
+    public String coinChart(
+    		@PathVariable("coinId") long coinId,
+    		@RequestParam(value="lastHours", required=true) int lastHours,
+    		@RequestParam(value="intervalInMinutes", required=true) int intervalInMinutes,
+    		Model model) {
+        
+		// now get a list for this coin
+		//List<CoinValue> coinValues = coinValueRepository.findTop10ByCoinOrderByRequestDateDesc(coin);
+        
+		
+		//model.addAttribute("coinValues", coinValues);
+		
+		Calendar start = Calendar.getInstance();
+		start.add(Calendar.HOUR_OF_DAY, -lastHours);
+		start.set(Calendar.SECOND, 0);
+		
+		Calendar end = Calendar.getInstance();
+		//end.add(Calendar.HOUR, 1);
+		end.set(Calendar.SECOND, 0);
+		
+		
+		List<CoinValue> avgCoinValues = new ArrayList<>();
+		
+		double lastKnownValue = 0;
+		for (Date date = start.getTime(); start.before(end) || start.equals(end); start.add(Calendar.MINUTE, intervalInMinutes), date = start.getTime()) {
+
+			Calendar startInterval = Calendar.getInstance();
+			startInterval.setTime(date);
+			startInterval.set(Calendar.SECOND, 0);
+			
+			Calendar lastMinute = Calendar.getInstance();
+			lastMinute.setTime(date);
+			lastMinute.add(Calendar.MINUTE, intervalInMinutes);
+			lastMinute.add(Calendar.SECOND, -1);
+
+			//System.out.println("  lastMinute    =>" + lastMinute.getTime());
+			
+			
+			// now get the value
+			//List<CoinValue> coinValues = coinValueRepository.findByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), lastMinute.getTime());
+			
+			//List<CoinValue> coinValues = coinValueRepository.findByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), lastMinute.getTime());
+			
+			double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), lastMinute.getTime());
+			
+			System.out.println(avgValue);
+			
+			if(avgValue == 0) {
+				avgValue = lastKnownValue;
+			}else {
+				lastKnownValue = avgValue;
+			}
+			
+			// add this to a CoinValue object
+			CoinValue avgCoinValue = new CoinValue();
+			avgCoinValue.setRequestDate(startInterval.getTime());
+			avgCoinValue.setValue(avgValue);
+			
+			// and add it to the list
+			avgCoinValues.add(avgCoinValue);
+			
+		}
+		
+		model.addAttribute("coinValues", avgCoinValues);
+		
+        return "coin_chart";
+    }
 	
 }

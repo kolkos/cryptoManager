@@ -28,7 +28,7 @@ div.menuHolder li a {
     color: #fff;
     background: #43D1AF;
     text-decoration: none;
-    font-size: 0.9vw;
+    font-size: 1.0vw;
 }
 /*Hover state for top level links*/
 div.menuHolder li:hover a {

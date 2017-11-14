@@ -171,9 +171,7 @@ public class CoinController {
 		
 		// add the minute options
 		List<FormOption> minuteOptions = new ArrayList<>();
-		FormOption minuteOption = new FormOption("1", "1 minute");
-		minuteOptions.add(minuteOption);
-		minuteOption = new FormOption("5", "5 minutes");
+		FormOption minuteOption = new FormOption("5", "5 minutes");
 		minuteOptions.add(minuteOption);
 		minuteOption = new FormOption("10", "10 minutes");
 		minuteOptions.add(minuteOption);
@@ -217,7 +215,6 @@ public class CoinController {
 		
 		List<CoinValue> avgCoinValues = new ArrayList<>();
 		
-		double lastKnownValue = 0;
 		for (Date date = start.getTime(); start.before(end) || start.equals(end); start.add(Calendar.MINUTE, intervalInMinutes), date = start.getTime()) {
 
 			Calendar startInterval = Calendar.getInstance();
@@ -229,14 +226,7 @@ public class CoinController {
 			lastMinute.add(Calendar.MINUTE, intervalInMinutes);
 			lastMinute.add(Calendar.SECOND, -1);
 
-			//System.out.println("  lastMinute    =>" + lastMinute.getTime());
-			
-			
-			// now get the value
-			//List<CoinValue> coinValues = coinValueRepository.findByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), lastMinute.getTime());
-			
-			//List<CoinValue> coinValues = coinValueRepository.findByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), lastMinute.getTime());
-			
+	
 			double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), lastMinute.getTime());
 			
 			

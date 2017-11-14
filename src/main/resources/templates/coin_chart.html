@@ -9,7 +9,7 @@
 		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 		<script type="text/javascript" th:inline="javascript">
 		    /*<![CDATA[*/
-				google.charts.load('current', {'packages':['corechart']});
+				google.charts.load('current', {'packages':['corechart'], language:'nl'});
 	      		google.charts.setOnLoadCallback(drawChart);
 				var rows = [];
 				var header = ['Date', 'value'];
@@ -27,19 +27,16 @@
 					        rows.push(row);
 					        
 					    }
-				    var formatter = new google.visualization.DateFormat({pattern: 'dd-MM-yyyy HH:mm'});
+				    
 					var data = google.visualization.arrayToDataTable(rows);
-					formatter.format(data, 0);
+
 	
 					var options = {
 						title: [[${coinName}]] + ' value over time',
 						height: 500,
 						curveType: 'function',
 						legend: {
-							position: 'bottom'
-						},
-						hAxis: {
-							format: 'dd-MM-yyyy HH:mm',
+							position: 'none'
 						},
 						pointSize: 5,
 			        };
@@ -53,6 +50,10 @@
 		</script>
 	</head>
 	<body>
+		<p>
+			<a th:href="@{/coin/showCoin/{id}(id=${coinId})}" class="button">Back to coin details</a>
+			<a href="/coin/results" class="button">Back to coins</a>
+		</p>
 		<form action="#" method="get">
 			<table class="single_line_form">
 				<thead>

@@ -28,3 +28,7 @@ table.results a:active{
 	text-decoration: none;
 	color: #000;
 }
+table.results tbody tr td.autofit{
+	width:1%;
+    white-space:nowrap;
+}

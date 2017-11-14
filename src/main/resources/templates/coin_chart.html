@@ -20,7 +20,6 @@
 					    for (i = 0; i < theList.length; i++) {
 					        
 					        var date = new Date(theList[i]['requestDate']);
-					        console.log(date);
 			
 					        var value = theList[i]['value'];
 			
@@ -63,13 +62,21 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td class="autoFit">Number of hours in the past:</td>
+						<td class="autoFit">Period:</td>
 						<td>
-							<input type="number" name="lastHours" id="lastHours" th:value="${lastHours}"/>
+							<select name="lastHours" id="lastHours">
+								<option th:each="hourOption : ${hourOptions}" 
+								th:value="${hourOption.value}" th:text="${hourOption.text}"
+								th:selected="(${hourOption.value} == *{lastHours})">address (coinName)</option>
+							</select>
 						</td>
-						<td class="autoFit">Interval in minutes:</td>
+						<td class="autoFit">Interval:</td>
 						<td>
-							<input type="number" name="intervalInMinutes" id="intervalInMinutes" th:value="${intervalInMinutes}"/>
+							<select name="intervalInMinutes" id="intervalInMinutes">
+								<option th:each="minuteOption : ${minuteOptions}" 
+								th:value="${minuteOption.value}" th:text="${minuteOption.text}"
+								th:selected="(${minuteOption.value} == *{intervalInMinutes})">address (coinName)</option>
+							</select>
 						</td>
 						<td class="autoFit"><button type="submit">Update</button></td>
 					</tr>
@@ -79,5 +86,6 @@
 		<div id="chart"></div>
 		<script src="/js/LoadMenu.js"></script>
 		<script src="/js/LoadHeader.js"></script>
+		<script src="/js/autoSelectInterval.js"></script>
 	</body>
 </html>

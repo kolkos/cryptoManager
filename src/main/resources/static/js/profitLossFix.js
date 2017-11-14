@@ -8,10 +8,10 @@ $(function() {
 		
 		var fixedNrInt = parseInt(fixedNrStr);
 		
-		if(fixedNrInt > 0){
-			$(this).css('color', '#33cc33');
-		}else{
+		if(fixedNrInt < 0){
 			$(this).css('color', 'red');
+		}else{
+			$(this).css('color', '#33cc33');
 		}
 	});
 });

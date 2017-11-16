@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 	<head>
-		<title>Coin chart</title>
+		<title>Wallet chart</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
 		<link href="/css/style.css" rel="stylesheet" />
@@ -12,18 +12,18 @@
 				google.charts.load('current', {'packages':['corechart'], language:'nl'});
 	      		google.charts.setOnLoadCallback(drawChart);
 				var rows = [];
-				var header = ['Date', 'value'];
+				var header = ['Date', 'Total invested', 'Value'];
 				rows.push(header);
 
 				function drawChart() {
-				    var theList = [[${coinValues}]]
+				    var theList = [[${walletChartLines}]]
 					    for (i = 0; i < theList.length; i++) {
 					        
-					        var date = new Date(theList[i]['requestDate']);
-			
+					        var date = new Date(theList[i]['date']);
+					        var totalDepositValue = theList[i]['totalDepositValue'];
 					        var value = theList[i]['value'];
 			
-					        var row = [date, value];
+					        var row = [date, totalDepositValue, value];
 					        rows.push(row);
 					        
 					    }
@@ -32,11 +32,11 @@
 
 	
 					var options = {
-						title: [[${coinName}]] + ' value over time',
+						title: 'value for ' + [[${walletAddress}]] + ' (' + [[${coinName}]] + ') over time',
 						height: 500,
 						curveType: 'function',
 						legend: {
-							position: 'none'
+							position: 'bottom'
 						},
 						pointSize: 5,
 			        };
@@ -51,8 +51,8 @@
 	</head>
 	<body>
 		<p>
-			<a th:href="@{/coin/showCoin/{id}(id=${coinId})}" class="button">Back to coin details</a>
-			<a href="/coin/results" class="button">Back to coins</a>
+			<a th:href="@{/wallet/showWallet/{id}(id=${walletId})}" class="button">Back to wallet details</a>
+			<a href="/wallet/results" class="button">Back to wallets</a>
 		</p>
 		<form action="#" method="get">
 			<table class="single_line_form">

@@ -1,5 +1,8 @@
 package nl.kolkos.cryptoManager.controllers;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +21,10 @@ import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinMarketCapCoin;
 import nl.kolkos.cryptoManager.CoinValue;
 import nl.kolkos.cryptoManager.Deposit;
+import nl.kolkos.cryptoManager.FormOption;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Wallet;
+import nl.kolkos.cryptoManager.WalletChartLine;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.repositories.DepositRepository;
@@ -221,4 +226,143 @@ public class WalletController {
 		
 		return "wallet_details";
 	}
+	
+	@RequestMapping(value = "/chart/{walletId}", method = RequestMethod.GET)
+    public String coinChart(
+    		@PathVariable("walletId") long walletId,
+    		@RequestParam(value="lastHours", required=false) Integer lastHours,
+    		@RequestParam(value="intervalInMinutes", required=false) Integer intervalInMinutes,
+    		Model model) {
+        
+		// check if the values are null
+		if(lastHours == null) {
+			lastHours = 1;
+		}
+		if(intervalInMinutes == null) {
+			intervalInMinutes = 5;
+		}
+		
+		List<FormOption> hourOptions = new ArrayList<>();
+		FormOption hourOption = new FormOption("1", "Last 1 hour");
+		hourOptions.add(hourOption);
+		hourOption = new FormOption("2", "Last 2 hours");
+		hourOptions.add(hourOption);
+		hourOption = new FormOption("3", "Last 3 hours");
+		hourOptions.add(hourOption);
+		hourOption = new FormOption("4", "Last 4 hours");
+		hourOptions.add(hourOption);
+		hourOption = new FormOption("5", "Last 5 hours");
+		hourOptions.add(hourOption);
+		hourOption = new FormOption("24", "Last 24 Hours");
+		hourOptions.add(hourOption);
+		hourOption = new FormOption("48", "Last 2 days");
+		hourOptions.add(hourOption);
+		hourOption = new FormOption("168", "Last 7 days");
+		hourOptions.add(hourOption);
+		hourOption = new FormOption("336", "Last 14 days");
+		hourOptions.add(hourOption);
+		hourOption = new FormOption("720", "Last 30 days");
+		hourOptions.add(hourOption);
+		
+		// now add to the model
+		model.addAttribute("hourOptions",hourOptions);
+		
+		
+		// add the minute options
+		List<FormOption> minuteOptions = new ArrayList<>();
+		FormOption minuteOption = new FormOption("5", "5 minutes");
+		minuteOptions.add(minuteOption);
+		minuteOption = new FormOption("10", "10 minutes");
+		minuteOptions.add(minuteOption);
+		minuteOption = new FormOption("15", "15 minutes");
+		minuteOptions.add(minuteOption);
+		minuteOption = new FormOption("30", "30 minutes");
+		minuteOptions.add(minuteOption);
+		minuteOption = new FormOption("60", "1 hour");
+		minuteOptions.add(minuteOption);
+		minuteOption = new FormOption("120", "2 hours");
+		minuteOptions.add(minuteOption);
+		minuteOption = new FormOption("300", "5 hours");
+		minuteOptions.add(minuteOption);
+		minuteOption = new FormOption("720", "12 hours");
+		minuteOptions.add(minuteOption);
+		minuteOption = new FormOption("1440", "1 day");
+		minuteOptions.add(minuteOption);
+		minuteOption = new FormOption("10080", "1 week");
+		minuteOptions.add(minuteOption);
+		
+		// now add to the model
+		model.addAttribute("minuteOptions",minuteOptions);
+		
+		// get the wallet
+		Wallet wallet = walletRepository.findById(walletId);
+		
+		model.addAttribute("walletId",walletId);
+		
+		// get the coin for this wallet
+		Coin coin = wallet.getCoin();
+		long coinId = coin.getId();
+		
+		// nog get the cmc Coin by this coin
+		
+		CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
+		model.addAttribute("coinName",cmcCoin.getName());
+		model.addAttribute("walletAddress",wallet.getAddress());
+		
+		// set the get parameters
+		model.addAttribute("lastHours", lastHours);
+		model.addAttribute("intervalInMinutes", intervalInMinutes);
+		
+		Calendar start = Calendar.getInstance();
+		start.add(Calendar.HOUR_OF_DAY, -lastHours);
+		start.set(Calendar.SECOND, 0);
+		
+		Calendar end = Calendar.getInstance();
+		//end.add(Calendar.HOUR, 1);
+		end.set(Calendar.SECOND, 0);
+		
+		
+		List<WalletChartLine> walletChartLines = new ArrayList<>();
+		
+		// loop through the dates
+		for (Date date = start.getTime(); start.before(end) || start.equals(end); start.add(Calendar.MINUTE, intervalInMinutes), date = start.getTime()) {
+
+			Calendar startInterval = Calendar.getInstance();
+			startInterval.setTime(date);
+			startInterval.set(Calendar.SECOND, 0);
+			
+			Calendar lastMinute = Calendar.getInstance();
+			lastMinute.setTime(date);
+			lastMinute.add(Calendar.MINUTE, intervalInMinutes);
+			lastMinute.add(Calendar.SECOND, -1);
+
+			// get the total purchase value
+			double totalPurchaseValue = depositRepository.getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(walletId, lastMinute.getTime());
+			
+			// get the total amount
+			double totalAmount = depositRepository.getSumOfAmountForWalletIdAndBeforeDepositDate(walletId, lastMinute.getTime());
+			
+			// get the value of the coin for this moment
+			double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), lastMinute.getTime());
+			
+			// calculate the value for this moment
+			double value = avgValue * totalAmount;
+			
+			System.out.println(String.format("date=%s, totalPurchaseValue=%f, totalAmount=%f", lastMinute.getTime(), totalPurchaseValue, totalAmount));
+			
+			// add it to a wallet chart line object
+			WalletChartLine walletChartLine = new WalletChartLine();
+			walletChartLine.setDate(lastMinute.getTime());
+			walletChartLine.setValue(value);
+			walletChartLine.setTotalDepositValue(totalPurchaseValue);
+			
+			// add it to the list
+			walletChartLines.add(walletChartLine);
+			
+		}
+		
+		model.addAttribute("walletChartLines", walletChartLines);
+		
+        return "wallet_chart";
+    }
 }

@@ -1,5 +1,6 @@
 package nl.kolkos.cryptoManager.repositories;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -32,6 +33,12 @@ public interface DepositRepository extends CrudRepository<Deposit, Long> {
 			"	AND wallet.id LIKE ?2 " + 
 			"	AND portfolio.id LIKE ?3)", nativeQuery = true)
 	List<Deposit> filterResults(String coinId, String walletId, String PortfolioId);
+	
+	@Query(value="SELECT COALESCE((SELECT SUM(amount) as totalAmount FROM deposit WHERE wallet_id = ?1 AND deposit_date <= ?2), 0) AS totalAmount", nativeQuery = true)
+	double getSumOfAmountForWalletIdAndBeforeDepositDate(long walletId, Date depositDate);
+	
+	@Query(value="SELECT COALESCE((SELECT SUM(purchase_value) as totalPurchaseValue FROM deposit WHERE wallet_id = ?1 AND deposit_date <= ?2),0) as totalPurchaseValue", nativeQuery = true)
+	double getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(long walletId, Date depositDate);
 	
 	
 }

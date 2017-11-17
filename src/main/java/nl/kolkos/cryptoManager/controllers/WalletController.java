@@ -313,6 +313,28 @@ public class WalletController {
 		model.addAttribute("lastHours", lastHours);
 		model.addAttribute("intervalInMinutes", intervalInMinutes);
 		
+		// update the coin price
+		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
+		
+		double currentCoinValue;
+		try {
+			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
+			currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			currentCoinValue = 0;
+		}
+		
+		// register this result
+		CoinValue coinValue = new CoinValue();
+		coinValue.setCoin(coin);
+		coinValue.setValue(currentCoinValue);
+		
+		coinValueRepository.save(coinValue);
+		
 		Calendar start = Calendar.getInstance();
 		start.add(Calendar.HOUR_OF_DAY, -lastHours);
 		start.set(Calendar.SECOND, 0);
@@ -320,6 +342,9 @@ public class WalletController {
 		Calendar end = Calendar.getInstance();
 		//end.add(Calendar.HOUR, 1);
 		end.set(Calendar.SECOND, 0);
+		
+		// get the last known value, just to be sure
+		double lastKnownValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coinId, start.getTime());
 		
 		
 		List<WalletChartLine> walletChartLines = new ArrayList<>();
@@ -345,11 +370,17 @@ public class WalletController {
 			// get the value of the coin for this moment
 			double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), lastMinute.getTime());
 			
+			// if the avg value is 0, then use the last known value
+			if(avgValue == 0) {
+				avgValue = lastKnownValue;
+			}else {
+				lastKnownValue = avgValue;
+			}
+			
 			// calculate the value for this moment
 			double value = avgValue * totalAmount;
 			
-			System.out.println(String.format("date=%s, totalPurchaseValue=%f, totalAmount=%f", lastMinute.getTime(), totalPurchaseValue, totalAmount));
-			
+						
 			// add it to a wallet chart line object
 			WalletChartLine walletChartLine = new WalletChartLine();
 			walletChartLine.setDate(lastMinute.getTime());

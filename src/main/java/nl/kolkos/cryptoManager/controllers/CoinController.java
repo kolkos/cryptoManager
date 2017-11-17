@@ -143,6 +143,7 @@ public class CoinController {
 			intervalInMinutes = 5;
 		}
 		
+		
 		List<FormOption> hourOptions = new ArrayList<>();
 		FormOption hourOption = new FormOption("1", "Last 1 hour");
 		hourOptions.add(hourOption);
@@ -200,9 +201,33 @@ public class CoinController {
 		CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
 		model.addAttribute("coinName",cmcCoin.getName());
 		
+		// update the coin price
+		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
+		
+		double currentCoinValue;
+		try {
+			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
+			currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			currentCoinValue = 0;
+		}
+		
+		// register this result
+		CoinValue coinValue = new CoinValue();
+		coinValue.setCoin(coin);
+		coinValue.setValue(currentCoinValue);
+		
+		coinValueRepository.save(coinValue);
+		
 		// set the get parameters
 		model.addAttribute("lastHours", lastHours);
 		model.addAttribute("intervalInMinutes", intervalInMinutes);
+		
+		
 		
 		Calendar start = Calendar.getInstance();
 		start.add(Calendar.HOUR_OF_DAY, -lastHours);
@@ -211,6 +236,9 @@ public class CoinController {
 		Calendar end = Calendar.getInstance();
 		//end.add(Calendar.HOUR, 1);
 		end.set(Calendar.SECOND, 0);
+		
+		// get the last known value, just to be sure
+		double lastKnownValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coinId, start.getTime());
 		
 		
 		List<CoinValue> avgCoinValues = new ArrayList<>();
@@ -228,7 +256,12 @@ public class CoinController {
 
 	
 			double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), lastMinute.getTime());
-			
+			// if the value is 0 then use the last known value
+			if(avgValue == 0) {
+				avgValue = lastKnownValue;
+			}else {
+				lastKnownValue = avgValue;
+			}
 			
 			
 			// add this to a CoinValue object

@@ -9,7 +9,10 @@
 		<script src="/js/jquery-3.2.1.min.js"></script>
 	</head>
 	<body>
-		<p><a href="/wallet/results" class="button">Back to wallets</a></p>
+		<p>
+			<a href="/wallet/results" class="button">Back to wallets</a>
+			<a th:href="@{/wallet/chart/{id}(id=${walletId})}" class="button">Show chart</a>
+		</p>
 		<table class="results details">
 			<thead>
 				<tr>

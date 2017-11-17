@@ -28,4 +28,7 @@ public interface CoinValueRepository extends CrudRepository<CoinValue, Long> {
 	@Query(value="SELECT COALESCE((SELECT avg(value) as avgValue FROM coin_value WHERE coin_id = ?1 AND request_date BETWEEN ?2 AND ?3), 0) as avgValue", nativeQuery = true)
 	double findAvgByCoin_IdAndRequestDateBetween(long coinId, Date dateIntervalStart, Date dateIntervalEnd);
 	
+	@Query(value="SELECT COALESCE((SELECT value FROM coin_value WHERE coin_id = ?1 AND request_date < ?2 AND value > 0 ORDER BY request_date DESC LIMIT 1),0) as lastKnownValue;", nativeQuery = true)
+	double findLastKnownValueBeforeRequestDate(long coinId, Date dateIntervalStart);
+	
 }

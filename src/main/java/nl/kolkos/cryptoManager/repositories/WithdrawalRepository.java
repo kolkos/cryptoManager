@@ -1,5 +1,6 @@
 package nl.kolkos.cryptoManager.repositories;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -34,6 +35,15 @@ public interface WithdrawalRepository extends CrudRepository<Withdrawal, Long> {
 	// get the total value of all withdrawals for this wallet
 	@Query(value="SELECT COALESCE((SELECT SUM(withdrawal_value) FROM withdrawal WHERE wallet_id = ?1), 0) AS withdrawnToCash", nativeQuery = true)
 	double getSumOfWithdrawalsForWalletId(long walletId);
+	
+	
+	// get the total of withdrawn coins before a date
+	@Query(value="SELECT COALESCE((SELECT SUM(amount) as totalAmount FROM withdrawal WHERE wallet_id = ?1 AND withdrawal_date <= ?2), 0) AS totalAmount", nativeQuery = true)
+	double getSumOfAmountForWalletIdAndBeforeWithdrawalDate(long walletId, Date depositDate);
+	
+	// get the total of the investment before a date
+	@Query(value="SELECT COALESCE((SELECT SUM(withdrawal_value) as totalPurchaseValue FROM withdrawal WHERE wallet_id = ?1 AND withdrawal_date <= ?2 AND to_cash = 1),0) as totalWithdrawanValue", nativeQuery = true)
+	double getSumOfWithdrawalToCashValueForWalletIdAndBeforeWithdrawalDate(long walletId, Date depositDate);
 	
 	
 }

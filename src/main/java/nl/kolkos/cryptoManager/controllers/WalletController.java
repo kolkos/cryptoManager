@@ -392,12 +392,30 @@ public class WalletController {
 			lastMinute.setTime(date);
 			lastMinute.add(Calendar.MINUTE, intervalInMinutes);
 			lastMinute.add(Calendar.SECOND, -1);
-
+			
+			
+			// ---- get the totals for deposits
 			// get the total purchase value
 			double totalPurchaseValue = depositRepository.getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(walletId, lastMinute.getTime());
 			
+			// get the amount purchased
+			double totalAmountDeposited = depositRepository.getSumOfAmountForWalletIdAndBeforeDepositDate(walletId, lastMinute.getTime());
+			
+			
+			// --- get the values for the withdrawals
+			// get the to cash value
+			double totalWithDrawnToCashValue = withdrawalRepository.getSumOfWithdrawalToCashValueForWalletIdAndBeforeWithdrawalDate(walletId, lastMinute.getTime());
+			
+			// get the total amount of withdrawals
+			double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletIdAndBeforeWithdrawalDate(walletId, lastMinute.getTime());
+			
 			// get the total amount
-			double totalAmount = depositRepository.getSumOfAmountForWalletIdAndBeforeDepositDate(walletId, lastMinute.getTime());
+			double totalAmount = totalAmountDeposited - totalAmountWithdrawn;
+			
+			
+			// calculate the investment
+			double totalInvested = totalPurchaseValue - totalWithDrawnToCashValue;
+			
 			
 			// get the value of the coin for this moment
 			double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), lastMinute.getTime());
@@ -417,7 +435,8 @@ public class WalletController {
 			WalletChartLine walletChartLine = new WalletChartLine();
 			walletChartLine.setDate(lastMinute.getTime());
 			walletChartLine.setValue(value);
-			walletChartLine.setTotalDepositValue(totalPurchaseValue);
+			walletChartLine.setTotalInvested(totalInvested);
+			
 			
 			// add it to the list
 			walletChartLines.add(walletChartLine);

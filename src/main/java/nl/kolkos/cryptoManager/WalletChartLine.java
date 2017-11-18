@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class WalletChartLine {
 	private Date date;
-	private double totalDepositValue;
+	private double totalInvested;
 	private double value;
 	
 	public Date getDate() {
@@ -13,11 +13,12 @@ public class WalletChartLine {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	public double getTotalDepositValue() {
-		return totalDepositValue;
+
+	public double getTotalInvested() {
+		return totalInvested;
 	}
-	public void setTotalDepositValue(double totalDepositValue) {
-		this.totalDepositValue = totalDepositValue;
+	public void setTotalInvested(double totalInvested) {
+		this.totalInvested = totalInvested;
 	}
 	public double getValue() {
 		return value;

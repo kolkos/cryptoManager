@@ -24,6 +24,9 @@ a.button {
 	
 	padding: 10px 20px 10px 20px;
 	font-size: 1.0vw;
+	display:inline-block;
+	min-width: 200px;
+	text-align: center;
 
 }
 a.button:hover{

@@ -25,11 +25,13 @@ import nl.kolkos.cryptoManager.FormOption;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.WalletChartLine;
+import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.repositories.DepositRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
+import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -59,6 +61,10 @@ public class WalletController {
 	@Autowired
 	@Qualifier(value = "depositRepository")
 	private DepositRepository depositRepository;
+	
+	@Autowired
+	@Qualifier(value = "withdrawalRepository")
+	private WithdrawalRepository withdrawalRepository;
 	
 	@GetMapping("/")
     public String forwardWalletList(Model model) {
@@ -174,7 +180,10 @@ public class WalletController {
 		coinValueRepository.save(coinValue);
 		
 		// get the sum of all the deposited coins (amount) for this wallet
-		double currentBalance = depositRepository.getSumOfAmountForWalletId(wallet.getId());
+		double currentBalance = 0;
+		double totalAmountDeposited = depositRepository.getSumOfAmountForWalletId(wallet.getId());
+		double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletId(wallet.getId());
+		currentBalance = totalAmountDeposited - totalAmountWithdrawn;
 		// add to the model
 		model.addAttribute("currentBalance", currentBalance);
 		
@@ -189,12 +198,18 @@ public class WalletController {
 		// add to the model
 		model.addAttribute("totalDeposited", totalDeposited);
 		
-		// withdrawn is not implemented yet
-		double totalWithdrawn = 0;
+		// total withdrawn from wallet
+		double totalWithdrawn = withdrawalRepository.getSumOfWithdrawalsForWalletId(wallet.getId());
 		// add to the model
 		model.addAttribute("totalWithdrawn", totalWithdrawn);
 		
-		double totalInvested = totalDeposited - totalWithdrawn;
+		// total withdrawn from wallet
+		double totalWithdrawnToCash = withdrawalRepository.getSumOfWithdrawalsToCashForWalletId(wallet.getId());
+		// add to the model
+		model.addAttribute("totalWithdrawnToCash", totalWithdrawnToCash);
+		
+		// calculate the investment
+		double totalInvested = totalDeposited - totalWithdrawnToCash;
 		// add to the model
 		model.addAttribute("totalInvested", totalInvested);
 		
@@ -213,6 +228,7 @@ public class WalletController {
 			// set this value
 			deposit.setCurrentDepositValue(currentDepositValue);
 			
+			// calculate the difference
 			double currentDepositDifference = currentDepositValue - deposit.getPurchaseValue();
 			// set this value
 			deposit.setCurrentDepositDifference(currentDepositDifference);
@@ -221,6 +237,22 @@ public class WalletController {
 		
 		// add the deposits to the model
 		model.addAttribute("deposits", deposits);
+		
+		
+		// now get the withdrawals
+		List<Withdrawal> withdrawals = withdrawalRepository.findByWallet(wallet);
+		for(Withdrawal withdrawal : withdrawals) {
+			// calculate the current value of the withdrawal
+			double currentWithdrawalValue = withdrawal.getAmount() * currentCoinValue;
+			withdrawal.setCurrentWithdrawalValue(currentWithdrawalValue);
+			
+			// calculate the difference between the current value and the purchase value
+ 			double currentWithdrawalDifference = withdrawal.getWithdrawalValue() - currentWithdrawalValue;
+ 			// add this to this deposit
+ 			withdrawal.setCurrentWithdrawalDifference(currentWithdrawalDifference);
+			
+		}
+		model.addAttribute("withdrawals", withdrawals);
 		
 		
 		

@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Add withdrawal</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
+	</head>
+	<body>
+		<form action="#" th:action="@{/withdrawal/add}" th:object="${withdrawal}"
+			method="post">
+			<table class="form">
+				<thead>
+					<tr>
+						<th colspan="2">Add withdrawal form</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Withdrawal date:</td>
+						<td><input type="date" th:field="*{withdrawalDate}" /></td>
+					</tr>
+					<tr>
+						<td>Wallet:</td>
+						<td>
+							<select th:field="*{wallet}" required="required">
+								<option value="">-Select wallet-</option>
+								<option th:each="wallet : ${walletList}" th:value="${wallet.id}" th:text="${wallet.address + ' (' + wallet.coin.coinMarketCapCoin.symbol + ')'}">address (coinName)</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>Amount:</td>
+						<td><input type="number" th:field="*{amount}"
+							step="0.00000001" /></td>
+					</tr>
+					<tr>
+						<td>Value on withdrawal:</td>
+						<td><input type="number" th:field="*{withdrawalValue}"
+							step="0.01" /></td>
+					</tr>
+					<tr>
+						<td>Remarks:</td>
+						<td><input type="text" th:field="*{remarks}" /></td>
+					</tr>
+					<tr>
+						<td>To cash</td>
+						<td>
+							<div class="checkboxDiv">
+								<input type="checkbox" name="toCash" id="toCash" value="true"/>
+								<label for="toCash"></label>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>Add another withdrawal</td>
+						<td>
+							<div class="checkboxDiv">
+								<input type="checkbox" name="addAnotherWithdrawal" id="addAnotherWithdrawal" value="true"/>
+								<label for="addAnotherWithdrawal"></label>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2"><button type="submit">Submit</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
+	</body>
+</html>

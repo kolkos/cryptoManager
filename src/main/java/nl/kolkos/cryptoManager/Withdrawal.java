@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Withdrawal {
@@ -21,10 +23,18 @@ public class Withdrawal {
 	private double amount;
 	private double withdrawalValue;
 	private String remarks;
+	private boolean toCash;
 	
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name = "wallet_id")
 	private Wallet wallet;
+	
+	// these fields don't need to be in the database since there are calculated
+	@Transient
+	private double currentWithdrawalValue;
+	
+	@Transient
+	private double currentWithdrawalDifference;
 
 	public Integer getId() {
 		return id;
@@ -72,6 +82,30 @@ public class Withdrawal {
 
 	public void setWallet(Wallet wallet) {
 		this.wallet = wallet;
+	}
+
+	public boolean isToCash() {
+		return toCash;
+	}
+
+	public void setToCash(boolean toCash) {
+		this.toCash = toCash;
+	}
+
+	public double getCurrentWithdrawalValue() {
+		return currentWithdrawalValue;
+	}
+
+	public void setCurrentWithdrawalValue(double currentWithdrawalValue) {
+		this.currentWithdrawalValue = currentWithdrawalValue;
+	}
+
+	public double getCurrentWithdrawalDifference() {
+		return currentWithdrawalDifference;
+	}
+
+	public void setCurrentWithdrawalDifference(double currentWithdrawalDifference) {
+		this.currentWithdrawalDifference = currentWithdrawalDifference;
 	}
 	
 	

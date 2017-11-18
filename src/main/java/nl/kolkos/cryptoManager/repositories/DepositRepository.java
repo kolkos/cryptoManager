@@ -17,10 +17,10 @@ public interface DepositRepository extends CrudRepository<Deposit, Long> {
 	
 	List<Deposit> findAllByOrderByDepositDateAsc();
 	
-	@Query(value="SELECT COALESCE((SELECT SUM(amount) FROM deposit WHERE wallet_id = ?1), 0) AS aantal", nativeQuery = true)
+	@Query(value="SELECT COALESCE((SELECT SUM(amount) FROM deposit WHERE wallet_id = ?1), 0) AS amount", nativeQuery = true)
 	double getSumOfAmountForWalletId(long walletId);
 	
-	@Query(value="SELECT COALESCE((SELECT SUM(purchase_value) FROM deposit WHERE wallet_id = ?1), 0) AS aantal", nativeQuery = true)
+	@Query(value="SELECT COALESCE((SELECT SUM(purchase_value) FROM deposit WHERE wallet_id = ?1), 0) AS purchaseValue", nativeQuery = true)
 	double getSumOfPurchaseValueForWalletId(long walletId);
 	
 	

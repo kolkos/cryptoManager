@@ -53,6 +53,10 @@
 					<td th:text="${'€ ' + #numbers.formatDecimal(totalWithdrawn, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
 				</tr>
 				<tr>
+					<td>Total withdrawn to cash:</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(totalWithdrawnToCash, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
+				</tr>
+				<tr>
 					<td>Total invested:</td>
 					<td th:text="${'€ ' + #numbers.formatDecimal(totalInvested, 1, 'POINT', 2, 'COMMA')}">totalInvested</td>
 				</tr>
@@ -84,6 +88,36 @@
 					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
 					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
 					<td th:text="${deposit.remarks}">remarks</td>
+				</tr>
+			</tbody>
+		
+		</table>
+		
+		<h2>Withdrawals</h2>
+		<table class="results">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Amount</th>
+					<th>Withdrawal value</th>
+					<th>Current value</th>
+					<th>Difference</th>
+					<th>To cash</th>
+					<th>Remarks</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="withdrawal : ${withdrawals}">
+					<td th:text="${#dates.format(withdrawal.withdrawalDate, 'dd-MM-yyyy')}">withdrawalDate</td>
+					<td th:text="${#numbers.formatDecimal(withdrawal.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(withdrawal.withdrawalValue, 1, 'POINT', 2, 'COMMA')}">withdrawalValue</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(withdrawal.currentWithdrawalValue, 1, 'POINT', 2, 'COMMA')}">currentWithdrawalValue</td>
+					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(withdrawal.currentWithdrawalDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
+					<td>
+						<span><i th:if="${withdrawal.toCash}" class="fa fa-check" style="font-size:24px;"></i></span>
+						<span><i th:unless="${withdrawal.toCash}" class="fa fa-remove" style="font-size:24px;"></i></span>
+					</td>
+					<td th:text="${withdrawal.remarks}">remarks</td>
 				</tr>
 			</tbody>
 		

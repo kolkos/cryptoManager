@@ -4,9 +4,12 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
  
 @Entity
@@ -24,6 +27,9 @@ public class Customer implements Serializable {
 	@Column(name = "lastname")
 	private String lastName;
  
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name = "wallet_id")
+	private Wallet wallet;
 	
 	
 	protected Customer() {
@@ -61,5 +67,13 @@ public class Customer implements Serializable {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public Wallet getWallet() {
+		return wallet;
+	}
+
+	public void setWallet(Wallet wallet) {
+		this.wallet = wallet;
 	}
 }

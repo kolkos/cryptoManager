@@ -19,8 +19,9 @@
 			<tr>
 				<th><span>ID</span> <span class="buttonHolder id"></span></th>
 				<th><span>First name</span> <span class="buttonHolder firstName"></span></th>
-				<th><span>Last name</span> <span class="buttonHolder lastName"></span>
-				</th>
+				<th><span>Last name</span> <span class="buttonHolder lastName"></span></th>
+				<th><span>Last name</span> <span class="buttonHolder wallet.address"></span></th>
+
 			</tr>
 		</thead>
 		<tbody>
@@ -28,6 +29,7 @@
 				<td th:text="${customer.id}">id</td>
 				<td th:text="${customer.firstName}">firstName</td>
 				<td th:text="${customer.lastName}">lastName</td>
+				<td th:text="${customer.wallet.address}">lastName</td>
 			</tr>
 		</tbody>
 

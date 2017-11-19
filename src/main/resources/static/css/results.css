@@ -32,3 +32,7 @@ table.results tbody tr td.autofit{
 	width:1%;
     white-space:nowrap;
 }
+table.results span.buttonHolder{
+	float:right;
+	padding-right: 5px;
+}

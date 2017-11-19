@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Wallets</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="https://fonts.googleapis.com/css?family=Raleway"
+	rel="stylesheet" />
+<link href="/css/style.css" rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<script src="/js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+	<input type="hidden" id="sortBy" th:value="${sortBy}" />
+	<input type="hidden" id="direction" th:value="${direction}" />
+	<h1>TEST</h1>
+	<table class="results">
+		<thead>
+			<tr>
+				<th><span>ID</span> <span class="buttonHolder id"></span></th>
+				<th><span>First name</span> <span class="buttonHolder firstName"></span></th>
+				<th><span>Last name</span> <span class="buttonHolder lastName"></span>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="customer : ${customers}">
+				<td th:text="${customer.id}">id</td>
+				<td th:text="${customer.firstName}">firstName</td>
+				<td th:text="${customer.lastName}">lastName</td>
+			</tr>
+		</tbody>
+
+	</table>
+	<script src="/js/LoadMenu.js"></script>
+	<script src="/js/LoadHeader.js"></script>
+	<script src="/js/sortingButtons.js"></script>
+</body>
+</html>

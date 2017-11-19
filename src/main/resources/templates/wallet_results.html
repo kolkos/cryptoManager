@@ -19,6 +19,7 @@
 					<th>Coin</th>
 					<th>Portfolio</th>
 					<th>&nbsp;</th>
+					<th>&nbsp;</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -27,10 +28,16 @@
 					<td th:text="${wallet.description}">description</td>
 					<td th:text="${wallet.coin.coinMarketCapCoin.symbol}">coinName</td>
 					<td th:text="${wallet.portfolio.name}">portfolioName</td>
-					<td>
+					<td class="autofit">
 						<a th:href="@{/wallet/showWallet/{id}(id=${wallet.id})}" class="tooltip">
-							<span class="tooltiptext">Open details for this wallet</span>
+							<span class="tooltiptext">Open this wallet</span>
 							<i class="fa fa-folder-open-o" style="font-size:24px;"></i>
+						</a>
+					</td>
+					<td class="autofit">
+						<a th:href="@{/wallet/chart/{id}(id=${wallet.id})}" class="tooltip">
+							<span class="tooltiptext">Show chart for this wallet</span>
+							<i class="fa fa-line-chart" style="font-size:24px;"></i>
 						</a>
 					</td>
 				</tr>

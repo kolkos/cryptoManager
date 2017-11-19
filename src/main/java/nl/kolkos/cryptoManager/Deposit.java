@@ -17,7 +17,7 @@ import javax.persistence.Transient;
 public class Deposit {
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 	
 	private Date depositDate;
 	private double amount;
@@ -38,10 +38,10 @@ public class Deposit {
 	
 	
 	
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public Date getDepositDate() {

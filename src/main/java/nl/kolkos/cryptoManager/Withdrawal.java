@@ -18,7 +18,7 @@ import javax.persistence.Transient;
 public class Withdrawal {
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 	private Date withdrawalDate;
 	private double amount;
 	private double withdrawalValue;
@@ -36,11 +36,11 @@ public class Withdrawal {
 	@Transient
 	private double currentWithdrawalDifference;
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

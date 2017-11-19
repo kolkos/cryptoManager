@@ -17,25 +17,27 @@
     /* Position the tooltip text */
     position: absolute;
     z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -60px;
+    top: -5px;
+    right: 105%; 
+
 
     /* Fade in tooltip */
     opacity: 0;
     transition: opacity 0.5s;
+    
+    font-size: 0.7vw;
 }
 
 /* Tooltip arrow */
 .tooltip .tooltiptext::after {
-    content: "";
+	content: " ";
     position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
+    top: 50%;
+    left: 100%; /* To the right of the tooltip */
+    margin-top: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: #555 transparent transparent transparent;
+    border-color: transparent transparent transparent black;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */

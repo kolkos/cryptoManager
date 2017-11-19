@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -177,5 +179,34 @@ public class DepositController {
         
  		return "deposit_results";
     }
+	
+	// delete a deposit - the confirmation form
+	@RequestMapping(value = "/delete/{depositId}", method = RequestMethod.GET)
+	public String deleteDepositForm(@PathVariable("depositId") long depositId, Model model) {
+		
+		// get the entity
+		Deposit deposit = depositRepository.findById(depositId);
+		
+		model.addAttribute("deposit", deposit);
+		
+		return "deposit_delete";
+	}
+	
+	@PostMapping(path="/delete") // Map ONLY POST Requests
+	public String deleteDeposit (
+			@RequestParam(value="deposit", required=false) Deposit deposit,
+			@RequestParam(value="confirmDelete", required=false) boolean confirmDelete,
+			Model model) {
+
+		
+		model.addAttribute("deposit", new Deposit());
+		
+		if(confirmDelete) {
+			depositRepository.delete(deposit);
+		}
+		
+		
+		return "redirect:/deposit/results";
+	}
 	
 }

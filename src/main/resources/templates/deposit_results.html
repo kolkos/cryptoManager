@@ -77,6 +77,7 @@
 					<th>Current value</th>
 					<th>Difference</th>
 					<th>Remarks</th>
+					<th>&nbsp;</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -90,6 +91,12 @@
 					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
 					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
 					<td th:text="${deposit.remarks}">remarks</td>
+					<td class="autofit">
+						<a th:href="@{/deposit/delete/{id}(id=${deposit.id})}" class="tooltip">
+							<span class="tooltiptext">Delete this deposit</span>
+							<i class="fa fa-trash" style="font-size:24px;"></i>
+						</a>
+					</td>
 				</tr>
 			</tbody>
 		</table>

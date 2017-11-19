@@ -13,6 +13,8 @@ import nl.kolkos.cryptoManager.Wallet;
 //CRUD refers Create, Read, Update, Delete
 
 public interface DepositRepository extends CrudRepository<Deposit, Long> {
+	Deposit findById(Long id);
+	
 	List<Deposit> findByWallet(Wallet wallet);
 	
 	List<Deposit> findAllByOrderByDepositDateAsc();
@@ -31,7 +33,8 @@ public interface DepositRepository extends CrudRepository<Deposit, Long> {
 			"	AND wallet.portfolio_id = portfolio.id " + 
 			"	AND coin.id LIKE ?1 " + 
 			"	AND wallet.id LIKE ?2 " + 
-			"	AND portfolio.id LIKE ?3)", nativeQuery = true)
+			"	AND portfolio.id LIKE ?3)"
+			+ "ORDER BY deposit_date DESC", nativeQuery = true)
 	List<Deposit> filterResults(String coinId, String walletId, String PortfolioId);
 	
 	@Query(value="SELECT COALESCE((SELECT SUM(amount) as totalAmount FROM deposit WHERE wallet_id = ?1 AND deposit_date <= ?2), 0) AS totalAmount", nativeQuery = true)

@@ -2,6 +2,7 @@ package nl.kolkos.cryptoManager;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class CoinMarketCapCoin {
@@ -9,6 +10,10 @@ public class CoinMarketCapCoin {
 	private String id;
 	private String name;
 	private String symbol;
+	
+	@Transient
+	private boolean synced;
+	
 	
 	public String getId() {
 		return id;
@@ -28,5 +33,13 @@ public class CoinMarketCapCoin {
 	public void setSymbol(String symbol) {
 		this.symbol = symbol;
 	}
+	
+	public boolean isSynced() {
+		return synced;
+	}
+	public void setSynced(boolean synced) {
+		this.synced = synced;
+	}
+	
 	
 }

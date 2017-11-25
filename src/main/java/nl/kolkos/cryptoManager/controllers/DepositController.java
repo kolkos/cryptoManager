@@ -25,6 +25,8 @@ import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.DepositRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
+import nl.kolkos.cryptoManager.services.CustomerService;
+import nl.kolkos.cryptoManager.services.DepositService;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/deposit") // This means URL's start with /demo (after Application path)
@@ -44,6 +46,9 @@ public class DepositController {
 	@Autowired
 	@Qualifier(value = "portfolioRepository")
 	private PortfolioRepository portfolioRepository;
+	
+	@Autowired
+	private DepositService depositService;
 	
 	@GetMapping("/")
     public String forwardDepositForm(Model model) {
@@ -106,6 +111,9 @@ public class DepositController {
     		@RequestParam(value="filterByCoin", required=false) Coin coinFilter,
     		@RequestParam(value="filterByWallet", required=false) Wallet walletFilter,
     		@RequestParam(value="filterByPortfolio", required=false) Portfolio portfolioFilter,
+    		@RequestParam(name = "page", defaultValue = "1") int pageNumber,
+		@RequestParam(name = "sortBy", defaultValue = "depositDate") String sortBy,
+		@RequestParam(name = "direction", defaultValue = "DESC") String direction,
     		Model model) {
 		//model.addAttribute("portfolio", new Portfolio());
         //model.addAttribute("wallet", new Wallet());
@@ -116,26 +124,28 @@ public class DepositController {
 		model.addAttribute("coinList", coinRepository.findAllByOrderByCoinMarketCapCoinSymbol());
         model.addAttribute("walletList", walletRepository.findAll());
         model.addAttribute("portfolioList", portfolioRepository.findAll());
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("direction", direction);
         
-        String filterCoinId = "%";
-        String filterWalletId = "%";
-        String filterPortfolioId = "%";
+        long filterCoinId = 0;
+        long filterWalletId = 0;
+        long filterPortfolioId = 0;
         
         if(coinFilter != null) {
         		model.addAttribute("selectedCoin", coinFilter.getId());
-        		filterCoinId = coinFilter.getId().toString();
+        		filterCoinId = coinFilter.getId();
         }
         if(walletFilter != null) {
 	    		model.addAttribute("selectedWallet", walletFilter.getId());
-	    		filterWalletId = walletFilter.getId().toString();
+	    		filterWalletId = walletFilter.getId();
 	    }
         if(portfolioFilter != null) {
 	    		model.addAttribute("selectedPortfolio", portfolioFilter.getId());
-	    		filterPortfolioId = portfolioFilter.getId().toString();
+	    		filterPortfolioId = portfolioFilter.getId();
 	    }
         
         // get all the deposits
- 		List<Deposit> deposits = depositRepository.filterResults(filterCoinId, filterWalletId, filterPortfolioId);
+ 		List<Deposit> deposits = depositService.getPage(pageNumber, sortBy, direction);
  		
  		// create the Api Handler object
  		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();

@@ -9,6 +9,8 @@
 		<script src="/js/jquery-3.2.1.min.js"></script>
 	</head>
 	<body>
+		<input type="hidden" id="sortBy" th:value="${sortBy}" />
+		<input type="hidden" id="direction" th:value="${direction}" />
 		<p>
 			<a href="/deposit/add" class="button">Add a deposit</a>
 			<a href="#" id="showHideFilter" class="button">Show filter</a>
@@ -68,15 +70,15 @@
 		<table class="results">
 			<thead>
 				<tr>
-					<th>Date</th>
-					<th>Wallet</th>
-					<th>Coin</th>
-					<th>Portfolio</th>
-					<th>Amount</th>
-					<th>Purchase value</th>
+					<th><span>Date</span> <span class="buttonHolder depositDate"></span></th>
+					<th><span>Wallet</span> <span class="buttonHolder wallet.address"></span></th>
+					<th><span>Coin</span> <span class="buttonHolder wallet.coin.coinMarketCapCoin.symbol"></span></th>
+					<th><span>Portfolio</span> <span class="buttonHolder wallet.portfolio.name"></span></th>
+					<th><span>Amount</span> <span class="buttonHolder amount"></span></th>
+					<th><span>Purchase value</span> <span class="buttonHolder purchaseValue"></span></th>
 					<th>Current value</th>
 					<th>Difference</th>
-					<th>Remarks</th>
+					<th><span>Remarks</span> <span class="buttonHolder remarks"></span></th>
 					<th>&nbsp;</th>
 				</tr>
 			</thead>
@@ -104,5 +106,6 @@
 		<script src="/js/LoadHeader.js"></script>
 		<script src="/js/profitLossFix.js"></script>
 		<script src="/js/showHideFilter.js"></script>
+		<script src="/js/sortingButtons.js"></script>
 	</body>
 </html>

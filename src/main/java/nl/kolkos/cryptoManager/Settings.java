@@ -7,10 +7,9 @@ import org.hibernate.validator.constraints.NotBlank;
 @Table(name = "settings")
 public class Settings {
 	@Id
-	@Column(name = "option", nullable = false)
+	@Column(name = "`option`")
 	private String option;
 	
-	@NotBlank
 	private String value;
 	
 	

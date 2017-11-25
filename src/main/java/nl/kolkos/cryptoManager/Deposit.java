@@ -29,14 +29,14 @@ public class Deposit {
 	private Wallet wallet;
 	
 	
+	
 	// these fields don't need to be in the database since there are calculated
 	@Transient
 	private double currentDepositValue;
 	
 	@Transient
 	private double currentDepositDifference;
-	
-	
+		
 	
 	public Long getId() {
 		return id;

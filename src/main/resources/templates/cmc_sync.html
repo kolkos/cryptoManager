@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Coin details</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
+		<link href="/css/style.css" rel="stylesheet" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+		<script src="/js/jquery-3.2.1.min.js"></script>
+	</head>
+	<body>
+		<p>
+			<a href="/coin/results" class="button">Back to coins</a>
+		</p>
+		
+		<h1>Sync results</h1>
+		<table class="results">
+			<thead>
+				<tr>
+					<th>CoinMarketCap ID</th>
+					<th>Name</th>
+					<th>Symbol</th>
+					<th>Synchronized</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="cmcCoin : ${cmcCoins}">
+					<td th:text="${cmcCoin.id}">id</td>
+					<td th:text="${cmcCoin.name}">value</td>
+					<td th:text="${cmcCoin.symbol}">value</td>
+					<td>
+						<span><i th:if="${cmcCoin.synced}" class="fa fa-check" style="font-size:24px;"></i></span>
+						<span><i th:unless="${cmcCoin.synced}" class="fa fa-remove" style="font-size:24px;"></i></span>
+					</td>
+				</tr>
+			</tbody>
+		
+		</table>
+		
+		<script src="/js/LoadMenu.js"></script>
+		<script src="/js/LoadHeader.js"></script>
+	</body>
+</html>

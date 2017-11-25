@@ -3,8 +3,11 @@ package nl.kolkos.cryptoManager.repositories;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+
 
 import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Wallet;
@@ -12,7 +15,9 @@ import nl.kolkos.cryptoManager.Wallet;
 //This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 //CRUD refers Create, Read, Update, Delete
 
-public interface DepositRepository extends CrudRepository<Deposit, Long> {
+public interface DepositRepository extends PagingAndSortingRepository<Deposit, Long> {
+
+
 	Deposit findById(Long id);
 	
 	List<Deposit> findByWallet(Wallet wallet);
@@ -44,4 +49,5 @@ public interface DepositRepository extends CrudRepository<Deposit, Long> {
 	double getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(long walletId, Date depositDate);
 	
 	
+	Page<Deposit> findDepositByWallet_Coin_IdAndWallet_IdAndWallet_Portfolio_Id(long coinId, long walletId, long PortfolioId, Pageable pageable);
 }

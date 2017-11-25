@@ -73,17 +73,15 @@ public class PortfolioController {
 	@PostMapping(path="/add") // Map ONLY Post Requests
 	public @ResponseBody String addNewPortfolio (
 			@RequestParam String description,
-			@RequestParam String name) {
+			@RequestParam String name, 
+			Model model) {
 				
 		Portfolio portfolio = new Portfolio();
 		portfolio.setDescription(description);
 		portfolio.setName(name);
 		portfolioRepository.save(portfolio);
 				
-		String message = String.format("Portfolio '%s' created", name);
-		
-		
-		return message;
+		return "redirect:/portfolio/results";
 		
 	}
 	

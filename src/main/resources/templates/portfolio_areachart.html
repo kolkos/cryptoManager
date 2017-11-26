@@ -1,0 +1,66 @@
+<script xmlns:th="http://www.thymeleaf.org" type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+		google.charts.load('current', {'packages':['corechart'], language:'nl'});
+		google.charts.setOnLoadCallback(drawChart);
+		var rows = [];
+		var header = [];
+		header.push('Date');
+		header.push('Total investment');
+		var walletAddresses = [[${walletAddresses}]]
+		for(var i = 0; i < walletAddresses.length; i++){
+			var walletAddress = walletAddresses[i];
+			header.push(walletAddress);
+		}
+		
+
+		rows.push(header);
+		
+		
+		var portfolioChartLines = [[${portfolioChartLines}]]
+		for (i = 0; i < portfolioChartLines.length; i++) {
+		
+			var row = []
+			var date = new Date(portfolioChartLines[i]['date']);
+			var totalInvested = portfolioChartLines[i]['totalInvested'];
+		
+			row.push(date);
+			row.push(totalInvested);
+		
+			// loop through the wallet lines
+			var walletLines = portfolioChartLines[i]['portfolioChartLineWallets'];
+			for (j = 0; j < walletLines.length; j++) {
+				var walletValue = walletLines[j]['walletValue'];
+		
+				// push it to the row
+				row.push(walletValue);
+			}
+			// push it to the rows
+			rows.push(row);
+		       
+		}
+		
+		
+
+		function drawChart() {
+		   
+		    
+			var data = google.visualization.arrayToDataTable(rows);
+
+
+			var options = {
+				title: 'portfolio value over time',
+				height: 500,
+				isStacked: true,
+				backgroundColor: '#F7F7F7',
+				series: {0: {type: 'line'}}
+	        };
+
+			var chart = new google.visualization.AreaChart(document.getElementById('area_chart'));
+
+	        chart.draw(data, options);
+		}
+
+    /*]]>*/
+</script>
+	
+<div id="area_chart"></div>

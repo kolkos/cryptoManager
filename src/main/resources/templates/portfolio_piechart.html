@@ -1,0 +1,40 @@
+<script xmlns:th="http://www.thymeleaf.org" type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+		google.charts.load('current', {'packages':['corechart'], language:'nl'});
+	      		google.charts.setOnLoadCallback(drawChart);
+				var rows = [];
+				var header = ['Wallet', 'value'];
+				rows.push(header);
+
+				var theList = [[${portfolioPieChartValues}]]
+			    for (i = 0; i < theList.length; i++) {
+			        
+			        var wallet = theList[i]['walletAddress'];
+			        var value = theList[i]['currentWalletValue'];
+	
+			        var row = [wallet, value];
+			        rows.push(row);
+			        
+			    }
+
+				function drawChart() {
+				    
+					var data = google.visualization.arrayToDataTable(rows);
+
+	
+					var options = {
+						title: 'Distribution portfolio value for "' + [[${portfolioName}]] + '"',
+						height: 500,
+						is3D: true,
+						backgroundColor: '#F7F7F7',
+			        };
+	
+					var chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
+	
+			        chart.draw(data, options);
+				}
+
+    /*]]>*/
+</script>
+	
+<div id="pie_chart"></div>

@@ -27,6 +27,7 @@ import nl.kolkos.cryptoManager.FormOptions;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.PortfolioChartLine;
 import nl.kolkos.cryptoManager.PortfolioChartLineWallet;
+import nl.kolkos.cryptoManager.PortfolioPieChartValue;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.repositories.DepositRepository;
@@ -176,6 +177,7 @@ public class PortfolioController {
 	
 	
 	
+	
 	@RequestMapping(value = "/chart/{portfolioId}", method = RequestMethod.GET)
     public String coinChart(
     		@PathVariable("portfolioId") long portfolioId,
@@ -208,6 +210,19 @@ public class PortfolioController {
 		// now add to the model
 		model.addAttribute("minuteOptions",minuteOptions);
 		
+		
+		
+		
+		
+		return "portfolio_chart";
+	}
+	
+	@RequestMapping(value = "/areachart", method = RequestMethod.GET)
+    public String createAreaChartPortfolioValue(
+    		@RequestParam(value="portfolioId", required=true) Long portfolioId,
+    		@RequestParam(value="lastHours", required=true) Integer lastHours,
+    		@RequestParam(value="intervalInMinutes", required=true) Integer intervalInMinutes,
+    		Model model) {
 		
 		// get the wallets
 		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
@@ -330,8 +345,75 @@ public class PortfolioController {
 		model.addAttribute("portfolioChartLines",portfolioChartLines);
 		model.addAttribute("walletAddresses",walletAddresses);
 		
-		
-		return "portfolio_chart";
+		return "portfolio_areachart";
 	}
+	
+
+	@RequestMapping(value = "/piechart", method = RequestMethod.GET)
+    public String createPieChartPortfolioDistribution(
+    		@RequestParam(value="portfolioId", required=true) Long portfolioId,
+    		Model model) {
+		
+		// get the portfolio
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		
+		// get the wallets
+		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
+		
+		
+		List<PortfolioPieChartValue> portfolioPieChartValues = new ArrayList<>();
+		
+		
+		// loop the wallets to update the current coin value
+		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
+		for(Wallet wallet : wallets) {
+			
+			// get the coin for this wallet
+			Coin coin = wallet.getCoin();
+			
+			// nog get the cmc Coin by this coin
+			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
+			
+			double currentCoinValue;
+			try {
+				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
+				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
+				
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				currentCoinValue = 0;
+			}
+			// register this result
+			CoinValue coinValue = new CoinValue();
+			coinValue.setCoin(coin);
+			coinValue.setValue(currentCoinValue);
+			
+			coinValueRepository.save(coinValue);
+			
+			// get the current amount
+			double totalAmountDeposited = depositRepository.getSumOfAmountForWalletId(wallet.getId());
+			double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletId(wallet.getId());
+			double totalAmount = totalAmountDeposited - totalAmountWithdrawn;
+			
+			// calculate the total value
+			double currentWalletValue = totalAmount * currentCoinValue;
+			
+			// now add to the PortfolioPieChartValue object
+			PortfolioPieChartValue portfolioPieChartValue = new PortfolioPieChartValue();
+			portfolioPieChartValue.setWalletAddress(wallet.getAddress());
+			portfolioPieChartValue.setCurrentWalletValue(currentWalletValue);
+			
+			// add to the list
+			portfolioPieChartValues.add(portfolioPieChartValue);
+		}
+		
+		model.addAttribute("portfolioPieChartValues",portfolioPieChartValues);
+		model.addAttribute("portfolioName",portfolio.getName());
+		
+		return "portfolio_piechart";
+	}
+	
 	
 }

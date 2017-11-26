@@ -7,108 +7,72 @@
 		<link href="/css/style.css" rel="stylesheet" />
 		<script src="/js/jquery-3.2.1.min.js"></script>
 		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-		<script type="text/javascript" th:inline="javascript">
-		    /*<![CDATA[*/
-				google.charts.load('current', {'packages':['corechart'], language:'nl'});
-				google.charts.setOnLoadCallback(drawChart);
-				var rows = [];
-				var header = [];
-				header.push('Date');
-				header.push('Total investment');
-				var walletAddresses = [[${walletAddresses}]]
-				for(var i = 0; i < walletAddresses.length; i++){
-					var walletAddress = walletAddresses[i];
-					header.push(walletAddress);
-				}
-				
-
-				rows.push(header);
-				
-				
-				var portfolioChartLines = [[${portfolioChartLines}]]
-				for (i = 0; i < portfolioChartLines.length; i++) {
-				
-					var row = []
-					var date = new Date(portfolioChartLines[i]['date']);
-					var totalInvested = portfolioChartLines[i]['totalInvested'];
-				
-					row.push(date);
-					row.push(totalInvested);
-				
-					// loop through the wallet lines
-					var walletLines = portfolioChartLines[i]['portfolioChartLineWallets'];
-					for (j = 0; j < walletLines.length; j++) {
-						var walletValue = walletLines[j]['walletValue'];
-				
-						// push it to the row
-						row.push(walletValue);
-					}
-					// push it to the rows
-					rows.push(row);
-				       
-				}
-				
-				
-
-				function drawChart() {
-				   
-				    
-					var data = google.visualization.arrayToDataTable(rows);
-
-	
-					var options = {
-						title: 'portfolio value over time',
-						height: 500,
-						isStacked: true,
-						series: {0: {type: 'line'}}
-			        };
-	
-					var chart = new google.visualization.AreaChart(document.getElementById('chart'));
-	
-			        chart.draw(data, options);
-				}
 		
-		    /*]]>*/
-		</script>
 	</head>
 	<body>
 		<p>
 			<a th:href="@{/portfolio/showPortfolio/{id}(id=${portfolioId})}" class="button">Back to portfolio details</a>
 			<a href="/portfolio/results" class="button">Back to portfolios</a>
 		</p>
-		<form action="#" method="get">
-			<table class="single_line_form">
+		
+		<form action="#" id="chartCreatorForm">
+			<input type="hidden" name="portfolioId" id="portfolioId" th:value="${portfolioId}" /> 
+			<table class="form chart_table">
 				<thead>
 					<tr>
-						<th colspan="5">Change chart</th>
+						<th colspan="3">Generate chart</th>
 					</tr>
 				</thead>
 				<tbody>
+					<tr>
+						<td>Chart type:</td>
+						<td>
+							<select name="chartType" id="chartType">
+								<optgroup label="Area chart(s)">
+									<option value="areaChart_portfolio_value">Portfolio value over time</option>
+								</optgroup>
+								<optgroup label="Pie chart(s)">
+									<option value="pieChart_portfolio_distribution">Distribution portfolio value</option>
+								</optgroup>
+								<optgroup label="Line chart(s)">
+									<option value="lineChart_portfolio_roi">Portfolio ROI over time</option>
+								</optgroup>
+							</select>
+						</td>
+						<td rowspan="4" id="chartHolder" class="chartHolder">
+							Chart here
+						</td>
+					</tr>
 					<tr>
 						<td class="autoFit">Period:</td>
 						<td>
 							<select name="lastHours" id="lastHours">
 								<option th:each="hourOption : ${hourOptions}" 
 								th:value="${hourOption.value}" th:text="${hourOption.text}"
-								th:selected="(${hourOption.value} == *{lastHours})">address (coinName)</option>
+								th:selected="(${hourOption.value} == *{lastHours})">number of hours</option>
 							</select>
 						</td>
+					</tr>
+					<tr>
 						<td class="autoFit">Interval:</td>
 						<td>
 							<select name="intervalInMinutes" id="intervalInMinutes">
 								<option th:each="minuteOption : ${minuteOptions}" 
 								th:value="${minuteOption.value}" th:text="${minuteOption.text}"
-								th:selected="(${minuteOption.value} == *{intervalInMinutes})">address (coinName)</option>
+								th:selected="(${minuteOption.value} == *{intervalInMinutes})">interval</option>
 							</select>
 						</td>
-						<td class="autoFit"><button type="submit">Update</button></td>
+					</tr>
+					<tr>
+						<td colspan="2"><button type="button" id="generateChartButton">Generate</button></td>
 					</tr>
 				</tbody>
 			</table>
 		</form>
-		<div id="chart"></div>
+		
 		<script src="/js/LoadMenu.js"></script>
 		<script src="/js/LoadHeader.js"></script>
 		<script src="/js/autoSelectInterval.js"></script>
+		<script src="/js/chartCreator.js"></script>
 	</body>
 </html>

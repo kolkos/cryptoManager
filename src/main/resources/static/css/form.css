@@ -212,3 +212,20 @@ table.single_line_form tbody tr td button:hover,
 table.single_line_form tbody tr td input[type="button"]:hover{
     background: #2EBC99;
 }
+
+/* For the charts */
+table.chart_table{
+	max-width: 100%;
+	min-width: 100%;
+	
+}
+table.chart_table td.chartHolder{
+	width: 60%;
+}
+table.chart_table tbody tr{
+	height: 20px;
+}
+table.chart_table tbody tr:last-child{
+	height:auto;
+	vertical-align: top;
+}

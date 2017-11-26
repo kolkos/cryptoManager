@@ -279,6 +279,7 @@ public class PortfolioController {
 		// set the get parameters
 		model.addAttribute("lastHours", lastHours);
 		model.addAttribute("intervalInMinutes", intervalInMinutes);
+		model.addAttribute("portfolioId", portfolioId);
 		
 		
 		FormOptions formOptions = new FormOptions();

@@ -108,6 +108,7 @@ public class PortfolioController {
 		Portfolio portfolio = portfolioRepository.findById(portfolioId);
 		// add to model		
 		model.addAttribute("portfolio", portfolio);
+		model.addAttribute("portfolioId", portfolioId);
 		
 		// now get the attached wallets
 		List<Wallet> wallets = walletRepository.findByPortfolio(portfolio);
@@ -172,92 +173,7 @@ public class PortfolioController {
 	}
 	
 	
-	// list all 
-	@GetMapping(path="/test")
-	public @ResponseBody List<PortfolioChartLine> testList() {
-		// This returns a JSON or XML with the users
-		
-		List<Wallet> wallets = walletRepository.findByPortfolio_Id(1L);
-		
-		// now determine the begin and end time
-		Calendar start = Calendar.getInstance();
-		start.add(Calendar.HOUR_OF_DAY, -24);
-		start.set(Calendar.SECOND, 0);
-		
-		Calendar end = Calendar.getInstance();
-		end.set(Calendar.SECOND, 0);
-		
-		List<PortfolioChartLine> portfolioChartLines = new ArrayList<>();
-		
-		// loop through the times
-		for (Date date = start.getTime(); start.before(end) || start.equals(end); start.add(Calendar.MINUTE, 60), date = start.getTime()) {
-			Calendar startInterval = Calendar.getInstance();
-			startInterval.setTime(date);
-			startInterval.set(Calendar.SECOND, 0);
-			
-			Calendar endInterval = Calendar.getInstance();
-			endInterval.setTime(date);
-			endInterval.add(Calendar.MINUTE, 60);
-			endInterval.add(Calendar.SECOND, -1);
-			
-			PortfolioChartLine portfolioChartLine = new PortfolioChartLine();
-			portfolioChartLine.setDate(endInterval.getTime());
-			
-			double totalInvestment = 0;
-			
-			// loop through the wallets again
-			for(Wallet wallet : wallets) {
-				long walletId = wallet.getId();
-				long coinId = wallet.getCoin().getId();
-				
-				// ---- get the totals for deposits
-				// get the total purchase value
-				double totalPurchaseValue = depositRepository.getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(walletId, endInterval.getTime());
-				// get the amount purchased
-				double totalAmountDeposited = depositRepository.getSumOfAmountForWalletIdAndBeforeDepositDate(walletId, endInterval.getTime());
-				
-				// --- get the values for the withdrawals
-				// get the to cash value
-				double totalWithDrawnToCashValue = withdrawalRepository.getSumOfWithdrawalToCashValueForWalletIdAndBeforeWithdrawalDate(walletId, endInterval.getTime());
-				// get the total amount of withdrawals
-				double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletIdAndBeforeWithdrawalDate(walletId, endInterval.getTime());
-				
-				// get the total amount
-				double totalAmount = totalAmountDeposited - totalAmountWithdrawn;
-				// calculate the investment
-				double totalInvested = totalPurchaseValue - totalWithDrawnToCashValue;
-				
-				// get the value of the coin for this moment
-				double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), endInterval.getTime());
-				
-				
-				
-				// add this investment to the total investment
-				totalInvestment += totalInvested;
-				
-				double value = avgValue * totalAmount;
-				
-				PortfolioChartLineWallet portfolioChartLineWallet = new PortfolioChartLineWallet();
-				portfolioChartLineWallet.setWalletName(wallet.getAddress());
-				portfolioChartLineWallet.setWalletValue(value);
-				
-				// now push it to the portfolioChartLine
-				portfolioChartLine.getPortfolioChartLineWallets().add(portfolioChartLineWallet);
-				
-			}
-			
-			// add the total investment
-			portfolioChartLine.setTotalInvested(totalInvestment);
-			
-			// push it to the list
-			portfolioChartLines.add(portfolioChartLine);
-			
-		}
-		
-		return portfolioChartLines;
-		
-		
-	}
+	
 	
 	
 	@RequestMapping(value = "/chart/{portfolioId}", method = RequestMethod.GET)

@@ -1,0 +1,48 @@
+<script xmlns:th="http://www.thymeleaf.org" type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+		google.charts.load('current', {'packages':['corechart'], language:'nl'});
+     	google.charts.setOnLoadCallback(drawChart);
+		var rows = [];
+		var header = ['Date', 'ROI'];
+		rows.push(header);
+
+		var theList = [[${portfolioLineChartRoiValues}]]
+	    for (i = 0; i < theList.length; i++) {
+	        
+	        var date = new Date(theList[i]['date']);
+
+	        var value = theList[i]['roi'];
+
+	        var row = [date, value];
+	        rows.push(row);
+	        
+	    }
+		
+		function drawChart() {
+		    
+			var data = google.visualization.arrayToDataTable(rows);
+
+
+			var options = {
+				title: 'Return on Investment for portfolio "' + [[${portfolioName}]] + '" over time',
+				height: 500,
+				curveType: 'function',
+				legend: {
+					position: 'bottom'
+				},
+				vAxis: {
+					format:'#.###%'
+				},
+				backgroundColor: '#F7F7F7',
+				pointSize: 1,
+	        };
+
+			var chart = new google.visualization.LineChart(document.getElementById('line_chart'));
+
+	        chart.draw(data, options);
+		}
+
+    /*]]>*/
+</script>
+	
+<div id="line_chart"></div>

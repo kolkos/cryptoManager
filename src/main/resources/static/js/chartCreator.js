@@ -17,6 +17,9 @@ $(function() {
 			case "pieChart_portfolio_distribution":
 				url = "/portfolio/piechart";
 				break;
+			case "lineChart_portfolio_roi":
+				url = "/portfolio/linechart";
+				break;
 		}
 		
 		$.get(url, 

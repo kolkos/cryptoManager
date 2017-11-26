@@ -27,6 +27,7 @@ import nl.kolkos.cryptoManager.FormOptions;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.PortfolioChartLine;
 import nl.kolkos.cryptoManager.PortfolioChartLineWallet;
+import nl.kolkos.cryptoManager.PortfolioLineChartRoiValue;
 import nl.kolkos.cryptoManager.PortfolioPieChartValue;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
@@ -413,6 +414,135 @@ public class PortfolioController {
 		model.addAttribute("portfolioName",portfolio.getName());
 		
 		return "portfolio_piechart";
+	}
+	
+	@RequestMapping(value = "/linechart", method = RequestMethod.GET)
+    public String createLineChartPortfolioROI(
+    		@RequestParam(value="portfolioId", required=true) Long portfolioId,
+    		@RequestParam(value="lastHours", required=true) Integer lastHours,
+    		@RequestParam(value="intervalInMinutes", required=true) Integer intervalInMinutes,
+    		Model model) {
+		
+		// get the wallets
+		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
+		
+		// get the portfolio
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		
+		// loop the wallets to update the current coin value
+		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
+		for(Wallet wallet : wallets) {
+						
+			// get the coin for this wallet
+			Coin coin = wallet.getCoin();
+			
+			
+			// nog get the cmc Coin by this coin
+			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
+			
+			double currentCoinValue;
+			try {
+				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
+				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
+				
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				currentCoinValue = 0;
+			}
+			// register this result
+			CoinValue coinValue = new CoinValue();
+			coinValue.setCoin(coin);
+			coinValue.setValue(currentCoinValue);
+			
+			coinValueRepository.save(coinValue);
+		}
+		
+		// now determine the begin and end time
+		Calendar start = Calendar.getInstance();
+		start.add(Calendar.HOUR_OF_DAY, -lastHours);
+		start.set(Calendar.SECOND, 0);
+		
+		Calendar end = Calendar.getInstance();
+		end.set(Calendar.SECOND, 0);
+		
+		List<PortfolioLineChartRoiValue> portfolioLineChartRoiValues = new ArrayList<>();
+		
+		// loop through the times
+		for (Date date = start.getTime(); start.before(end) || start.equals(end); start.add(Calendar.MINUTE, intervalInMinutes), date = start.getTime()) {
+			Calendar startInterval = Calendar.getInstance();
+			startInterval.setTime(date);
+			startInterval.set(Calendar.SECOND, 0);
+			
+			Calendar endInterval = Calendar.getInstance();
+			endInterval.setTime(date);
+			endInterval.add(Calendar.MINUTE, intervalInMinutes);
+			endInterval.add(Calendar.SECOND, -1);
+			
+			PortfolioLineChartRoiValue portfolioLineChartRoiValue = new PortfolioLineChartRoiValue();
+			
+			
+			double totalValue = 0;
+			double totalInvestment = 0;
+			
+			// loop through the wallets again
+			for(Wallet wallet : wallets) {
+				long walletId = wallet.getId();
+				long coinId = wallet.getCoin().getId();
+				
+				// ---- get the totals for deposits
+				// ---- get the totals for deposits
+				// get the total purchase value
+				double totalPurchaseValue = depositRepository.getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(walletId, endInterval.getTime());
+				// get the amount purchased
+				double totalAmountDeposited = depositRepository.getSumOfAmountForWalletIdAndBeforeDepositDate(walletId, endInterval.getTime());
+				
+				// --- get the values for the withdrawals
+				// get the to cash value
+				double totalWithDrawnToCashValue = withdrawalRepository.getSumOfWithdrawalToCashValueForWalletIdAndBeforeWithdrawalDate(walletId, endInterval.getTime());
+				// get the total amount of withdrawals
+				double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletIdAndBeforeWithdrawalDate(walletId, endInterval.getTime());
+				
+				// get the total amount
+				double totalAmount = totalAmountDeposited - totalAmountWithdrawn;
+				// calculate the investment
+				double totalInvested = totalPurchaseValue - totalWithDrawnToCashValue;
+				
+				double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), endInterval.getTime());
+				
+				// prevent 0 by using the last known value
+				if(avgValue == 0) {
+					
+					avgValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coinId, startInterval.getTime());
+				}
+				
+				// calculate the value
+				double value = avgValue * totalAmount;
+				// add to the totalValue
+				totalValue += value;
+				
+				// calculate the investment for this wallet
+				totalInvestment += totalInvested;
+			}
+			
+			// add to the portfolioLineChartRoiValue
+			portfolioLineChartRoiValue.setDate(endInterval.getTime());
+			
+			// calculate the roi
+			double profitLoss = totalValue - totalInvestment;
+			double roi = profitLoss / totalInvestment;
+			
+			portfolioLineChartRoiValue.setRoi(roi);
+			
+			// add to the list
+			portfolioLineChartRoiValues.add(portfolioLineChartRoiValue);
+		}
+		
+		model.addAttribute("portfolioLineChartRoiValues",portfolioLineChartRoiValues);
+		model.addAttribute("portfolioName",portfolio.getName());
+		
+		return "portfolio_linechart";
 	}
 	
 	

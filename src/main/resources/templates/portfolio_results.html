@@ -24,16 +24,16 @@
 				<tr th:each="portfolio : ${portfolioList}">
 					<td th:text="${portfolio.name}">name</td>
 					<td th:text="${portfolio.description}">description</td>
-					<td class="autofit">
+					<td>
 						<a th:href="@{/portfolio/showPortfolio/{id}(id=${portfolio.id})}" class="tooltip">
-							<span class="tooltiptext">Open details for this portfolio</span>
 							<i class="fa fa-folder-open-o" style="font-size:24px;"></i>
+							<span class="tooltiptext">Open details for this portfolio</span>
 						</a>
 					</td>
-					<td class="autofit">
+					<td>
 						<a th:href="@{/portfolio/chart/{id}(id=${portfolio.id})}" class="tooltip">
-							<span class="tooltiptext">Show chart for this portfolio</span>
 							<i class="fa fa-area-chart" style="font-size:24px;"></i>
+							<span class="tooltiptext">Show chart for this portfolio</span>
 						</a>
 					</td>
 				</tr>

@@ -24,16 +24,18 @@
 				<tr th:each="coin : ${coinList}">
 					<td th:text="${coin.coinMarketCapCoin.name}">name</td>
 					<td th:text="${coin.coinMarketCapCoin.symbol}">symbol</td>
-					<td class="autofit">
+					<td>
 						<a th:href="@{/coin/showCoin/{id}(id=${coin.id})}" class="tooltip">
-							<span class="tooltiptext">Open details for this coin</span>
 							<i class="fa fa-folder-open-o" style="font-size:24px;"></i>
+							<span class="tooltiptext">Open details for this coin</span>
+							
 						</a>
 					</td>
-					<td class="autofit">
+					<td>
 						<a th:href="@{/coin/chart/{id}(id=${coin.id})}" class="tooltip">
-							<span class="tooltiptext">Show chart for this coin</span>
 							<i class="fa fa-line-chart" style="font-size:24px;"></i>
+							<span class="tooltiptext">Show chart for this coin</span>
+							
 						</a>
 					</td>
 				</tr>

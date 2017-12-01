@@ -37,7 +37,7 @@ import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
 
 @Controller    // This means that this class is a Controller
-@RequestMapping(path="/portfolio") // This means URL's start with /demo (after Application path)
+@RequestMapping(path="/portfolio") // This means URL's start with /portfolio (after Application path)
 public class PortfolioController {
 	@Autowired
 	private PortfolioRepository portfolioRepository;
@@ -403,7 +403,7 @@ public class PortfolioController {
 			
 			// now add to the PortfolioPieChartValue object
 			PortfolioPieChartValue portfolioPieChartValue = new PortfolioPieChartValue();
-			portfolioPieChartValue.setWalletAddress(wallet.getAddress());
+			portfolioPieChartValue.setWalletAddress(wallet.getAddress() + " (" + cmcCoin.getSymbol() + ")");
 			portfolioPieChartValue.setCurrentWalletValue(currentWalletValue);
 			
 			// add to the list

@@ -5,12 +5,12 @@ table.form{
     margin-top: 10px;
     padding: 16px;
     background: #F7F7F7;
-    font-size: 1.0vw;
+    font-size: 0.8vmax;
 }
 table.form thead tr th{
 	background: #43D1AF;
     padding: 20px 0;
-    font-size: 1.2vw;
+    font-size: 1.0vmax;
     font-weight: 300;
     text-align: center;
     color: #fff;
@@ -47,7 +47,7 @@ table.form tbody tr td select
     border: 1px solid #ccc;
     padding: 3%;
     color: #555;
-    font-size: 0.8vw;
+    font-size: 0.8vmax;
 }
 
 table.form tbody tr td input[type="text"]:focus,
@@ -79,7 +79,7 @@ table.form tbody tr td input[type="button"]{
     border-right-style: none;
     border-left-style: none;    
     color: #fff;
-    font-size: 0.9vw;
+    font-size: 0.9vmax;
 }
 table.form tbody tr td input[type="submit"]:hover,
 table.form tbody tr td button:hover,
@@ -134,12 +134,12 @@ table.single_line_form{
     margin-top: 10px;
     padding: 5px;
     background: #F7F7F7;
-    font-size: 0.9vw;
+    font-size: 0.7vmax;
 }
 table.single_line_form thead tr th{
 	background: #43D1AF;
     padding: 10px 0;
-    font-size: 1.0vw;
+    font-size: 0.8vmax;
     font-weight: 300;
     text-align: center;
     color: #fff;
@@ -173,7 +173,7 @@ table.single_line_form tbody tr td select
     border: 1px solid #ccc;
     padding: 2px;
     color: #555;
-    font-size: 0.9vw;
+    font-size: 0.7vmax;
 }
 
 table.single_line_form tbody tr td input[type="text"]:focus,
@@ -205,7 +205,7 @@ table.single_line_form tbody tr td input[type="button"]{
     border-right-style: none;
     border-left-style: none;    
     color: #fff;
-    font-size: 0.9vw;
+    font-size: 0.7vmax;
 }
 table.single_line_form tbody tr td input[type="submit"]:hover,
 table.single_line_form tbody tr td button:hover,

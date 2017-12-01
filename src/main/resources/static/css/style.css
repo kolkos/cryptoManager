@@ -8,7 +8,7 @@ body{
 	font-family: 'Raleway', sans-serif;
 	color: #333;
 	font-size: 11pt;
-	font-size: 1.1vw;
+	font-size: 1.1vmax;
 }
 a.button {
 	text-decoration: none;
@@ -23,7 +23,7 @@ a.button {
     border-left-style: none;    
 	
 	padding: 10px 20px 10px 20px;
-	font-size: 1.0vw;
+	font-size: 0.8vmax;
 	display:inline-block;
 	min-width: 200px;
 	text-align: center;

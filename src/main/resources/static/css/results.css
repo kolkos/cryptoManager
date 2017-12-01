@@ -2,7 +2,7 @@ table.results{
 	width: 100%;
     padding: 5px;
     background: #F7F7F7;
-    font-size: 1.0vw;
+    font-size: 0.8vmax;
 }
 
 table.results thead tr th{

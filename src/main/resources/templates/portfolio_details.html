@@ -1,24 +1,40 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title>Portfolio details</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
-		<link href="/css/style.css" rel="stylesheet" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-		<script src="/js/jquery-3.2.1.min.js"></script>
-	</head>
-	<body>
-		<p>
-			<a href="/portfolio/results" class="button">Back to portfolios</a>
-			<a th:href="@{/portfolio/chart/{id}(id=${portfolioId})}" class="button">Show chart</a>
-		</p>
-		<table class="results details">
-			<thead>
-				<tr>
-					<th colspan="2">Coin Details</th>
-				</tr>
-			</thead>
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>cryotoManager::Coin::Details</title>
+	
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
+    
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	
+	<nav class="navbar navbar-inverse" id="menuHodler">
+		
+	</nav>
+
+	
+	<div class="container">
+		<div class="page-header">
+			<h1 th:text="${portfolio.name}">portfolio details</h1>
+		</div>
+		<p class="lead">See the details for the portfolio '<span th:text="${portfolio.name}">name</span>'. Return to the list by clicking <a href="/portfolio/results">here</a>.</p>
+		
+		<table class="table table-striped">
 			<tbody>
 				<tr>
 					<td>Portfolio name:</td>
@@ -38,9 +54,19 @@
 				</tr>
 			</tbody>
 		</table>
-		<br />
-		<h2>Wallets</h2>
-		<table class="results">
+		
+		<p>
+			<a th:href="@{/portfolio/chart/{id}(id=${portfolioId})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-stats"></span> Show chart</a>
+			<a href="#" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+			<a href="#" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+		</p>
+		
+		<div class="page-header">
+			<h2>Wallets</h2>
+		</div>
+		
+		
+		<table class="table table-striped">
 			<thead>
 				<tr>
 					<th>Wallet</th>
@@ -48,7 +74,7 @@
 					<th>Coin</th>
 					<th>Balance</th>
 					<th>Value</th>
-					<th>&nbsp;</th>
+					<th>Open wallet</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -59,17 +85,20 @@
 					<td th:text="${#numbers.formatDecimal(wallet.currentWalletAmount, 1, 'POINT', 8, 'COMMA')}">currentWalletAmount</td>
 					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletValue, 1, 'POINT', 2, 'COMMA')}">currentWalletValue</td>
 					<td>
-						<a th:href="@{/wallet/showWallet/{id}(id=${wallet.id})}" class="tooltip">
-							<span class="tooltiptext">Open details for this wallet</span>
-							<i class="fa fa-folder-open-o" style="font-size:24px;"></i>
+						<a th:href="@{/wallet/showWallet/{id}(id=${wallet.id})}">
+							<span class="glyphicon glyphicon-zoom-in"></span>
+							
 						</a>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 		
-		
-		<script src="/js/LoadMenu.js"></script>
-		<script src="/js/LoadHeader.js"></script>
-	</body>
+    </div>
+    
+    <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/loadMenu.js"></script>
+
+</body>
 </html>

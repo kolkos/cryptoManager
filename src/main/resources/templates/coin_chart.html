@@ -82,12 +82,12 @@
 		
 		
 		<form action="#" method="get">
-			<table class="table table-striped chart-table">
+			<table class="table table-striped">
 				<tbody>
 					<tr>
-						<td>Period:</td>
+						<td><label for="lastHours">Period:</label></td>
 						<td>
-							<select name="lastHours" id="lastHours">
+							<select name="lastHours" id="lastHours" class="form-control">
 								<option th:each="hourOption : ${hourOptions}" 
 								th:value="${hourOption.value}" th:text="${hourOption.text}"
 								th:selected="(${hourOption.value} == *{lastHours})">address (coinName)</option>
@@ -95,9 +95,9 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Interval:</td>
+						<td><label for="intervalInMinutes">Interval:</label></td>
 						<td>
-							<select name="intervalInMinutes" id="intervalInMinutes">
+							<select name="intervalInMinutes" id="intervalInMinutes" class="form-control">
 								<option th:each="minuteOption : ${minuteOptions}" 
 								th:value="${minuteOption.value}" th:text="${minuteOption.text}"
 								th:selected="(${minuteOption.value} == *{intervalInMinutes})">address (coinName)</option>
@@ -105,7 +105,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2"><button type="submit" class="btn btn-primary">Genere chart</button></td>
+						<td colspan="2"><button type="submit" class="btn btn-primary">Generate chart</button></td>
 					</tr>
 					
 				</tbody>

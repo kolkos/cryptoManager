@@ -73,7 +73,7 @@ public class PortfolioController {
 	
 	// handle the form
 	@PostMapping(path="/add") // Map ONLY Post Requests
-	public @ResponseBody String addNewPortfolio (
+	public String addNewPortfolio (
 			@RequestParam String description,
 			@RequestParam String name, 
 			Model model) {
@@ -199,6 +199,9 @@ public class PortfolioController {
 		model.addAttribute("lastHours", lastHours);
 		model.addAttribute("intervalInMinutes", intervalInMinutes);
 		model.addAttribute("portfolioId", portfolioId);
+		
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		model.addAttribute("portfolioName", portfolio.getName());
 		
 		
 		FormOptions formOptions = new FormOptions();

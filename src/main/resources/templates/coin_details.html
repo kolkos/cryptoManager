@@ -55,12 +55,14 @@
 			</tbody>
 		</table>
 		
+		<p>
+			<a th:href="@{/coin/chart/{id}(id=${coinId})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-stats"></span> Show chart</a>
+			
+		</p>
+
 		<div class="page-header">
 			<h2>Last values</h2>
 		</div>
-		<p>
-			<a th:href="@{/coin/chart/{id}(id=${coinId})}" class="btn btn-info" role="button">Show chart</a>
-		</p>
 		
 		<table class="table table-striped">
 			<thead>

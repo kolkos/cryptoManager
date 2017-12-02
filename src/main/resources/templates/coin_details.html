@@ -1,24 +1,40 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title>Coin details</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
-		<link href="/css/style.css" rel="stylesheet" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-		<script src="/js/jquery-3.2.1.min.js"></script>
-	</head>
-	<body>
-		<p>
-			<a href="/coin/results" class="button">Back to coins</a>
-			<a th:href="@{/coin/chart/{id}(id=${coinId})}" class="button">Show chart</a>
-		</p>
-		<table class="results details">
-			<thead>
-				<tr>
-					<th colspan="2">Coin Details</th>
-				</tr>
-			</thead>
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>cryotoManager::Coin::Details</title>
+	
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
+    
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	
+	<nav class="navbar navbar-inverse" id="menuHodler">
+		
+	</nav>
+
+	
+	<div class="container">
+		<div class="page-header">
+			<h1 th:text="${coin.coinMarketCapCoin.name}">Coin details</h1>
+		</div>
+		<p class="lead">This page shows the details for the coin '<span th:text="${coin.coinMarketCapCoin.name}">name</span>'. Return to the list by clicking <a href="/coin/results">here</a>.</p>
+		
+		<table class="table table-striped">
 			<tbody>
 				<tr>
 					<td>Coin name:</td>
@@ -37,11 +53,16 @@
 					<td th:text="${'€ ' + #numbers.formatDecimal(currentCoinValue, 1, 'POINT', 2, 'COMMA')}">walletAddress</td>
 				</tr>
 			</tbody>
-		
 		</table>
-		<br />
-		<h2>Last 10 coin values</h2>
-		<table class="results">
+		
+		<div class="page-header">
+			<h2>Last values</h2>
+		</div>
+		<p>
+			<a th:href="@{/coin/chart/{id}(id=${coinId})}" class="btn btn-info" role="button">Show chart</a>
+		</p>
+		
+		<table class="table table-striped">
 			<thead>
 				<tr>
 					<th>Date	</th>
@@ -57,7 +78,11 @@
 		
 		</table>
 		
-		<script src="/js/LoadMenu.js"></script>
-		<script src="/js/LoadHeader.js"></script>
-	</body>
+    </div>
+    
+    <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/loadMenu.js"></script>
+
+</body>
 </html>

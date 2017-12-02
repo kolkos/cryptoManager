@@ -1,0 +1,14 @@
+table.table a{
+	text-decoration: none;
+	color: #000;
+}
+table.chart-table td.chartHolder{
+	width: 60%;
+}
+table.chart-table tbody tr{
+	height: 20px;
+}
+table.chart-table tbody tr:last-child{
+	height:auto;
+	vertical-align: top;
+}

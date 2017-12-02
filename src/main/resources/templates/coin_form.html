@@ -1,37 +1,68 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title>Add coin</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
-		<link href="/css/style.css" rel="stylesheet" />
-		<script src="/js/jquery-3.2.1.min.js"></script>
-	</head>
-	<body>
-		<form action="#" th:action="@{/coin/add}" th:object="${coin}" method="post">
-			<table class="form">
-				<thead>
-					<tr>
-						<th colspan="2">Add coin</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>CoinMarketCap coin:</td>
-						<td>
-							<select th:field="*{coinMarketCapCoin}" required="required">
-								<option value="">-Select coin-</option>
-								<option th:each="cmcCoin : ${cmcCoinList}" th:value="${cmcCoin.id}" th:text="${cmcCoin.symbol + ' (' + cmcCoin.name + ')'}">symbol (name)</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2"><button type="submit">Submit</button></td>
-					</tr>
-				</tbody>
-			</table>
-		</form>
-		<script src="/js/LoadMenu.js"></script>
-		<script src="/js/LoadHeader.js"></script>
-	</body>
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>cryotoManager::Coin::Add</title>
+	
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
+	
+	
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	
+	<nav class="navbar navbar-inverse" id="menuHodler">
+		
+	</nav>
+
+	
+	<div class="container">
+		<div class="page-header">
+			<h1>Add a coin</h1>
+		</div>
+		<p class="lead">This page lets you add a CoinMarketCap coin to the collection. You can see the added coins <a href="/coin/results">here</a>.</p>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+	    			<h3 class="panel-title">Add deposit</h3>
+	  		</div>
+	  		<div class="panel-body">
+		  		<form action="#" th:action="@{/coin/add}" th:object="${coin}" method="post">
+					<label for="coinMarketCapCoin">Coin</label>
+					<div class="form-group">
+			    			<select th:field="*{coinMarketCapCoin}" required="required" class="form-control" >
+							<option value="">-Select coin-</option>
+							<option th:each="cmcCoin : ${cmcCoinList}" th:value="${cmcCoin.id}" th:text="${cmcCoin.symbol + ' (' + cmcCoin.name + ')'}">symbol (name)</option>
+						</select>
+			    		</div>
+						
+								
+					<button type="submit" class="btn btn-primary">Submit</button>
+							
+				</form>
+			</div>
+	  	</div>
+		
+		
+      
+    </div>
+    
+    <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/loadMenu.js"></script>
+
+</body>
 </html>

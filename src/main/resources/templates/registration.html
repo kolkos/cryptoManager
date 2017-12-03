@@ -2,71 +2,94 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org">
 <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<title>Registration Form</title>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/registration.css}" />
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
 </head>
 <body>
-	<form th:action="@{/}" method="get">
-		<button class="btn btn-md btn-warning btn-block" type="Submit">Go To Login Page</button>
-	</form>	
+	<nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">cryptoManager &copy;</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="/login">Login</a></li>
+              <li><a href="/registration">Registration</a></li>
+              
+              
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
 	
 	<div class="container">
-		<div class="row">
-			<div class="col-md-6 col-md-offset-3">
-				<form autocomplete="off" action="#" th:action="@{/registration}"
-					th:object="${user}" method="post" class="form-horizontal"
-					role="form">
-					<h2>Registration Form</h2>
-					<div class="form-group">
-						<div class="col-sm-9">
-						<label th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
-								class="validation-message"></label>
-						<input type="text" th:field="*{name}" placeholder="Name"
-								class="form-control" /> 
-						</div>
-					</div>
-
-					<div class="form-group">
-						<div class="col-sm-9">
-						<label	th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"
-								class="validation-message"></label>
-							<input type="text" th:field="*{lastName}"
-								placeholder="Last Name" class="form-control" /> 
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-9">
-							<input type="text" th:field="*{email}" placeholder="Email"
-								class="form-control" /> <label
-								th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
-								class="validation-message"></label>
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-9">
-							<input type="password" th:field="*{password}"
-								placeholder="Password" class="form-control" /> <label
-								th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
-								class="validation-message"></label>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<div class="col-sm-9">
-							<button type="submit" class="btn btn-primary btn-block">Register User</button>
-						</div>
-					</div>
-					
-					<span th:utext="${successMessage}"></span>
-					
-					
-				</form>
-			</div>
+		<div class="page-header">
+			<h1>Register</h1>
 		</div>
+		<p class="lead">Use this form to create an account.</p>
+		
+
+			
+		<form autocomplete="off" action="#" th:action="@{/registration}" 	th:object="${user}" method="post" role="form">
+			
+			<label for="name">Name</label>
+			<div class="form-group">
+			
+				<input type="text" th:field="*{name}" class="form-control" placeholder="name"/> 
+				<label th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="validation-message" class="label label-danger"></label>	
+				
+				
+			</div>
+			
+			<label for="lastname">Last name</label>
+			<div class="form-group">
+
+				<input type="text" th:field="*{lastName}" placeholder="Last Name" class="form-control" /> 
+				<label th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" 	class="validation-message" class="label label-danger"></label>
+			</div>
+			
+			<label for="email">E-mail</label>
+			<div class="input-group form-group">
+				<span class="input-group-addon" id="userPrefix"><span class="glyphicon glyphicon-user"></span></span>
+				<input type="text" th:field="*{email}" placeholder="Email" class="form-control" aria-describedby="userPrefix"/> 
+				<label th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="validation-message" class="label label-danger"></label>
+				
+			</div>
+			
+			<label for="password">Password</label>
+			<div class="input-group form-group">
+				<span class="input-group-addon" id="passPrefix"><span class="glyphicon glyphicon-lock"></span></span>
+				<input type="password" th:field="*{password}" placeholder="Password" class="form-control" aria-describedby="passPrefix"/>
+				<label th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="label label-danger"></label>
+				
+			</div>
+			<br />
+			<div class="form-group">
+				
+					<button type="submit" class="btn btn-primary btn-block">Register User</button>
+				
+			</div>
+			
+			<span th:utext="${successMessage}"></span>
+			
+			
+		</form>
 	</div>
+
 
 </body>
 </html>

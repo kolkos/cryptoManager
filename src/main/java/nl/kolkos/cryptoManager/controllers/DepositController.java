@@ -194,25 +194,25 @@ public class DepositController {
     }
 	
 	// delete a deposit - the confirmation form
-	@RequestMapping(value = "/delete/{depositId}", method = RequestMethod.GET)
-	public String deleteDepositForm(@PathVariable("depositId") long depositId, Model model) {
+	@RequestMapping(value = "/details/{depositId}", method = RequestMethod.GET)
+	public String showDepositDetails(@PathVariable("depositId") long depositId, Model model) {
 		
 		// get the entity
 		Deposit deposit = depositRepository.findById(depositId);
 		
 		model.addAttribute("deposit", deposit);
 		
-		return "deposit_delete";
+		return "deposit_details";
 	}
 	
 	@PostMapping(path="/delete") // Map ONLY POST Requests
 	public String deleteDeposit (
-			@RequestParam(value="deposit", required=false) Deposit deposit,
-			@RequestParam(value="confirmDelete", required=false) boolean confirmDelete,
+			@RequestParam(value="depositId", required=true) long depositId,
+			@RequestParam(value="confirmDelete", required=true) boolean confirmDelete,
 			Model model) {
 
 		
-		model.addAttribute("deposit", new Deposit());
+		Deposit deposit = depositService.findById(depositId);
 		
 		if(confirmDelete) {
 			depositRepository.delete(deposit);

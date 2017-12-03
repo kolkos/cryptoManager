@@ -55,7 +55,7 @@
 					<th>Current value</th>
 					<th>Difference</th>
 					<th><span>Remarks</span> <span class="buttonHolder remarks alphabet"></span></th>
-					<th>Delete deposit</th>
+					<th>Open deposit</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -70,8 +70,8 @@
 					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
 					<td class="cutoff" th:text="${deposit.remarks}">remarks</td>
 					<td>
-						<a th:href="@{/deposit/delete/{id}(id=${deposit.id})}">
-							<span class="glyphicon glyphicon-trash"></span>
+						<a th:href="@{/deposit/details/{id}(id=${deposit.id})}">
+							<span class="glyphicon glyphicon-zoom-in"></span>
 						</a>
 					</td>
 				</tr>

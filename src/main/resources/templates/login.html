@@ -3,28 +3,66 @@
 	xmlns:th="http://www.thymeleaf.org">
 
 <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
 	<title>Spring Security Tutorial</title>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/login.css}" />
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
 </head>
 
 <body>
-	<form th:action="@{/registration}" method="get">
-		<button class="btn btn-md btn-warning btn-block" type="Submit">Go To Registration Page</button>
-	</form>	
+	<nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">cryptoManager &copy;</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="/login">Login</a></li>
+              <li><a href="/registration">Registration</a></li>
+              
+              
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+	
 	
 	<div class="container">
-		<img th:src="@{/images/login.jpg}" class="img-responsive center-block" width="300" height="300" alt="Logo" />
+		<div class="page-header">
+			<h1>Welcome</h1>
+		</div>
+		<p class="lead">Log in with your account. If you don't have an account, please register <a href="/registration">here</a>.</p>
+		
 		<form th:action="@{/login}" method="POST" class="form-signin">
-			<h3 class="form-signin-heading" th:text="Welcome"></h3>
-			<br/>
-			 
-			<input type="text" id="email" name="email"  th:placeholder="Email"
-				class="form-control" /> <br/> 
-			<input type="password"  th:placeholder="Password"
-				id="password" name="password" class="form-control" /> <br /> 
+
+			<label for="email">E-mail</label>
+			<div class="input-group form-group">
+				<span class="input-group-addon" id="userPrefix"><span class="glyphicon glyphicon-user"></span></span>
+				<input type="text" id="email" name="email" th:placeholder="Email" class="form-control" aria-describedby="userPrefix"/> 
+				
+			</div>
+			
+			<label for="password">Password</label>
+			<div class="input-group form-group">
+				<span class="input-group-addon" id="passPrefix"><span class="glyphicon glyphicon-lock"></span></span>
+				<input type="password"  th:placeholder="Password" id="password" name="password" class="form-control" aria-describedby="passPrefix"/>
+				
+			</div>
+			
+			
 				
 			<div align="center" th:if="${param.error}">
 				<p style="font-size: 20; color: #FF1C19;">Email or Password invalid, please verify</p>

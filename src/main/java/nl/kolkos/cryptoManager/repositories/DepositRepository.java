@@ -50,4 +50,9 @@ public interface DepositRepository extends PagingAndSortingRepository<Deposit, L
 	
 	
 	Page<Deposit> findDepositByWallet_Coin_IdAndWallet_IdAndWallet_Portfolio_Id(long coinId, long walletId, long PortfolioId, Pageable pageable);
+	
+	@Query(value="SELECT COUNT(id) FROM deposit;", nativeQuery = true)
+	int getNumberOfDeposits();
+	
+	
 }

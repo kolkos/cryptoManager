@@ -127,6 +127,9 @@ public class DepositController {
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("direction", direction);
         
+        model.addAttribute("numberOfResults", depositService.getNumberOfDeposits());
+        model.addAttribute("page", pageNumber);
+        
         long filterCoinId = 0;
         long filterWalletId = 0;
         long filterPortfolioId = 0;

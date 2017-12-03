@@ -1,111 +1,196 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title>Deposits</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
-		<link href="/css/style.css" rel="stylesheet" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-		<script src="/js/jquery-3.2.1.min.js"></script>
-	</head>
-	<body>
-		<input type="hidden" id="sortBy" th:value="${sortBy}" />
-		<input type="hidden" id="direction" th:value="${direction}" />
-		<p>
-			<a href="/deposit/add" class="button">Add a deposit</a>
-			<a href="#" id="showHideFilter" class="button">Show filter</a>
-		</p>
-		<!-- 
-			Create filter form
-		 -->
-		<form action="#" th:action="@{/deposit/results}" method="GET">
-			<table class="form" id="filter" style="display: none;">
-				<thead>
-					<tr>
-						<th colspan="2">Filter deposits</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Coin:</td>
-						<td>
-							<select name="filterByCoin" id="filterByCoin" >
-								<option value="">-Select coin-</option>
-								<option th:each="coin : ${coinList}" 
-										th:value="${coin.id}" 
-										th:text="${coin.coinMarketCapCoin.symbol + ' (' + coin.coinMarketCapCoin.name + ')'}"
-										th:selected="(${coin.id} == *{selectedCoin})">symbol (name)</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Wallet:</td>
-						<td>
-							<select name="filterByWallet" id="filterByWallet" >
-								<option value="">-Select wallet-</option>
-								<option th:each="wallet : ${walletList}" 
-								th:value="${wallet.id}" th:text="${wallet.address + ' (' + wallet.coin.coinMarketCapCoin.symbol + ')'}"
-								th:selected="(${wallet.id} == *{selectedWallet})">address (coinName)</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Portfolio:</td>
-						<td>
-							<select name="filterByPortfolio" id="filterByPortfolio" >
-								<option value="">-Select portfolio-</option>
-								<option th:each="portfolio : ${portfolioList}" 
-								th:value="${portfolio.id}" th:text="${portfolio.name}"
-								th:selected="(${portfolio.id} == *{selectedPortfolio})">name</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2"><button type="submit">Filter</button></td>
-					</tr>
-				</tbody>
-			</table> 
-		</form>
-		<br />
-		<table class="results">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>cryotoManager::Deposits::Results</title>
+	
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
+    
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	<input type="hidden" id="sortBy" th:value="${sortBy}" />
+	<input type="hidden" id="direction" th:value="${direction}" />
+	<input type="hidden" id="page" th:value="${page}" />
+	<input type="hidden" id="nrOfResults" th:value="${numberOfResults}" />
+
+	
+	<nav class="navbar navbar-inverse" id="menuHodler">
+		
+	</nav>
+
+	
+	<div class="container">
+		<div class="page-header">
+			<h1>Deposits</h1>
+		</div>
+		<p class="lead">This page shows the registered deposits. You can register a new deposit <a href="/deposit/add">here</a>.</p>
+		
+		<nav aria-label="Page navigation">
+			<ul class="pagination" id="pagination"></ul>
+		</nav>
+		
+		
+		
+		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th><span>Date</span> <span class="buttonHolder depositDate"></span></th>
-					<th><span>Wallet</span> <span class="buttonHolder wallet.address"></span></th>
-					<th><span>Coin</span> <span class="buttonHolder wallet.coin.coinMarketCapCoin.symbol"></span></th>
-					<th><span>Portfolio</span> <span class="buttonHolder wallet.portfolio.name"></span></th>
-					<th><span>Amount</span> <span class="buttonHolder amount"></span></th>
-					<th><span>Purchase value</span> <span class="buttonHolder purchaseValue"></span></th>
+					<th><span>Date</span> <span class="buttonHolder depositDate numeric"></span></th>
+					<th><span>Wallet</span> <span class="buttonHolder wallet.address alphabet"></span></th>
+					<th><span>Coin</span> <span class="buttonHolder wallet.coin.coinMarketCapCoin.symbol alphabet"></span></th>
+					<th><span>Portfolio</span> <span class="buttonHolder wallet.portfolio.name alphabet"></span></th>
+					<th><span>Amount</span> <span class="buttonHolder amount numeric"></span></th>
+					<th><span>Purchase value</span> <span class="buttonHolder purchaseValue numeric"></span></th>
 					<th>Current value</th>
 					<th>Difference</th>
-					<th><span>Remarks</span> <span class="buttonHolder remarks"></span></th>
-					<th>&nbsp;</th>
+					<th><span>Remarks</span> <span class="buttonHolder remarks alphabet"></span></th>
+					<th>Delete deposit</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr th:each="deposit : ${deposits}">
 					<td th:text="${#dates.format(deposit.depositDate, 'dd-MM-yyyy')}">depositDate</td>
-					<td th:text="${deposit.wallet.address}">address</td>
+					<td class="cutoff" th:text="${deposit.wallet.address}">address</td>
 					<td th:text="${deposit.wallet.coin.coinMarketCapCoin.symbol}">coinName</td>
-					<td th:text="${deposit.wallet.portfolio.name}">portfolioName</td>
+					<td class="cutoff" th:text="${deposit.wallet.portfolio.name}">portfolioName</td>
 					<td th:text="${#numbers.formatDecimal(deposit.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
 					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.purchaseValue, 1, 'POINT', 2, 'COMMA')}">purchaseValue</td>
 					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
 					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
-					<td th:text="${deposit.remarks}">remarks</td>
+					<td class="cutoff" th:text="${deposit.remarks}">remarks</td>
 					<td>
-						<a th:href="@{/deposit/delete/{id}(id=${deposit.id})}" class="tooltip">
-							<i class="fa fa-trash" style="font-size:24px;"></i>
-							<span class="tooltiptext">Delete this deposit</span>
+						<a th:href="@{/deposit/delete/{id}(id=${deposit.id})}">
+							<span class="glyphicon glyphicon-trash"></span>
 						</a>
 					</td>
 				</tr>
+				
+				
 			</tbody>
 		</table>
-		<script src="/js/LoadMenu.js"></script>
-		<script src="/js/LoadHeader.js"></script>
-		<script src="/js/profitLossFix.js"></script>
-		<script src="/js/showHideFilter.js"></script>
-		<script src="/js/sortingButtons.js"></script>
-	</body>
+		
+      
+    </div>
+    
+    <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/loadMenu.js"></script>
+    <script src="/js/profitLossFix.js"></script>
+    <script src="/js/sortingButtons.js"></script>
+    <script src="/js/cutOffText.js"></script>
+    
+    <script type="text/javascript">
+	    $(function() {
+			// hardcoded values
+			var resultsPerPage = 25;
+			var maxPages = 10;
+
+			// get the current sorting options
+			var sortBy = $('#sortBy').val();
+  			var direction = $('#direction').val();
+
+		    // get the current page number
+		    var curPageNr = parseInt($('#page').val());
+		    // get the number of results
+		    var nrOfResults = $('#nrOfResults').val();
+
+		    // calculate the number of pages
+		    var nrOfPages = Math.ceil(nrOfResults / resultsPerPage);
+
+			console.log("Number of results per page: " + resultsPerPage);
+			console.log("Maximum number of pages: " + maxPages);
+			console.log("Number of results found: " + nrOfResults);
+			console.log("Number of pages needed: " + nrOfPages);
+		    
+		    
+
+		    // form base href
+		    var href = '&sortBy=' + sortBy + '&direction=' + direction;
+
+			// now generate the new html
+			var newHtml = "";
+			// first the previous button
+			var previousPage = 1;
+			var liClass = 'class="disabled" ';
+			if(curPageNr > 1){
+				previousPage = curPageNr - 1;
+				liClass = '';
+			}
+			
+			newHtml += '<li ' + liClass + '><a href="?page=' + previousPage + href + '" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
+
+			// check if the number of needed pages is smaller than the max number of pages
+			if(nrOfPages < maxPages){
+				// number is smaller, just generate all the pages
+				for(var i = 1; i <= nrOfPages; i++){
+
+					var curPageClass = '';
+					if(i == curPageNr){
+						curPageClass = 'class="active" ';
+					}
+					
+					// <li><a href="#">1</a></li>
+					newHtml += '<li ' + curPageClass + '><a href="?page=' + i + href + '">' + i + '</a></li>';
+				}
+			}else{
+				// the number of pages is greater than the max number of pages, shorten the list
+				// first the first x number of pages (depending on the max pages variable)
+				for(var i = 1; i <= (maxPages / 2); i++){
+					var curPageClass = '';
+					if(i == curPageNr){
+						curPageClass = 'class="active" ';
+					}
+					
+					newHtml += '<li ' + curPageClass + '><a href="?page=' + i + href + '">' + i + '</a></li>';
+				}
+				// add a seperator
+				newHtml += '<li class="disabled"><a href="#">...</a></li>';
+
+				// now the last x number of pages
+				var tempPageNr = nrOfPages - (maxPages / 2) + 1;
+				for(var i = nrOfPages; i > nrOfPages - (maxPages / 2); i--) {
+					var curPageClass = '';
+					if(tempPageNr == curPageNr){
+						curPageClass = 'class="active" ';
+					}
+
+					newHtml += '<li ' + curPageClass + '><a href="?page=' + tempPageNr + href + '">' + tempPageNr + '</a></li>';
+					tempPageNr++;
+				}
+			}
+
+			// calculate the next page 
+			var nextPage = curPageNr + 1;
+			// check if the next page isn't outside the range
+			liClass = "";
+			if(nextPage > nrOfPages){
+				// the next page is greater than the nr of pages, use the current page nr
+				nextPage = curPageNr;
+				liClass = 'class="disabled" ';
+			}
+			
+			newHtml += '<li ' + liClass + '><a href="?page=' + nextPage + href + '" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';
+			
+			
+			// add it to the container
+			$('#pagination').html(newHtml);
+			
+		});
+    </script>
+
+
+</body>
 </html>

@@ -56,6 +56,10 @@ public class DepositService {
 		return depositRepository.getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(walletId, depositDate);
 	}
 	
+	public int getNumberOfDeposits() {
+		return depositRepository.getNumberOfDeposits();
+	}
+	
 	public List<Deposit> getPage(int pageNumber, String columnName, String direction) {
 		Sort.Direction sort = Sort.Direction.ASC;
 		if(direction.equals("DESC")) {

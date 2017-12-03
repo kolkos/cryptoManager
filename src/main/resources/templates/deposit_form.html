@@ -60,26 +60,24 @@
 					<label for="amount">Purchased amount</label>
 					<div class="input-group">
 						<span class="input-group-addon" id="coinPrefix"><span class="glyphicon glyphicon-piggy-bank"></span></span>
-					  	<input type="number" step="0.00000001" class="form-control" aria-label="The amount of the coin purchased" th:field="*{amount}" aria-describedby="coinPrefix" />
+					  	<input type="number" step="0.00000001" class="form-control" aria-label="The amount of the coin purchased" th:field="*{amount}" aria-describedby="coinPrefix" required="required"/>
 					</div>
 					<br/>
 			    		
 			    		<label for="purchaseValue">Value on purchase</label>
 					<div class="input-group">
 						<span class="input-group-addon" id="euroPrefix"><span class="glyphicon glyphicon-euro"></span></span>
-					  	<input type="number" step="0.01" class="form-control" th:field="*{purchaseValue}" aria-describedby="euroPrefix">
+					  	<input type="number" step="0.01" class="form-control" th:field="*{purchaseValue}" aria-describedby="euroPrefix" required="required"/>
 					</div>
 					<br />
 					
 					<label for="remarks">Remarks for this deposit</label>
 					<div class="input-group">
 						<span class="input-group-addon" id="remarksPrefix"><span class="glyphicon glyphicon-pushpin"></span></span>
-					  	<input type="text" class="form-control" id="remarks" th:field="*{remarks}" aria-describedby="remarksPrefix">
+					  	<input type="text" class="form-control" id="remarks" th:field="*{remarks}" aria-describedby="remarksPrefix" />
 					</div>
 					<br />
-					
-					
-					
+										
 					<div class="btn-group">
   						<button type="button" class="btn btn-primary" id="submitForm">Submit</button>
   						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

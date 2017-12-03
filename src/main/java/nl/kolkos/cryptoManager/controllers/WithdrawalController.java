@@ -96,6 +96,8 @@ public class WithdrawalController {
 		return redirect;
 	}
 	
+	
+	
 	@GetMapping(path="/list")
 	public @ResponseBody Iterable<Withdrawal> getAllDeposits() {
 		// This returns a JSON or XML with the users

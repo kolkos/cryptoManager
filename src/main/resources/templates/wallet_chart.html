@@ -1,92 +1,127 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title>Wallet chart</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
-		<link href="/css/style.css" rel="stylesheet" />
-		<script src="/js/jquery-3.2.1.min.js"></script>
-		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-		<script type="text/javascript" th:inline="javascript">
-		    /*<![CDATA[*/
-				google.charts.load('current', {'packages':['corechart'], language:'nl'});
-	      		google.charts.setOnLoadCallback(drawChart);
-				var rows = [];
-				var header = ['Date', 'Total invested', 'Value'];
-				rows.push(header);
 
-				function drawChart() {
-				    var theList = [[${walletChartLines}]]
-					    for (i = 0; i < theList.length; i++) {
-					        
-					        var date = new Date(theList[i]['date']);
-					        var totalDepositValue = theList[i]['totalInvested'];
-					        var value = theList[i]['value'];
-			
-					        var row = [date, totalDepositValue, value];
-					        rows.push(row);
-					        
-					    }
-				    
-					var data = google.visualization.arrayToDataTable(rows);
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>cryotoManager::Coin::Chart</title>
+	
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
+    
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript" th:inline="javascript">
+	    /*<![CDATA[*/
+			google.charts.load('current', {'packages':['corechart'], language:'nl'});
+      		google.charts.setOnLoadCallback(drawChart);
+			var rows = [];
+			var header = ['Date', 'Total invested', 'Value'];
+			rows.push(header);
 
-	
-					var options = {
-						title: 'value for ' + [[${walletAddress}]] + ' (' + [[${coinName}]] + ') over time',
-						height: 500,
-						curveType: 'function',
-						legend: {
-							position: 'bottom'
-						},
-						pointSize: 1,
-			        };
-	
-					var chart = new google.visualization.LineChart(document.getElementById('chart'));
-	
-			        chart.draw(data, options);
-				}
+			function drawChart() {
+			    var theList = [[${walletChartLines}]]
+				    for (i = 0; i < theList.length; i++) {
+				        
+				        var date = new Date(theList[i]['date']);
+				        var totalDepositValue = theList[i]['totalInvested'];
+				        var value = theList[i]['value'];
 		
-		    /*]]>*/
-		</script>
-	</head>
-	<body>
-		<p>
-			<a th:href="@{/wallet/showWallet/{id}(id=${walletId})}" class="button">Back to wallet details</a>
-			<a href="/wallet/results" class="button">Back to wallets</a>
-		</p>
+				        var row = [date, totalDepositValue, value];
+				        rows.push(row);
+				        
+				    }
+			    
+				var data = google.visualization.arrayToDataTable(rows);
+
+
+				var options = {
+					title: 'value for ' + [[${walletAddress}]] + ' (' + [[${coinName}]] + ') over time',
+					height: 500,
+					curveType: 'function',
+					legend: {
+						position: 'bottom'
+					},
+					pointSize: 1,
+		        };
+
+				var chart = new google.visualization.LineChart(document.getElementById('chart'));
+
+		        chart.draw(data, options);
+			}
+	
+	    /*]]>*/
+	</script>
+    
+    
+    
+</head>
+<body>
+	
+	<nav class="navbar navbar-inverse" id="menuHodler">
+		
+	</nav>
+
+	
+	<div class="container">
+		<div class="page-header">
+			<h1 th:text="${coinName}">coin</h1>
+		</div>
+		<p class="lead">See the value for this the wallet over time. Return to the details page by clicking <a th:href="@{/wallet/showWallet/{id}(id=${walletId})}">here</a>.</p>
+		
+		
 		<form action="#" method="get">
-			<table class="single_line_form">
-				<thead>
-					<tr>
-						<th colspan="5">Change chart</th>
-					</tr>
-				</thead>
+			<table class="table table-striped">
 				<tbody>
 					<tr>
-						<td class="autoFit">Period:</td>
+						<td><label for="lastHours">Period:</label></td>
 						<td>
-							<select name="lastHours" id="lastHours">
+							<select name="lastHours" id="lastHours" class="form-control">
 								<option th:each="hourOption : ${hourOptions}" 
 								th:value="${hourOption.value}" th:text="${hourOption.text}"
 								th:selected="(${hourOption.value} == *{lastHours})">address (coinName)</option>
 							</select>
 						</td>
-						<td class="autoFit">Interval:</td>
+					</tr>
+					<tr>
+						<td><label for="intervalInMinutes">Interval:</label></td>
 						<td>
-							<select name="intervalInMinutes" id="intervalInMinutes">
+							<select name="intervalInMinutes" id="intervalInMinutes" class="form-control">
 								<option th:each="minuteOption : ${minuteOptions}" 
 								th:value="${minuteOption.value}" th:text="${minuteOption.text}"
 								th:selected="(${minuteOption.value} == *{intervalInMinutes})">address (coinName)</option>
 							</select>
 						</td>
-						<td class="autoFit"><button type="submit">Update</button></td>
 					</tr>
+					<tr>
+						<td colspan="2"><button type="submit" class="btn btn-primary">Generate chart</button></td>
+					</tr>
+					
 				</tbody>
 			</table>
 		</form>
+		
 		<div id="chart"></div>
-		<script src="/js/LoadMenu.js"></script>
-		<script src="/js/LoadHeader.js"></script>
-		<script src="/js/autoSelectInterval.js"></script>
-	</body>
+		
+		
+    </div>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/loadMenu.js"></script>
+    <script src="/js/autoSelectInterval.js"></script>
+
+</body>
 </html>

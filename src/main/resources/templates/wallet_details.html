@@ -1,19 +1,40 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title>Wallet details</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
-		<link href="/css/style.css" rel="stylesheet" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-		<script src="/js/jquery-3.2.1.min.js"></script>
-	</head>
-	<body>
-		<p>
-			<a href="/wallet/results" class="button">Back to wallets</a>
-			<a th:href="@{/wallet/chart/{id}(id=${walletId})}" class="button">Show chart</a>
-		</p>
-		<table class="results details">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>cryotoManager::Wallet::Details</title>
+	
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
+    
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	
+	<nav class="navbar navbar-inverse" id="menuHodler">
+		
+	</nav>
+
+	
+	<div class="container">
+		<div class="page-header">
+			<h1>Wallet details</h1>
+		</div>
+		<p class="lead">See the details for wallet '<span th:text="${wallet.address}">name</span>'. Return to the list by clicking <a href="/wallet/results">here</a>.</p>
+		
+		<table class="table table-striped">
 			<thead>
 				<tr>
 					<th colspan="2">Wallet details</th>
@@ -21,7 +42,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td>Address:</td>
+					<td width="20%">Address:</td>
 					<td th:text="${wallet.address}">walletAddress</td>
 				</tr>
 				<tr>
@@ -36,8 +57,17 @@
 					<td>Coin:</td>
 					<td th:text="${wallet.coin.coinMarketCapCoin.symbol}">coinName</td>
 				</tr>
+			</tbody>
+		</table>
+		<table class="table table-striped">
+			<thead>
 				<tr>
-					<td>Current balance:</td>
+					<th colspan="2">Values</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td width="20%">Current balance:</td>
 					<td th:text="${#numbers.formatDecimal(currentBalance, 1, 'POINT', 8, 'COMMA')}">currentBalance</td>
 				</tr>
 				<tr>
@@ -65,19 +95,28 @@
 					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(profitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
 				</tr>
 			</tbody>
-		
 		</table>
-		<br />
-		<h2>Deposits</h2>
-		<table class="results">
+		
+		<p>
+			<a th:href="@{/wallet/chart/{id}(id=${wallet.id})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-stats"></span> Show chart</a>
+			<a href="#" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+			<a href="#" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+		</p>
+		
+		<div class="page-header">
+			<h2>Deposits</h2>
+		</div>
+		<p class="lead">Deposits for this wallet.</p>
+		
+		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th>Date</th>
-					<th>Amount</th>
-					<th>Purchase value</th>
-					<th>Current value</th>
-					<th>Difference</th>
-					<th>Remarks</th>
+					<th>Wallet</th>
+					<th>Description</th>
+					<th>Coin</th>
+					<th>Balance</th>
+					<th>Value</th>
+					<th>Open wallet</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -90,11 +129,14 @@
 					<td th:text="${deposit.remarks}">remarks</td>
 				</tr>
 			</tbody>
-		
 		</table>
 		
-		<h2>Withdrawals</h2>
-		<table class="results">
+		<div class="page-header">
+			<h2>Withdrawal</h2>
+		</div>
+		<p class="lead">Withdrawals for this wallet.</p>
+		
+		<table class="table table-striped">
 			<thead>
 				<tr>
 					<th>Date</th>
@@ -114,17 +156,20 @@
 					<td th:text="${'€ ' + #numbers.formatDecimal(withdrawal.currentWithdrawalValue, 1, 'POINT', 2, 'COMMA')}">currentWithdrawalValue</td>
 					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(withdrawal.currentWithdrawalDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
 					<td>
-						<span><i th:if="${withdrawal.toCash}" class="fa fa-check" style="font-size:24px;"></i></span>
-						<span><i th:unless="${withdrawal.toCash}" class="fa fa-remove" style="font-size:24px;"></i></span>
+						<span th:if="${withdrawal.toCash}" class="glyphicon glyphicon-ok-circle"></span>
+						<span th:unless="${withdrawal.toCash}" class="glyphicon glyphicon-remove-circle"></span>
 					</td>
 					<td th:text="${withdrawal.remarks}">remarks</td>
 				</tr>
 			</tbody>
-		
 		</table>
 		
-		<script src="/js/LoadMenu.js"></script>
-		<script src="/js/LoadHeader.js"></script>
-		<script src="/js/profitLossFix.js"></script>
-	</body>
+		
+    </div>
+    
+    <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/loadMenu.js"></script>
+
+</body>
 </html>

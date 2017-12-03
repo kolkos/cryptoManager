@@ -1,58 +1,90 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title>Add Wallet</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
-		<link href="/css/style.css" rel="stylesheet" />
-		<script src="/js/jquery-3.2.1.min.js"></script>
-	</head>
-	<body>
-		<form action="#" th:action="@{/wallet/add}" th:object="${wallet}"
-			method="post">
-			<table class="form">
-				<thead>
-					<tr>
-						<th colspan="2">Add wallet</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Coin:</td>
-						<td>
-							<select th:field="*{coin}" required="required">
-								<option value="">-Select coin-</option>
-								<option th:each="coin : ${coinList}" th:value="${coin.id}" th:text="${coin.coinMarketCapCoin.symbol + ' (' + coin.coinMarketCapCoin.name + ')'}">symbol (name)</option>
-							</select>
-						</td>
-					</tr>
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>cryotoManager::Wallet::Add</title>
+	
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
+	
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	
+	<nav class="navbar navbar-inverse" id="menuHodler">
+		
+	</nav>
+
+	
+	<div class="container">
+		<div class="page-header">
+			<h1>Add a wallet</h1>
+		</div>
+		<p class="lead">With this page you can add a wallet to a portfolio. You can see the wallets you are authorized to <a href="/wallet/results">here</a>.</p>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+	    			<h3 class="panel-title">Add wallet</h3>
+	  		</div>
+	  		<div class="panel-body">
+		  		<form action="#" th:action="@{/wallet/add}" th:object="${wallet}" method="post">
 					
-					<tr>
-						<td>Portfolio:</td>
-						<td>
-							<select th:field="*{portfolio}" required="required">
-								<option value="">-Select portfolio-</option>
-								<option th:each="portfolio : ${portfolioList}" th:value="${portfolio.id}" th:text="${portfolio.name}">name</option>
-							</select>
-						</td>
-					</tr>
+					<label for="coin">Coin</label>
+					<div class="form-group">
+			    			<select th:field="*{coin}" required="required" class="form-control">
+							<option value="">-Select coin-</option>
+							<option th:each="coin : ${coinList}" th:value="${coin.id}" th:text="${coin.coinMarketCapCoin.symbol + ' (' + coin.coinMarketCapCoin.name + ')'}">symbol (name)</option>
+						</select>
+			    		</div>
+					<br/>
+					
+					<label for="portfolio">Portfolio</label>
+					<div class="form-group">
+			    			<select th:field="*{portfolio}" required="required" class="form-control">
+							<option value="">-Select portfolio-</option>
+							<option th:each="portfolio : ${portfolioList}" th:value="${portfolio.id}" th:text="${portfolio.name}">name</option>
+						</select>
+			    		</div>
+					<br/>
+					
+					<label for="name">Wallet address</label>
+					<div class="input-group">
+						<span class="input-group-addon" id="namePrefix"><span class="glyphicon glyphicon-tag"></span></span>
+					  	<input type="text" class="form-control" th:field="*{address}"  aria-describedby="namePrefix"/>
+					</div>
+					<br/>
+					
+					<label for="description">Description</label>
+					<div class="input-group">
+						<span class="input-group-addon" id="remarksPrefix"><span class="glyphicon glyphicon-pushpin"></span></span>
+					  	<input type="text" class="form-control" th:field="*{description}" aria-describedby="remarksPrefix"/>
+					</div>
+					<br />
+					
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form>
+			</div>
+	  	</div>
+		
+		
+      
+    </div>
+    
+    <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/loadMenu.js"></script>
 
-					<tr>
-						<td>Wallet address:</td>
-						<td><input type="text" th:field="*{address}" /></td>
-					</tr>
-					<tr>
-						<td>Description:</td>
-						<td><input type="text" th:field="*{description}" /></td>
-					</tr>
-					<tr>
-						<td colspan="2"><button type="submit">Submit</button></td>
-					</tr>
-
-				</tbody>
-			</table>
-		</form>
-		<script src="/js/LoadMenu.js"></script>
-		<script src="/js/LoadHeader.js"></script>
-	</body>
+</body>
 </html>

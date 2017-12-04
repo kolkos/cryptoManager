@@ -4,15 +4,17 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.Withdrawal;
 
 //This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 //CRUD refers Create, Read, Update, Delete
 
-public interface WithdrawalRepository extends CrudRepository<Withdrawal, Long> {
+public interface WithdrawalRepository extends PagingAndSortingRepository<Withdrawal, Long> {
 	List<Withdrawal> findByWallet(Wallet wallet);
+	
+	Withdrawal findById(Long id);
 	
 	@Query(value="SELECT * FROM withdrawal WHERE id IN( " + 
 			"	SELECT withdrawal.id FROM withdrawal, wallet, portfolio, coin " + 
@@ -45,5 +47,7 @@ public interface WithdrawalRepository extends CrudRepository<Withdrawal, Long> {
 	@Query(value="SELECT COALESCE((SELECT SUM(withdrawal_value) as totalPurchaseValue FROM withdrawal WHERE wallet_id = ?1 AND withdrawal_date <= ?2 AND to_cash = 1),0) as totalWithdrawanValue", nativeQuery = true)
 	double getSumOfWithdrawalToCashValueForWalletIdAndBeforeWithdrawalDate(long walletId, Date depositDate);
 	
+	@Query(value="SELECT COUNT(id) FROM withdrawal;", nativeQuery = true)
+	int getNumberOfDeposits();
 	
 }

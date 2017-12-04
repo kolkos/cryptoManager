@@ -8,14 +8,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinMarketCapCoin;
+import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.Withdrawal;
@@ -23,6 +26,7 @@ import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
+import nl.kolkos.cryptoManager.services.WithdrawalService;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/withdrawal") // This means URL's start with /demo (after Application path)
@@ -42,6 +46,9 @@ public class WithdrawalController {
 	@Autowired
 	@Qualifier(value = "portfolioRepository")
 	private PortfolioRepository portfolioRepository;
+	
+	@Autowired
+	private WithdrawalService withdrawalService;
 	
 	@GetMapping("/")
     public String forwardWithdrawalForm(Model model) {
@@ -109,6 +116,9 @@ public class WithdrawalController {
     		@RequestParam(value="filterByCoin", required=false) Coin coinFilter,
     		@RequestParam(value="filterByWallet", required=false) Wallet walletFilter,
     		@RequestParam(value="filterByPortfolio", required=false) Portfolio portfolioFilter,
+    		@RequestParam(name = "page", defaultValue = "1") int pageNumber,
+    		@RequestParam(name = "sortBy", defaultValue = "withdrawalDate") String sortBy,
+    		@RequestParam(name = "direction", defaultValue = "DESC") String direction,
     		Model model) {
 		//model.addAttribute("portfolio", new Portfolio());
         //model.addAttribute("wallet", new Wallet());
@@ -119,26 +129,31 @@ public class WithdrawalController {
 		model.addAttribute("coinList", coinRepository.findAllByOrderByCoinMarketCapCoinSymbol());
         model.addAttribute("walletList", walletRepository.findAll());
         model.addAttribute("portfolioList", portfolioRepository.findAll());
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("direction", direction);
         
-        String filterCoinId = "%";
-        String filterWalletId = "%";
-        String filterPortfolioId = "%";
+        model.addAttribute("numberOfResults", withdrawalService.getNumberOfDeposits());
+        model.addAttribute("page", pageNumber);
         
-        if(coinFilter != null) {
-        		model.addAttribute("selectedCoin", coinFilter.getId());
-        		filterCoinId = coinFilter.getId().toString();
-        }
-        if(walletFilter != null) {
-	    		model.addAttribute("selectedWallet", walletFilter.getId());
-	    		filterWalletId = walletFilter.getId().toString();
-	    }
-        if(portfolioFilter != null) {
-	    		model.addAttribute("selectedPortfolio", portfolioFilter.getId());
-	    		filterPortfolioId = portfolioFilter.getId().toString();
-	    }
+//        String filterCoinId = "%";
+//        String filterWalletId = "%";
+//        String filterPortfolioId = "%";
+//        
+//        if(coinFilter != null) {
+//        		model.addAttribute("selectedCoin", coinFilter.getId());
+//        		filterCoinId = coinFilter.getId().toString();
+//        }
+//        if(walletFilter != null) {
+//	    		model.addAttribute("selectedWallet", walletFilter.getId());
+//	    		filterWalletId = walletFilter.getId().toString();
+//	    }
+//        if(portfolioFilter != null) {
+//	    		model.addAttribute("selectedPortfolio", portfolioFilter.getId());
+//	    		filterPortfolioId = portfolioFilter.getId().toString();
+//	    }5
         
         // get all the deposits
- 		List<Withdrawal> withdrawals = withdrawalRepository.filterResults(filterCoinId, filterWalletId, filterPortfolioId);
+ 		List<Withdrawal> withdrawals = withdrawalService.getPage(pageNumber, sortBy, direction);
  		
  		// create the Api Handler object
  		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
@@ -182,4 +197,35 @@ public class WithdrawalController {
         
  		return "withdrawal_results";
     }
+	
+	// delete a deposit - the confirmation form
+	@RequestMapping(value = "/details/{withdrawalId}", method = RequestMethod.GET)
+	public String showWithdrawalDetails(@PathVariable("withdrawalId") long withdrawalId, Model model) {
+		
+		// get the entity
+		Withdrawal withdrawal = withdrawalService.findById(withdrawalId);
+		
+		model.addAttribute("withdrawal", withdrawal);
+		
+		return "withdrawal_details";
+	}
+	
+	@PostMapping(path="/delete") // Map ONLY POST Requests
+	public String deleteWithdrawal (
+			@RequestParam(value="withdrawalId", required=true) long withdrawalId,
+			@RequestParam(value="confirmDelete", required=true) boolean confirmDelete,
+			Model model) {
+
+		
+		Withdrawal withdrawal = withdrawalService.findById(withdrawalId);
+		
+		if(confirmDelete) {
+			withdrawalRepository.delete(withdrawal);
+		}
+		
+		
+		return "redirect:/withdrawal/results";
+	}
+	
+	
 }

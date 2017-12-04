@@ -39,21 +39,23 @@
 		</div>
 		<p class="lead">This page shows the registered withdrawals. You can register a new withdrawal <a href="/withdrawal/add">here</a>.</p>
 		
-
+		<nav aria-label="Page navigation">
+			<ul class="pagination" id="paginationTop"></ul>
+		</nav>
 		
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th>Date</th>
-					<th>Wallet</th>
-					<th>Coin</th>
-					<th>Portfolio</th>
-					<th>Amount</th>
-					<th>Withdrawal value</th>
+					<th><span>Date</span> <span class="buttonHolder withdrawalDate numeric"></span></th>
+					<th><span>Wallet</span> <span class="buttonHolder wallet.address alphabet"></span></th>
+					<th><span>Coin</span> <span class="buttonHolder wallet.coin.coinMarketCapCoin.symbol alphabet"></span></th>
+					<th><span>Portfolio</span> <span class="buttonHolder wallet.portfolio.name alphabet"></span></th>
+					<th><span>Amount</span> <span class="buttonHolder amount numeric"></span></th>
+					<th><span>Withdrawal value</span> <span class="buttonHolder withdrawalValue numeric"></span></th>
 					<th>Current value</th>
 					<th>Difference</th>
-					<th>To Cash</th>
-					<th>Remarks</th>
+					<th><span>To cash</span> <span class="buttonHolder toCash other"></span></th>
+					<th><span>Remarks</span> <span class="buttonHolder remarks alphabet"></span></th>
 					<th>Open withdrawal</th>
 				</tr>
 			</thead>
@@ -83,7 +85,12 @@
 				
 				
 			</tbody>
-		</table>      
+		</table>
+		
+		<nav aria-label="Page navigation">
+			<ul class="pagination" id="paginationBottom"></ul>
+		</nav>
+		      
     </div>
     
     <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
@@ -92,10 +99,10 @@
     <script src="/js/profitLossFix.js"></script>
     
     <script src="/js/cutOffText.js"></script>
-    <!-- 
+    
     <script src="/js/pagination.js"></script>
     <script src="/js/sortingButtons.js"></script>
-	 -->
+	
 
 </body>
 </html>

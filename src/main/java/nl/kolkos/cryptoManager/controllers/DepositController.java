@@ -130,22 +130,22 @@ public class DepositController {
         model.addAttribute("numberOfResults", depositService.getNumberOfDeposits());
         model.addAttribute("page", pageNumber);
         
-        long filterCoinId = 0;
-        long filterWalletId = 0;
-        long filterPortfolioId = 0;
-        
-        if(coinFilter != null) {
-        		model.addAttribute("selectedCoin", coinFilter.getId());
-        		filterCoinId = coinFilter.getId();
-        }
-        if(walletFilter != null) {
-	    		model.addAttribute("selectedWallet", walletFilter.getId());
-	    		filterWalletId = walletFilter.getId();
-	    }
-        if(portfolioFilter != null) {
-	    		model.addAttribute("selectedPortfolio", portfolioFilter.getId());
-	    		filterPortfolioId = portfolioFilter.getId();
-	    }
+//        long filterCoinId = 0;
+//        long filterWalletId = 0;
+//        long filterPortfolioId = 0;
+//        
+//        if(coinFilter != null) {
+//        		model.addAttribute("selectedCoin", coinFilter.getId());
+//        		filterCoinId = coinFilter.getId();
+//        }
+//        if(walletFilter != null) {
+//	    		model.addAttribute("selectedWallet", walletFilter.getId());
+//	    		filterWalletId = walletFilter.getId();
+//	    }
+//        if(portfolioFilter != null) {
+//	    		model.addAttribute("selectedPortfolio", portfolioFilter.getId());
+//	    		filterPortfolioId = portfolioFilter.getId();
+//	    }
         
         // get all the deposits
  		List<Deposit> deposits = depositService.getPage(pageNumber, sortBy, direction);
@@ -193,7 +193,6 @@ public class DepositController {
  		return "deposit_results";
     }
 	
-	// delete a deposit - the confirmation form
 	@RequestMapping(value = "/details/{depositId}", method = RequestMethod.GET)
 	public String showDepositDetails(@PathVariable("depositId") long depositId, Model model) {
 		

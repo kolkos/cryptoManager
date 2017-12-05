@@ -19,6 +19,19 @@ public class Coin {
 	@JoinColumn(name = "coin_market_cap_coin_id")
 	private CoinMarketCapCoin coinMarketCapCoin;
 	
+	
+	@Transient
+	private double currentCoinValue;
+	
+	@Transient
+	private double winLoss1h;
+	
+	@Transient
+	private double winLoss1d;
+	
+	@Transient
+	private double winLoss1w;
+	
 			
 	public Long getId() {
 		return id;
@@ -27,12 +40,36 @@ public class Coin {
 		this.id = id;
 	}
 	
-	
 	public CoinMarketCapCoin getCoinMarketCapCoin() {
 		return coinMarketCapCoin;
 	}
+	
 	public void setCoinMarketCapCoin(CoinMarketCapCoin coinMarketCapCoin) {
 		this.coinMarketCapCoin = coinMarketCapCoin;
+	}
+	public double getCurrentCoinValue() {
+		return currentCoinValue;
+	}
+	public void setCurrentCoinValue(double currentCoinValue) {
+		this.currentCoinValue = currentCoinValue;
+	}
+	public double getWinLoss1h() {
+		return winLoss1h;
+	}
+	public void setWinLoss1h(double winLoss1h) {
+		this.winLoss1h = winLoss1h;
+	}
+	public double getWinLoss1d() {
+		return winLoss1d;
+	}
+	public void setWinLoss1d(double winLoss1d) {
+		this.winLoss1d = winLoss1d;
+	}
+	public double getWinLoss1w() {
+		return winLoss1w;
+	}
+	public void setWinLoss1w(double winLoss1w) {
+		this.winLoss1w = winLoss1w;
 	}
 
 	

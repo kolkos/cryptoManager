@@ -85,8 +85,68 @@ public class CoinController {
 	
 	@GetMapping("/results")
     public String coinResults(Model model) {
+		List<Coin> coinList = coinRepository.findAllByOrderByCoinMarketCapCoinSymbol();
+		
+		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
+		
+		// loop through list
+		for(Coin coin : coinList) {
+			double currentCoinValue;
+			try {
+				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(coin.getCoinMarketCapCoin().getId(), "EUR");
+				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				currentCoinValue = 0;
+			}
+			
+			// register this value
+			CoinValue coinValue = new CoinValue();
+			coinValue.setCoin(coin);
+			coinValue.setValue(currentCoinValue);
+			coinValueRepository.save(coinValue);
+			
+			// set the value into the coin object
+			coin.setCurrentCoinValue(currentCoinValue);
+			
+			// now get the following values from the database
+			// - average last hour
+			// - average last 24 hours
+			// - average last 7 days
+			
+			// now determine the begin and end time
+			Calendar now = Calendar.getInstance();
+			
+			Calendar nowMinus1hour = Calendar.getInstance();
+			nowMinus1hour.add(Calendar.HOUR_OF_DAY, -1);
+			
+			Calendar nowMinus24hours = Calendar.getInstance();
+			nowMinus24hours.add(Calendar.HOUR_OF_DAY, -24);
+			
+			Calendar nowMinus1week = Calendar.getInstance();
+			nowMinus1week.add(Calendar.DAY_OF_WEEK, -7);
+			
+			// get the average values for the periods
+			double avgValueLast1Hour = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coin.getId(), nowMinus1hour.getTime(), now.getTime());
+			double avgValueLast24Hours = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coin.getId(), nowMinus24hours.getTime(), now.getTime());
+			double avgValueLast1Week = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coin.getId(), nowMinus1week.getTime(), now.getTime());
+			
+			// now calculate the percentages
+			
+			double winLoss1h = ((currentCoinValue - avgValueLast1Hour)*100)/currentCoinValue;
+			double winLoss1d = ((currentCoinValue - avgValueLast24Hours)*100)/currentCoinValue;
+			double winLoss1w = ((currentCoinValue - avgValueLast1Week)*100)/currentCoinValue;
+			
+			// finally set these values in the object
+			coin.setWinLoss1h(winLoss1h);
+			coin.setWinLoss1d(winLoss1d);
+			coin.setWinLoss1w(winLoss1w);
+			
+		}
+		
 		//model.addAttribute("coin", new Coin());
-		model.addAttribute("coinList", coinRepository.findAllByOrderByCoinMarketCapCoinSymbol());
+		model.addAttribute("coinList", coinList);
 		
         return "coin_results";
     }

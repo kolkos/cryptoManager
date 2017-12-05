@@ -39,6 +39,10 @@
 				<tr>
 					<th>Coin name</th>
 					<th>Symbol</th>
+					<th>Current value</th>
+					<th>Price last 1h</th>
+					<th>Price last 1d</th>
+					<th>Price last 1w</th>
 					<th>Open coin</th>
 					<th>Show chart</th>
 				</tr>
@@ -47,6 +51,10 @@
 				<tr th:each="coin : ${coinList}">
 					<td th:text="${coin.coinMarketCapCoin.name}">name</td>
 					<td th:text="${coin.coinMarketCapCoin.symbol}">symbol</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(coin.currentCoinValue, 1, 'POINT', 1, 'COMMA')}">currentValue</td>
+					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1h, 1, 'POINT', 2, 'COMMA')}">1h</td>
+					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1d, 1, 'POINT', 2, 'COMMA')}">1d</td>
+					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1w, 1, 'POINT', 2, 'COMMA')}">1w</td>
 					<td>
 						<a th:href="@{/coin/showCoin/{id}(id=${coin.id})}">
 							<span class="glyphicon glyphicon-zoom-in"></span>
@@ -69,6 +77,7 @@
     <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/loadMenu.js"></script>
+    <script src="/js/profitLossFix.js"></script>
 
 </body>
 </html>

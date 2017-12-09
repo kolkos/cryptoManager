@@ -2,8 +2,10 @@ package nl.kolkos.cryptoManager.controllers;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -84,8 +86,15 @@ public class CoinController {
 	}
 	
 	@GetMapping("/results")
-    public String coinResults(Model model) {
+    public String coinResults(
+    		@RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
+    		@RequestParam(name = "direction", defaultValue = "ASC") String direction,
+    		Model model) {
+		
 		List<Coin> coinList = coinRepository.findAllByOrderByCoinMarketCapCoinSymbol();
+		
+		model.addAttribute("sortBy", sortBy);
+        model.addAttribute("direction", direction);
 		
 		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
 		
@@ -145,11 +154,98 @@ public class CoinController {
 			
 		}
 		
+		// now sort the coins
+		switch (sortBy) {
+			case "name":
+				coinList = this.sortByCoinName(coinList, direction);
+				break;
+			case "symbol":
+				coinList = this.sortByCoinSymbol(coinList, direction);
+				break;
+			case "currentValue":
+				coinList = this.sortByCurrentCoinValue(coinList, direction);
+				break;
+			case "winLoss1h":
+				coinList = this.sortByWinLoss1h(coinList, direction);
+				break;
+			case "winLoss1d":
+				coinList = this.sortByWinLoss1d(coinList, direction);
+				break;
+			case "winLoss1w":
+				coinList = this.sortByWinLoss1w(coinList, direction);
+				break;
+			default:
+				coinList = this.sortByCoinName(coinList, "ASC");
+				break;
+		}
+		
+		
 		//model.addAttribute("coin", new Coin());
 		model.addAttribute("coinList", coinList);
 		
         return "coin_results";
     }
+	
+	public List<Coin> sortByCoinName(List<Coin> coinList, String direction){
+		if(direction.equals("ASC")) {
+			return coinList.stream()
+					.sorted((coin1, coin2) -> coin1.getCoinMarketCapCoin().getName().compareTo(coin2.getCoinMarketCapCoin().getName()))
+					.collect(Collectors.toCollection(ArrayList::new));
+		}else {
+			return coinList.stream()
+					.sorted((coin1, coin2) -> coin2.getCoinMarketCapCoin().getName().compareTo(coin1.getCoinMarketCapCoin().getName()))
+					.collect(Collectors.toCollection(ArrayList::new));
+		}
+	}
+	
+	public List<Coin> sortByCoinSymbol(List<Coin> coinList, String direction){
+		if(direction.equals("ASC")) {
+			return coinList.stream()
+					.sorted((coin1, coin2) -> coin1.getCoinMarketCapCoin().getSymbol().compareTo(coin2.getCoinMarketCapCoin().getSymbol()))
+					.collect(Collectors.toCollection(ArrayList::new));
+		}else {
+			return coinList.stream()
+					.sorted((coin1, coin2) -> coin2.getCoinMarketCapCoin().getSymbol().compareTo(coin1.getCoinMarketCapCoin().getSymbol()))
+					.collect(Collectors.toCollection(ArrayList::new));
+		}
+	}
+	
+	public List<Coin> sortByCurrentCoinValue(List<Coin> coinList, String direction){
+		if(direction.equals("ASC")) {
+			coinList.sort(Comparator.comparingDouble(Coin::getCurrentCoinValue));
+		}else {
+			coinList.sort(Comparator.comparingDouble(Coin::getCurrentCoinValue).reversed());
+		}
+		return coinList;
+	}
+	
+	public List<Coin> sortByWinLoss1h(List<Coin> coinList, String direction){
+		if(direction.equals("ASC")) {
+			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1h));
+		}else {
+			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1h).reversed());
+		}
+		return coinList;
+	}
+	
+	public List<Coin> sortByWinLoss1d(List<Coin> coinList, String direction){
+		if(direction.equals("ASC")) {
+			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1d));
+		}else {
+			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1d).reversed());
+		}
+		return coinList;
+	}
+	
+	public List<Coin> sortByWinLoss1w(List<Coin> coinList, String direction){
+		if(direction.equals("ASC")) {
+			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1w));
+		}else {
+			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1w).reversed());
+		}
+		return coinList;
+	}
+	
 	
 	// get coin details
 	@RequestMapping(value = "/showCoin/{coinId}", method = RequestMethod.GET)

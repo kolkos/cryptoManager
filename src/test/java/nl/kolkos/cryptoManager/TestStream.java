@@ -1,9 +1,11 @@
 package nl.kolkos.cryptoManager;
 
+import static org.assertj.core.api.Assertions.setAllowComparingPrivateFields;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,9 +26,16 @@ public class TestStream {
 		coinMarketCapCoin.setSymbol("TST");
 		
 		// create a coin
-		Coin coin = new Coin();
-		coin.setId(1L);
-		coin.setCoinMarketCapCoin(coinMarketCapCoin);
+		Coin coin1 = new Coin();
+		coin1.setId(1L);
+		coin1.setCoinMarketCapCoin(coinMarketCapCoin);
+		coin1.setCurrentCoinValue(1300);
+		
+		// create a coin
+		Coin coin2 = new Coin();
+		coin2.setId(1L);
+		coin2.setCoinMarketCapCoin(coinMarketCapCoin);
+		coin2.setCurrentCoinValue(9);
 		
 		
 		// create a portfolio
@@ -41,7 +50,7 @@ public class TestStream {
 		wallet1.setAddress("TST1-ADDRESS");
 		wallet1.setDescription("TEST Wallet 1");
 		wallet1.setPortfolio(portfolio);
-		wallet1.setCoin(coin);
+		wallet1.setCoin(coin1);
 		
 		// create another wallet
 		Wallet wallet2 = new Wallet();
@@ -49,7 +58,7 @@ public class TestStream {
 		wallet2.setAddress("TST2-ADDRESS");
 		wallet2.setDescription("TEST Wallet 2");
 		wallet2.setPortfolio(portfolio);
-		wallet2.setCoin(coin);
+		wallet2.setCoin(coin2);
 		
 		// create a test deposit
 		Deposit deposit1 = new Deposit();
@@ -90,7 +99,7 @@ public class TestStream {
 		return deposits;
 	}
 	
-	
+		
 	@Test
 	public void test() {
 		
@@ -176,8 +185,6 @@ public class TestStream {
 		}
 
 		
-		
-		
 		if(portfolioId > 0L) {
 			results = this.filterByPortfolioId(results, portfolioId);
 		}
@@ -210,6 +217,177 @@ public class TestStream {
 				.collect(Collectors.toCollection(ArrayList::new));
 		
 		return results;
+	}
+	
+	@Test
+	public void testSortingCoin() throws Exception {
+		// create some cmc coins
+		CoinMarketCapCoin cmc1 = new CoinMarketCapCoin();
+		cmc1.setId("CMC1");
+		cmc1.setName("A CoinMarketCap Coin nr 1");
+		cmc1.setSymbol("CMC1");
+		
+		CoinMarketCapCoin cmc2 = new CoinMarketCapCoin();
+		cmc2.setId("CMC2");
+		cmc2.setName("Z CoinMarketCap Coin nr 2");
+		cmc2.setSymbol("CMC2");
+		
+		CoinMarketCapCoin cmc3 = new CoinMarketCapCoin();
+		cmc3.setId("CMC3");
+		cmc3.setName("M CoinMarketCap Coin nr 3");
+		cmc3.setSymbol("CMC3");
+		
+		
+		// create some coins
+		Coin coin1 = new Coin();
+		coin1.setCoinMarketCapCoin(cmc1);
+		
+		// average values 
+		double curVal = 1234;
+		double avg1h = 1200;
+		double avg1d = 1000;
+		double avg1w = 1500;
+		
+		double winLoss1h = ((curVal - avg1h)*100)/curVal;
+		double winLoss1d = ((curVal - avg1d)*100)/curVal;
+		double winLoss1w = ((curVal - avg1w)*100)/curVal;
+		
+		coin1.setCurrentCoinValue(curVal);
+		coin1.setWinLoss1h(winLoss1h);
+		coin1.setWinLoss1d(winLoss1d);
+		coin1.setWinLoss1w(winLoss1w);
+		
+		
+		// create some coins
+		Coin coin2 = new Coin();
+		coin2.setCoinMarketCapCoin(cmc2);
+		
+		// average values 
+		curVal = 6;
+		avg1h = 9;
+		avg1d = 12;
+		avg1w = 15;
+		
+		winLoss1h = ((curVal - avg1h)*100)/curVal;
+		winLoss1d = ((curVal - avg1d)*100)/curVal;
+		winLoss1w = ((curVal - avg1w)*100)/curVal;
+		
+		coin2.setCurrentCoinValue(curVal);
+		coin2.setWinLoss1h(winLoss1h);
+		coin2.setWinLoss1d(winLoss1d);
+		coin2.setWinLoss1w(winLoss1w);
+		
+		// create some coins
+		Coin coin3 = new Coin();
+		coin3.setCoinMarketCapCoin(cmc3);
+		
+		// average values 
+		curVal = 15_000;
+		avg1h = 12_000;
+		avg1d = 11_000;
+		avg1w = 10_000;
+		
+		winLoss1h = ((curVal - avg1h)*100)/curVal;
+		winLoss1d = ((curVal - avg1d)*100)/curVal;
+		winLoss1w = ((curVal - avg1w)*100)/curVal;
+		
+		coin3.setCurrentCoinValue(curVal);
+		coin3.setWinLoss1h(winLoss1h);
+		coin3.setWinLoss1d(winLoss1d);
+		coin3.setWinLoss1w(winLoss1w);
+		
+		// now add these coins to the list
+		List<Coin> coins = new ArrayList<>();
+		coins.add(coin1);
+		coins.add(coin2);
+		coins.add(coin3);
+		
+		System.out.println("-- UNSORTED --");
+		this.printCoinObjects(coins);
+		
+		
+		
+		System.out.println("-- SORTED BY current coin value ASC --");
+		coins = this.sortByCurrentCoinValue(coins, "ASC");
+		this.printCoinObjects(coins);
+		
+		System.out.println("-- SORTED BY current coin value DESC --");
+		coins = this.sortByCurrentCoinValue(coins, "DESC");
+		this.printCoinObjects(coins);
+	
+		System.out.println("-- SORTED BY 1w win/loss ASC --");
+		coins = this.sortByWinLoss1h(coins, "ASC");
+		this.printCoinObjects(coins);
+		
+		System.out.println("-- SORTED BY 1w win/loss DESC --");
+		coins = this.sortByWinLoss1h(coins, "DESC");
+		this.printCoinObjects(coins);
+		
+		System.out.println("-- SORTED Coin Name ASC --");
+		coins = this.sortByCoinName(coins, "ASC");
+		this.printCoinObjects(coins);
+		
+		System.out.println("-- SORTED Coin Name DESC --");
+		coins = this.sortByCoinName(coins, "DESC");
+		this.printCoinObjects(coins);
+		
+		
+	}
+	
+	public List<Coin> sortByCurrentCoinValue(List<Coin> coins, String order){
+		if(order.equals("ASC")) {
+			coins.sort(Comparator.comparingDouble(Coin::getCurrentCoinValue));
+		}else {
+			coins.sort(Comparator.comparingDouble(Coin::getCurrentCoinValue).reversed());
+		}
+		return coins;
+	}
+	
+	public List<Coin> sortByWinLoss1h(List<Coin> coins, String order){
+		if(order.equals("ASC")) {
+			coins.sort(Comparator.comparingDouble(Coin::getWinLoss1h));
+		}else {
+			coins.sort(Comparator.comparingDouble(Coin::getWinLoss1h).reversed());
+		}
+		return coins;
+	}
+	
+	public List<Coin> sortByCoinName(List<Coin> coins, String order){
+		if(order.equals("ASC")) {
+			return coins.stream()
+					.sorted((coin1, coin2) -> coin1.getCoinMarketCapCoin().getName().compareTo(coin2.getCoinMarketCapCoin().getName()))
+					.collect(Collectors.toCollection(ArrayList::new));
+		}else {
+			return coins.stream()
+					.sorted((coin1, coin2) -> coin2.getCoinMarketCapCoin().getName().compareTo(coin1.getCoinMarketCapCoin().getName()))
+					.collect(Collectors.toCollection(ArrayList::new));
+		}
+		
+	}
+	
+	public void printCoinObjects(List<Coin> coins) {
+		// loop throug coins
+		int coinNr = 1;
+		for(Coin coin : coins) {
+			System.out.println(String.format("Coin #%d {", coinNr));
+			
+			// get the coin market cap values
+			System.out.println("  CMC Values:");
+			System.out.println(String.format("    CMC ID: %s", coin.getCoinMarketCapCoin().getId()));
+			System.out.println(String.format("    CMC Symbol: %s", coin.getCoinMarketCapCoin().getSymbol()));
+			System.out.println(String.format("    CMC Name: %s", coin.getCoinMarketCapCoin().getName()));
+			
+			// get the coin values
+			System.out.println("  Coin Values:");
+			System.out.println(String.format("    Current value %f", coin.getCurrentCoinValue()));
+			System.out.println(String.format("    Win/Loss 1h %f", coin.getWinLoss1h()));
+			System.out.println(String.format("    Win/Loss 1d %f", coin.getWinLoss1d()));
+			System.out.println(String.format("    Win/Loss 1w %f", coin.getWinLoss1w()));
+			
+			System.out.println("}");
+			coinNr++;
+			
+		}
 	}
 
 }

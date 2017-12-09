@@ -22,6 +22,8 @@
     <![endif]-->
 </head>
 <body>
+	<input type="hidden" id="sortBy" th:value="${sortBy}" />
+	<input type="hidden" id="direction" th:value="${direction}" />
 	
 	<nav class="navbar navbar-inverse" id="menuHodler">
 		
@@ -37,12 +39,12 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th>Coin name</th>
-					<th>Symbol</th>
-					<th>Current value</th>
-					<th>Price last 1h</th>
-					<th>Price last 1d</th>
-					<th>Price last 1w</th>
+					<th><span>Coin name</span> <span class="buttonHolder name alphabet"></span></th>
+					<th><span>Symbol</span> <span class="buttonHolder symbol alphabet"></span></th>
+					<th><span>Current value</span> <span class="buttonHolder currentValue numeric"></span></th>
+					<th><span>Price last hour</span> <span class="buttonHolder winLoss1h numeric"></span></th>
+					<th><span>Price last day</span> <span class="buttonHolder winLoss1d numeric"></span></th>
+					<th><span>Price last week</span> <span class="buttonHolder winLoss1w numeric"></span></th>
 					<th>Open coin</th>
 					<th>Show chart</th>
 				</tr>
@@ -51,10 +53,10 @@
 				<tr th:each="coin : ${coinList}">
 					<td th:text="${coin.coinMarketCapCoin.name}">name</td>
 					<td th:text="${coin.coinMarketCapCoin.symbol}">symbol</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(coin.currentCoinValue, 1, 'POINT', 1, 'COMMA')}">currentValue</td>
-					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1h, 1, 'POINT', 2, 'COMMA')}">1h</td>
-					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1d, 1, 'POINT', 2, 'COMMA')}">1d</td>
-					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1w, 1, 'POINT', 2, 'COMMA')}">1w</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(coin.currentCoinValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
+					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1h, 1, 'POINT', 2, 'COMMA') + '%'}">1h</td>
+					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1d, 1, 'POINT', 2, 'COMMA') + '%'}">1d</td>
+					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1w, 1, 'POINT', 2, 'COMMA') + '%'}">1w</td>
 					<td>
 						<a th:href="@{/coin/showCoin/{id}(id=${coin.id})}">
 							<span class="glyphicon glyphicon-zoom-in"></span>
@@ -78,6 +80,7 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/loadMenu.js"></script>
     <script src="/js/profitLossFix.js"></script>
+    <script src="/js/sortingButtons.js"></script>
 
 </body>
 </html>

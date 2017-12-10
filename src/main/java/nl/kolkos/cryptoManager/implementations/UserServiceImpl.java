@@ -16,9 +16,11 @@ import org.springframework.stereotype.Service;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Role;
 import nl.kolkos.cryptoManager.User;
+import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.RoleRepository;
 import nl.kolkos.cryptoManager.repositories.UserRepository;
+import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.services.UserService;
 
 @Service("userService")
@@ -31,6 +33,9 @@ public class UserServiceImpl implements UserService{
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
 	private PortfolioRepository portfolioRepository;
+    
+    @Autowired
+	private WalletRepository walletRepository;
     
     
     public String findLoggedInUsername() {
@@ -57,7 +62,7 @@ public class UserServiceImpl implements UserService{
 		userRepository.save(user);
 	}
 	
-	public boolean checkPortfolioRightsForCurrentUser(long portfolioId) {
+	public boolean checkIfCurrentUserIsAuthorizedToPortfolio(long portfolioId) {
 		boolean userHasAccess = false;
 		
 		// first get the portfolio
@@ -80,6 +85,17 @@ public class UserServiceImpl implements UserService{
 		
 		
 		return userHasAccess;
+	}
+	
+	public boolean checkIfCurrentUserIsAuthorizedToWallet(long walletId) {
+		// first get the wallet object
+		Wallet wallet = walletRepository.findById(walletId);
+		
+		// get the portfolio id for this wallet
+		long portfolioId = wallet.getPortfolio().getId();
+		
+		// because I'm lazy, use the checkIfCurrentUserIsAuthorizedToPortfolio method
+		return this.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 	}
 	
 }

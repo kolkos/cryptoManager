@@ -6,5 +6,7 @@ public interface UserService {
 	public User findUserByEmail(String email);
 	public void saveUser(User user);
 	public String findLoggedInUsername();
-	public boolean checkPortfolioRightsForCurrentUser(long portfolioId);
+	public boolean checkIfCurrentUserIsAuthorizedToPortfolio(long portfolioId);
+	public boolean checkIfCurrentUserIsAuthorizedToWallet(long walletId);
+	
 }

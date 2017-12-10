@@ -24,6 +24,7 @@ import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.FormOption;
 import nl.kolkos.cryptoManager.FormOptions;
 import nl.kolkos.cryptoManager.Portfolio;
+import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.WalletChartLine;
 import nl.kolkos.cryptoManager.Withdrawal;
@@ -33,6 +34,7 @@ import nl.kolkos.cryptoManager.repositories.DepositRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
+import nl.kolkos.cryptoManager.services.UserService;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -67,6 +69,9 @@ public class WalletController {
 	@Qualifier(value = "withdrawalRepository")
 	private WithdrawalRepository withdrawalRepository;
 	
+	@Autowired
+	private UserService userService;
+	
 	@GetMapping("/")
     public String forwardWalletList(Model model) {
         model.addAttribute("wallet", new Wallet());
@@ -81,7 +86,7 @@ public class WalletController {
 		//model.addAttribute("portfolio", new Portfolio());
 		
 		model.addAttribute("coinList", coinRepository.findAllByOrderByCoinMarketCapCoinSymbol());
-		model.addAttribute("portfolioList", portfolioRepository.findAll());
+		model.addAttribute("portfolioList", portfolioRepository.findByUsers_email(userService.findLoggedInUsername()));
 		
         return "wallet_form";
     }
@@ -93,7 +98,7 @@ public class WalletController {
 		model.addAttribute("portfolio", new Portfolio());
 		
 
-		model.addAttribute("walletList", walletRepository.findAll());
+		model.addAttribute("walletList", walletRepository.findByPortfolioUsersEmail(userService.findLoggedInUsername()));
 		
         return "wallet_results";
     }
@@ -131,23 +136,34 @@ public class WalletController {
 		return walletRepository.findAll();
 	}
 	
-	@RequestMapping(value = "/byPortfolioId/{portfolioId}", method = RequestMethod.GET)
-	public ResponseEntity<List<Wallet>> getWalletsByPortfolioId(@PathVariable("portfolioId") long portfolioId) {
-		// This returns a JSON or XML with the users
-		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
-		if (wallets.isEmpty()) {
-            System.out.println("Nothing found");
-			return new ResponseEntity(HttpStatus.NO_CONTENT);
-            // You many decide to return HttpStatus.NOT_FOUND
-        }
-        return new ResponseEntity<List<Wallet>>(wallets, HttpStatus.OK);
-		
-
-	}
+//	@RequestMapping(value = "/byPortfolioId/{portfolioId}", method = RequestMethod.GET)
+//	public ResponseEntity<List<Wallet>> getWalletsByPortfolioId(@PathVariable("portfolioId") long portfolioId) {
+//		// This returns a JSON or XML with the users
+//		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
+//		if (wallets.isEmpty()) {
+//            System.out.println("Nothing found");
+//			return new ResponseEntity(HttpStatus.NO_CONTENT);
+//            // You many decide to return HttpStatus.NOT_FOUND
+//        }
+//        return new ResponseEntity<List<Wallet>>(wallets, HttpStatus.OK);
+//		
+//
+//	}
 	
 	// get wallet details
 	@RequestMapping(value = "/showWallet/{walletId}", method = RequestMethod.GET)
 	public String getWalletsByPortfolioId(@PathVariable("walletId") long walletId, Model model) {
+		
+		// check if the current user has access to this wallet
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToWallet(walletId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "wallet");
+			return "not_authorized";
+		}
+		
+		
 		Wallet wallet = walletRepository.findById(walletId);
 		
 		// add this wallet to the model
@@ -267,6 +283,16 @@ public class WalletController {
     		@RequestParam(value="intervalInMinutes", required=false) Integer intervalInMinutes,
     		Model model) {
         
+		// check if the current user has access to this wallet
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToWallet(walletId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "wallet");
+			return "not_authorized";
+		}
+		
+		
 		// check if the values are null
 		if(lastHours == null) {
 			lastHours = 1;

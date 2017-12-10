@@ -144,10 +144,11 @@ public class PortfolioController {
 	public String getWalletsByPortfolioId(@PathVariable("portfolioId") long portfolioId, Model model) {
 		
 		// check if the current user has access to this portfolio
-		boolean access = userService.checkPortfolioRightsForCurrentUser(portfolioId);
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
 			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
 			return "not_authorized";
 		}
 		
@@ -233,10 +234,11 @@ public class PortfolioController {
     		Model model) {
 		
 		// check if the current user has access to this portfolio
-		boolean access = userService.checkPortfolioRightsForCurrentUser(portfolioId);
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
 			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
 			return "not_authorized";
 		}
 		
@@ -282,10 +284,11 @@ public class PortfolioController {
     		Model model) {
 		
 		// check if the current user has access to this portfolio
-		boolean access = userService.checkPortfolioRightsForCurrentUser(portfolioId);
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
 			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
 			return "not_authorized";
 		}
 		
@@ -420,10 +423,11 @@ public class PortfolioController {
     		Model model) {
 		
 		// check if the current user has access to this portfolio
-		boolean access = userService.checkPortfolioRightsForCurrentUser(portfolioId);
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
 			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
 			return "not_authorized";
 		}
 		
@@ -496,10 +500,11 @@ public class PortfolioController {
     		Model model) {
 		
 		// check if the current user has access to this portfolio
-		boolean access = userService.checkPortfolioRightsForCurrentUser(portfolioId);
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
 			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
 			return "not_authorized";
 		}
 		

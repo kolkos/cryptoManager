@@ -51,6 +51,11 @@ public class User {
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles;
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "user_portfolio", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "portfolio_id"))
+	private Set<Portfolio> portfolios;
+	
 
 	public int getId() {
 		return id;
@@ -106,6 +111,14 @@ public class User {
 
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
+	}
+
+	public Set<Portfolio> getPortfolios() {
+		return portfolios;
+	}
+
+	public void setPortfolios(Set<Portfolio> portfolios) {
+		this.portfolios = portfolios;
 	}
 
 }

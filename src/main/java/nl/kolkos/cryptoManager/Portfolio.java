@@ -1,9 +1,10 @@
 package nl.kolkos.cryptoManager;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.*;
+
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Portfolio {
@@ -13,6 +14,10 @@ public class Portfolio {
 	
 	private String name;
 	private String description;
+	
+	@ManyToMany(mappedBy = "portfolios")
+    private Set<User> users;
+	
 	
 	public Long getId() {
 		return id;
@@ -32,6 +37,13 @@ public class Portfolio {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	public Set<User> getUsers() {
+		return users;
+	}
+	public void setUsers(Set<User> users) {
+		this.users = users;
+	}
+	
 
 
 }

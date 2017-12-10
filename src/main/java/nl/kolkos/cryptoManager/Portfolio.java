@@ -15,8 +15,23 @@ public class Portfolio {
 	private String name;
 	private String description;
 	
-	@ManyToMany(mappedBy = "portfolios")
-    private Set<User> users;
+	//@ManyToMany(mappedBy = "portfolios")
+	@ManyToMany(cascade = { 
+	        CascadeType.PERSIST, 
+	        CascadeType.MERGE
+	    })
+	@JoinTable(name = "user_portfolio", joinColumns = @JoinColumn(name = "portfolio_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> users;
+	
+	public Portfolio() {
+		
+	}
+	
+	public Portfolio(String name, String description, List<User> users) {
+		this.name = name;
+		this.description = description;
+		this.users = users;
+	}
 	
 	
 	public Long getId() {
@@ -37,10 +52,10 @@ public class Portfolio {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Set<User> getUsers() {
+	public List<User> getUsers() {
 		return users;
 	}
-	public void setUsers(Set<User> users) {
+	public void setUsers(List<User> users) {
 		this.users = users;
 	}
 	

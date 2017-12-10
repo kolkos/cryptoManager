@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -52,9 +53,13 @@ public class User {
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles;
 	
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "user_portfolio", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "portfolio_id"))
-	private Set<Portfolio> portfolios;
+//	@ManyToMany(cascade = { 
+//	        CascadeType.PERSIST, 
+//	        CascadeType.MERGE
+//	    })
+//	@JoinTable(name = "user_portfolio", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "portfolio_id"))
+	@ManyToMany(mappedBy = "users")
+	private List<Portfolio> portfolios;
 	
 
 	public int getId() {
@@ -113,11 +118,11 @@ public class User {
 		this.roles = roles;
 	}
 
-	public Set<Portfolio> getPortfolios() {
+	public List<Portfolio> getPortfolios() {
 		return portfolios;
 	}
 
-	public void setPortfolios(Set<Portfolio> portfolios) {
+	public void setPortfolios(List<Portfolio> portfolios) {
 		this.portfolios = portfolios;
 	}
 

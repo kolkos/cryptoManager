@@ -21,7 +21,6 @@ import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinMarketCapCoin;
 import nl.kolkos.cryptoManager.CoinValue;
-import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.FormOption;
 import nl.kolkos.cryptoManager.FormOptions;
 import nl.kolkos.cryptoManager.Portfolio;
@@ -29,12 +28,15 @@ import nl.kolkos.cryptoManager.PortfolioChartLine;
 import nl.kolkos.cryptoManager.PortfolioChartLineWallet;
 import nl.kolkos.cryptoManager.PortfolioLineChartRoiValue;
 import nl.kolkos.cryptoManager.PortfolioPieChartValue;
+import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.repositories.DepositRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
+import nl.kolkos.cryptoManager.repositories.UserRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
+import nl.kolkos.cryptoManager.services.UserService;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/portfolio") // This means URL's start with /portfolio (after Application path)
@@ -56,7 +58,13 @@ public class PortfolioController {
 	
 	@Autowired
 	@Qualifier(value = "coinValueRepository")
-	private CoinValueRepository coinValueRepository;	
+	private CoinValueRepository coinValueRepository;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	// forward to list
 	@GetMapping("/")
@@ -81,18 +89,46 @@ public class PortfolioController {
 		Portfolio portfolio = new Portfolio();
 		portfolio.setDescription(description);
 		portfolio.setName(name);
+		
+		
+		String username = userService.findLoggedInUsername();
+		System.out.println("Username: " + username);
+		
+		User user = userService.findUserByEmail(username);
+		
+		List<User> users = new ArrayList<>();
+		users.add(user);
+		
+		portfolio.setUsers(users);
+		
 		portfolioRepository.save(portfolio);
+		
+		
+		List<Portfolio> portfolios = new ArrayList<>();
+		portfolios.add(portfolio);
+		
+		user.setPortfolios(portfolios);
+		
+		userRepository.save(user);
+		
 				
 		return "redirect:/portfolio/results";
 		
 	}
 	
+	
 	@GetMapping("/results")
     public String portfolioResults(Model model) {
-		//model.addAttribute("coin", new Coin());
-		model.addAttribute("portfolioList", portfolioRepository.findAll());
+
+		// get the portfolios for the logged in user
+		List<Portfolio> portfolioList = portfolioRepository.findByUsers_email(userService.findLoggedInUsername());
+		
+		model.addAttribute("portfolioList", portfolioList);
+		
 		
         return "portfolio_results";
+        
+        
     }
 	
 	// list all 
@@ -106,6 +142,16 @@ public class PortfolioController {
 	// get portfolio details
 	@RequestMapping(value = "/showPortfolio/{portfolioId}", method = RequestMethod.GET)
 	public String getWalletsByPortfolioId(@PathVariable("portfolioId") long portfolioId, Model model) {
+		
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkPortfolioRightsForCurrentUser(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			return "not_authorized";
+		}
+		
+		
 		// get the details
 		Portfolio portfolio = portfolioRepository.findById(portfolioId);
 		// add to model		
@@ -186,6 +232,13 @@ public class PortfolioController {
     		@RequestParam(value="intervalInMinutes", required=false) Integer intervalInMinutes,
     		Model model) {
 		
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkPortfolioRightsForCurrentUser(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			return "not_authorized";
+		}
 		
 		// check if the values are null
 		if(lastHours == null) {
@@ -227,6 +280,14 @@ public class PortfolioController {
     		@RequestParam(value="lastHours", required=true) Integer lastHours,
     		@RequestParam(value="intervalInMinutes", required=true) Integer intervalInMinutes,
     		Model model) {
+		
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkPortfolioRightsForCurrentUser(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			return "not_authorized";
+		}
 		
 		// get the wallets
 		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
@@ -358,6 +419,14 @@ public class PortfolioController {
     		@RequestParam(value="portfolioId", required=true) Long portfolioId,
     		Model model) {
 		
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkPortfolioRightsForCurrentUser(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			return "not_authorized";
+		}
+		
 		// get the portfolio
 		Portfolio portfolio = portfolioRepository.findById(portfolioId);
 		
@@ -425,6 +494,14 @@ public class PortfolioController {
     		@RequestParam(value="lastHours", required=true) Integer lastHours,
     		@RequestParam(value="intervalInMinutes", required=true) Integer intervalInMinutes,
     		Model model) {
+		
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkPortfolioRightsForCurrentUser(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			return "not_authorized";
+		}
 		
 		// get the wallets
 		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);

@@ -1,5 +1,7 @@
 package nl.kolkos.cryptoManager.repositories;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 
 import nl.kolkos.cryptoManager.Portfolio;
@@ -9,5 +11,8 @@ import nl.kolkos.cryptoManager.Portfolio;
 
 public interface PortfolioRepository extends CrudRepository<Portfolio, Long> {
 	Portfolio findById(Long id);	
+	
+	List<Portfolio> findByUsers_email(String email);
+	
 	
 }

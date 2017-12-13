@@ -25,7 +25,6 @@ import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.DepositRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
-import nl.kolkos.cryptoManager.services.CustomerService;
 import nl.kolkos.cryptoManager.services.DepositService;
 
 @Controller    // This means that this class is a Controller

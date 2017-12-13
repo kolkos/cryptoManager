@@ -49,6 +49,7 @@ public class User {
 	private String lastName;
 	@Column(name = "active")
 	private int active;
+	
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles;
@@ -59,7 +60,7 @@ public class User {
 //	    })
 //	@JoinTable(name = "user_portfolio", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "portfolio_id"))
 	@ManyToMany(mappedBy = "users")
-	private List<Portfolio> portfolios;
+	private Set<Portfolio> portfolios;
 	
 
 	public int getId() {
@@ -118,11 +119,11 @@ public class User {
 		this.roles = roles;
 	}
 
-	public List<Portfolio> getPortfolios() {
+	public Set<Portfolio> getPortfolios() {
 		return portfolios;
 	}
 
-	public void setPortfolios(List<Portfolio> portfolios) {
+	public void setPortfolios(Set<Portfolio> portfolios) {
 		this.portfolios = portfolios;
 	}
 

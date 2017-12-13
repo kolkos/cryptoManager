@@ -3,6 +3,7 @@ package nl.kolkos.cryptoManager.implementations;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -55,12 +56,31 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public void saveUser(User user) {
+		System.out.println(user.getPassword());
+		
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setActive(1);
         Role userRole = roleRepository.findByRole("USER");
+        
+        System.out.println(userRole.getRole());
+        
+        Set<User> users = new HashSet<>();
+        users.add(user);
+        userRole.setUsers(users);
+        roleRepository.save(userRole);
+        
         user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
 		userRepository.save(user);
+		
+		System.out.println("DONE!");
 	}
+	
+	public void updateUser(User user) {
+		// only update the user
+		userRepository.save(user);
+	}
+	
+	
 	
 	public boolean checkIfCurrentUserIsAuthorizedToPortfolio(long portfolioId) {
 		boolean userHasAccess = false;
@@ -69,7 +89,7 @@ public class UserServiceImpl implements UserService{
 		Portfolio portfolio = portfolioRepository.findById(portfolioId);
 		
 		// get the list of authenticated users
-		List<User> authenticatedUsers = portfolio.getUsers();
+		Set<User> authenticatedUsers = portfolio.getUsers();
 		
 		String userName = this.findLoggedInUsername();
 		// get the user object
@@ -96,6 +116,14 @@ public class UserServiceImpl implements UserService{
 		
 		// because I'm lazy, use the checkIfCurrentUserIsAuthorizedToPortfolio method
 		return this.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+	}
+	
+	public long countByEmail(String email) {
+		return userRepository.countByEmail(email);
+	}
+	
+	public Set<User> findByPortfolios_Id(Long portfolioId) {
+		return userRepository.findByPortfolios_Id(portfolioId);
 	}
 	
 }

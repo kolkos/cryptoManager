@@ -3,7 +3,9 @@ package nl.kolkos.cryptoManager.controllers;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -92,24 +94,28 @@ public class PortfolioController {
 		
 		
 		String username = userService.findLoggedInUsername();
-		System.out.println("Username: " + username);
+		User currentUser = userService.findUserByEmail(username);
 		
-		User user = userService.findUserByEmail(username);
 		
-		List<User> users = new ArrayList<>();
-		users.add(user);
+		// create a empty set of users for this portfolio
+		Set<User> users = new HashSet<>();
+		// add this user
+		users.add(currentUser);
 		
+		// add this set to the portfolio
 		portfolio.setUsers(users);
 		
+		// get the current portfolio set for this user
+		Set<Portfolio> portfolios = portfolioRepository.findByUsers_email(username);
+		// add this portfolio to the set
+		portfolios.add(portfolio);
+		// now add the portfolio to the current user
+		currentUser.setPortfolios(portfolios);
+		
+		// finally save both objects
+		userService.updateUser(currentUser);
 		portfolioRepository.save(portfolio);
 		
-		
-		List<Portfolio> portfolios = new ArrayList<>();
-		portfolios.add(portfolio);
-		
-		user.setPortfolios(portfolios);
-		
-		userRepository.save(user);
 		
 				
 		return "redirect:/portfolio/results";
@@ -121,7 +127,7 @@ public class PortfolioController {
     public String portfolioResults(Model model) {
 
 		// get the portfolios for the logged in user
-		List<Portfolio> portfolioList = portfolioRepository.findByUsers_email(userService.findLoggedInUsername());
+		Set<Portfolio> portfolioList = portfolioRepository.findByUsers_email(userService.findLoggedInUsername());
 		
 		model.addAttribute("portfolioList", portfolioList);
 		
@@ -138,6 +144,80 @@ public class PortfolioController {
 		return portfolioRepository.findAll();
 	}
 	
+	// handle get for the access page
+	@RequestMapping(value = "/access/{portfolioId}", method = RequestMethod.GET)
+	public String grantAccessToPortfolio(@PathVariable("portfolioId") long portfolioId, Model model) {
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
+			return "not_authorized";
+		}
+		
+		
+		return "portfolio_access";
+	}
+	
+	// handle post for the access page
+	@RequestMapping(value = "/access/{portfolioId}", method = RequestMethod.POST)
+	public String addUserAccessToPortfolio(@PathVariable("portfolioId") long portfolioId, 
+			@RequestParam(value="mail", required=false) String mail,
+			Model model) {
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
+			return "not_authorized";
+		}
+		
+		// check if the e-mail address exists
+		if(userService.countByEmail(mail) > 0) {
+			
+			// get the user object for the mail address
+			User newtUserForPortfolio = userService.findUserByEmail(mail);
+			
+			// get the current portfolio object
+			Portfolio currentPortfolio = portfolioRepository.findById(portfolioId);
+			
+			// get the current list of users for the portfolio
+			Set<User> users = userService.findByPortfolios_Id(portfolioId);
+			// add the new user to the portfolio set
+			users.add(newtUserForPortfolio);
+						
+			// get the current portfolio set for this user
+			Set<Portfolio> portfolios = portfolioRepository.findByUsers_email(mail);
+			// add this portfolio to this set
+			portfolios.add(currentPortfolio);
+			
+			
+			
+			// set the portfolio set to the new user
+			newtUserForPortfolio.setPortfolios(portfolios);
+			
+			// set the user set to this portfolio
+			currentPortfolio.setUsers(users);
+			
+			// finally save the changes to the object
+			portfolioRepository.save(currentPortfolio);
+			userService.updateUser(newtUserForPortfolio);
+			
+			
+			
+			
+			model.addAttribute("success", mail + " added");
+		}else {
+			model.addAttribute("error", mail + " does not exist.");
+		}
+		
+		
+		
+		
+		return "portfolio_access";
+	}
 	
 	// get portfolio details
 	@RequestMapping(value = "/showPortfolio/{portfolioId}", method = RequestMethod.GET)

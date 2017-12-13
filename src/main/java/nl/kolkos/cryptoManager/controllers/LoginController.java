@@ -1,17 +1,26 @@
 package nl.kolkos.cryptoManager.controllers;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import nl.kolkos.cryptoManager.Portfolio;
+import nl.kolkos.cryptoManager.Role;
 import nl.kolkos.cryptoManager.User;
+import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
+import nl.kolkos.cryptoManager.repositories.RoleRepository;
 import nl.kolkos.cryptoManager.services.UserService;
 
 
@@ -20,6 +29,13 @@ import nl.kolkos.cryptoManager.services.UserService;
 public class LoginController {
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private RoleRepository roleRepository;
+	
+	@Autowired
+	@Qualifier(value = "portfolioRepository")
+	private PortfolioRepository portfolioRepository;
 
 	@RequestMapping(value={"/login"}, method = RequestMethod.GET)
 	public ModelAndView login(){
@@ -37,6 +53,77 @@ public class LoginController {
 		modelAndView.setViewName("registration");
 		return modelAndView;
 	}
+	
+	@RequestMapping(value="/install", method = RequestMethod.GET)
+	public @ResponseBody String initialInstall(){
+		
+		String usernameAdministrator = "admin@admin.com";
+		String passwordAdministrator = "admin";
+		
+		String usernameUser = "user@user.com";
+		String passwordUser = "user";
+		
+		// create roles
+		Role userRole = new Role();
+		userRole.setRole("USER");
+		
+		// create roles
+		Role adminRole = new Role();
+		adminRole.setRole("ADMIN");
+		
+		roleRepository.save(userRole);
+		roleRepository.save(adminRole);
+		    	
+		// create a two users
+		User admin = new User();
+		admin.setEmail(usernameAdministrator);
+		admin.setLastName("Administrator");
+		admin.setName("Administrator");
+		admin.setPassword(passwordAdministrator);
+		
+		User user = new User();
+		user.setEmail(usernameUser);
+		user.setLastName("User");
+		user.setName("User");
+		user.setPassword(passwordUser);
+		
+		// save the users
+		userService.saveUser(admin);
+		userService.saveUser(user);
+		
+		// create portfolios
+		Portfolio portfolio1 = new Portfolio();
+		portfolio1.setName("Portfolio for Administrator");
+		portfolio1.setDescription("The administrator user has access to this portfolio");
+		Set <User> users1 = new HashSet<>();
+		users1.add(admin);
+		portfolio1.setUsers(users1);
+		
+		Portfolio portfolio2 = new Portfolio();
+		portfolio2.setName("Portfolio for Regular User");
+		portfolio2.setDescription("The regular user has access to this portfolio");
+		Set <User> users2 = new HashSet<>();
+		users2.add(user);
+		portfolio2.setUsers(users2);
+		
+		// save the portfolios
+		portfolioRepository.save(portfolio1);
+		portfolioRepository.save(portfolio2);
+		
+		String returnMessage = "<h1>Done!</h1>";
+		returnMessage += "<p>The following users are created:</p>";
+		returnMessage += "<p>Administrator:<br/>";
+		returnMessage += "Username: " + usernameAdministrator + "<br/>";
+		returnMessage += "Password: " + passwordAdministrator + "</p>";
+		returnMessage += "<p>Normal user:<br/>";
+		returnMessage += "Username: " + usernameUser + "<br/>";
+		returnMessage += "Password: " + passwordUser + "</p>";
+		
+		
+		
+		return returnMessage;
+	}
+	
 	
 	@RequestMapping(value = "/registration", method = RequestMethod.POST)
 	public ModelAndView createNewUser(@Valid User user, BindingResult bindingResult) {

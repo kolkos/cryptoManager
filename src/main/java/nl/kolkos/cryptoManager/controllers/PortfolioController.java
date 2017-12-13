@@ -156,6 +156,10 @@ public class PortfolioController {
 			return "not_authorized";
 		}
 		
+		// get the user with access to this portfolio
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		
+		model.addAttribute("users", portfolio.getUsers());
 		
 		return "portfolio_access";
 	}
@@ -193,8 +197,6 @@ public class PortfolioController {
 			// add this portfolio to this set
 			portfolios.add(currentPortfolio);
 			
-			
-			
 			// set the portfolio set to the new user
 			newtUserForPortfolio.setPortfolios(portfolios);
 			
@@ -205,16 +207,10 @@ public class PortfolioController {
 			portfolioRepository.save(currentPortfolio);
 			userService.updateUser(newtUserForPortfolio);
 			
-			
-			
-			
 			model.addAttribute("success", mail + " added");
 		}else {
 			model.addAttribute("error", mail + " does not exist.");
 		}
-		
-		
-		
 		
 		return "portfolio_access";
 	}

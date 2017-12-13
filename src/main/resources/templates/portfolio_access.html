@@ -31,7 +31,7 @@
 		<div class="page-header">
 			<h1>Grant access to user</h1>
 		</div>
-		<p class="lead">With this page you can give access to this portfolio to a user.</p>
+		<p class="lead">Use this page to give access to this portfolio to other users.</p>
 		
 		<div th:if="${success != null}" class="alert alert-success" role="alert" th:text="${success}"></div>
 		<div th:if="${error != null}" class="alert alert-danger" role="alert" th:text="${error}"></div>
@@ -54,7 +54,33 @@
 			</div>
 	  	</div>
 		
-		
+		<div class="page-header">
+			<h2>Granted users</h2>
+		</div>
+		<p class="lead">The following users have access to this portfolio.</p>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>First name</th>
+					<th>Last name</th>
+					<th>Email</th>
+					<th>Remove access</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="user : ${users}">
+					<td th:text="${user.name}">name</td>
+					<td th:text="${user.lastName}">last name</td>
+					<td th:text="${user.email}">email</td>
+					<td>
+						<a th:href="@{/portfolio/chart/{id}(id=${user.id})}" >
+							<span class="glyphicon glyphicon-stats"></span>
+						</a>
+					</td>
+				</tr>
+				
+			</tbody>
+		</table>
       
     </div>
     

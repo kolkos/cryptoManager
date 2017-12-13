@@ -329,7 +329,7 @@ public class WalletController {
 		
 		CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
 		model.addAttribute("coinName",cmcCoin.getName());
-		model.addAttribute("walletAddress",wallet.getAddress());
+		model.addAttribute("walletAddress",wallet.getCensoredWalletAddress());
 		
 		// set the get parameters
 		model.addAttribute("lastHours", lastHours);

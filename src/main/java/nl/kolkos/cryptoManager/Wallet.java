@@ -83,5 +83,18 @@ public class Wallet {
 		this.currentWalletAmount = currentWalletAmount;
 	}
 	
+	/**
+	 * Because I use the google charts api, I don't want to send the whole wallet address to google
+	 * @return the first and last 5 characters of the wallet address
+	 */
+	public String getCensoredWalletAddress() {
+		String firstPart = this.address.substring(0, Math.min(this.address.length(), 5));
+		String lastPart = this.address.substring(this.address.length() -5);
+		
+		String censoredWallet = firstPart + "xxx" + lastPart;
+		
+		return censoredWallet;
+	}
+	
 	
 }

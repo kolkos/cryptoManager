@@ -377,7 +377,7 @@ public class PortfolioController {
 		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
 		for(Wallet wallet : wallets) {
 			// add the wallet name to the list
-			walletAddresses.add(wallet.getAddress());
+			walletAddresses.add(wallet.getCensoredWalletAddress() + " (" + wallet.getCoin().getCoinMarketCapCoin().getSymbol() + ")");
 			
 			
 			// get the coin for this wallet
@@ -470,7 +470,7 @@ public class PortfolioController {
 				double value = avgValue * totalAmount;
 				
 				PortfolioChartLineWallet portfolioChartLineWallet = new PortfolioChartLineWallet();
-				portfolioChartLineWallet.setWalletName(wallet.getAddress());
+				portfolioChartLineWallet.setWalletName(wallet.getCensoredWalletAddress() + " (" + wallet.getCoin().getCoinMarketCapCoin().getSymbol() + ")");
 				portfolioChartLineWallet.setWalletValue(value);
 				
 				// now push it to the portfolioChartLine
@@ -555,7 +555,7 @@ public class PortfolioController {
 			
 			// now add to the PortfolioPieChartValue object
 			PortfolioPieChartValue portfolioPieChartValue = new PortfolioPieChartValue();
-			portfolioPieChartValue.setWalletAddress(wallet.getAddress() + " (" + cmcCoin.getSymbol() + ")");
+			portfolioPieChartValue.setWalletAddress(wallet.getCensoredWalletAddress() + " (" + cmcCoin.getSymbol() + ")");
 			portfolioPieChartValue.setCurrentWalletValue(currentWalletValue);
 			
 			// add to the list

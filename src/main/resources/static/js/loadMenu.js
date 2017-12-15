@@ -1,5 +1,5 @@
 $(function() {
-	$.get("/menu.html", function(data) {
+	$.get("/menu", function(data) {
 		$("#menuHodler").html(data);
 	});
 });

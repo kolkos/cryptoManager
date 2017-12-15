@@ -10,15 +10,19 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Role;
 import nl.kolkos.cryptoManager.User;
+import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.RoleRepository;
 import nl.kolkos.cryptoManager.services.UserService;
@@ -44,6 +48,13 @@ public class LoginController {
 		return modelAndView;
 	}
 	
+	@GetMapping("/menu")
+    public String depositForm(Model model) {
+        model.addAttribute("username", userService.findLoggedInUsername());
+        
+        
+        return "menu";
+    }
 	
 	@RequestMapping(value="/registration", method = RequestMethod.GET)
 	public ModelAndView registration(){

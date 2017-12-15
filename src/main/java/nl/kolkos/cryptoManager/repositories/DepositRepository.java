@@ -24,6 +24,8 @@ public interface DepositRepository extends PagingAndSortingRepository<Deposit, L
 	
 	List<Deposit> findAllByOrderByDepositDateAsc();
 	
+	Page<Deposit> findByWalletPortfolioUsersEmail(String email, Pageable pageable);
+	
 	@Query(value="SELECT COALESCE((SELECT SUM(amount) FROM deposit WHERE wallet_id = ?1), 0) AS amount", nativeQuery = true)
 	double getSumOfAmountForWalletId(long walletId);
 	

@@ -3,8 +3,12 @@ package nl.kolkos.cryptoManager.repositories;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+
+import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.Withdrawal;
 
@@ -15,6 +19,9 @@ public interface WithdrawalRepository extends PagingAndSortingRepository<Withdra
 	List<Withdrawal> findByWallet(Wallet wallet);
 	
 	Withdrawal findById(Long id);
+	
+	Page<Deposit> findByWalletPortfolioUsersEmail(String email, Pageable pageable);
+	
 	
 	@Query(value="SELECT * FROM withdrawal WHERE id IN( " + 
 			"	SELECT withdrawal.id FROM withdrawal, wallet, portfolio, coin " + 

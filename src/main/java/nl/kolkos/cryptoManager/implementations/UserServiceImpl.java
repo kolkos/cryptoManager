@@ -13,11 +13,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
+import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Role;
 import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.Wallet;
+import nl.kolkos.cryptoManager.repositories.DepositRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.RoleRepository;
 import nl.kolkos.cryptoManager.repositories.UserRepository;
@@ -37,6 +38,9 @@ public class UserServiceImpl implements UserService{
     
     @Autowired
 	private WalletRepository walletRepository;
+    
+    @Autowired
+	private DepositRepository depositRepository;
     
     
     public String findLoggedInUsername() {
@@ -117,6 +121,15 @@ public class UserServiceImpl implements UserService{
 		// because I'm lazy, use the checkIfCurrentUserIsAuthorizedToPortfolio method
 		return this.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 	}
+	
+	public boolean checkIfCurrentUserIsAuthorizedToDeposit(long depositId) {
+		// get the deposit object
+		Deposit deposit = depositRepository.findById(depositId);
+		
+		// get the wallet -> portfolio -> id
+		return this.checkIfCurrentUserIsAuthorizedToPortfolio(deposit.getWallet().getPortfolio().getId());
+	}
+	
 	
 	public long countByEmail(String email) {
 		return userRepository.countByEmail(email);

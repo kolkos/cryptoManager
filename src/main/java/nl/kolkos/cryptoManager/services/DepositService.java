@@ -60,6 +60,19 @@ public class DepositService {
 		return depositRepository.getNumberOfDeposits();
 	}
 	
+	public List<Deposit> findByWalletPortfolioUsersEmail(int pageNumber, String columnName, String direction, String email){
+		Sort.Direction sort = Sort.Direction.ASC;
+		if(direction.equals("DESC")) {
+			sort = Sort.Direction.DESC;
+		}
+		
+		PageRequest request = new PageRequest(pageNumber - 1, PAGESIZE, sort, columnName);
+		
+		
+		
+		return depositRepository.findByWalletPortfolioUsersEmail(email, request).getContent();
+	}
+	
 	public List<Deposit> getPage(int pageNumber, String columnName, String direction) {
 		Sort.Direction sort = Sort.Direction.ASC;
 		if(direction.equals("DESC")) {

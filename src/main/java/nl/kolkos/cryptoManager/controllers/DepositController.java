@@ -20,12 +20,14 @@ import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinMarketCapCoin;
 import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
+import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.DepositRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.services.DepositService;
+import nl.kolkos.cryptoManager.services.UserService;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/deposit") // This means URL's start with /demo (after Application path)
@@ -49,6 +51,9 @@ public class DepositController {
 	@Autowired
 	private DepositService depositService;
 	
+	@Autowired
+	private UserService userService;
+	
 	@GetMapping("/")
     public String forwardDepositForm(Model model) {
         model.addAttribute("deposit", new Deposit());
@@ -59,7 +64,7 @@ public class DepositController {
     public String depositForm(Model model) {
         model.addAttribute("deposit", new Deposit());
         model.addAttribute("wallet", new Wallet());
-        model.addAttribute("walletList", walletRepository.findAll());
+        model.addAttribute("walletList", walletRepository.findByPortfolioUsersEmail(userService.findLoggedInUsername()));
         
         return "deposit_form";
     }
@@ -114,10 +119,6 @@ public class DepositController {
 		@RequestParam(name = "sortBy", defaultValue = "depositDate") String sortBy,
 		@RequestParam(name = "direction", defaultValue = "DESC") String direction,
     		Model model) {
-		//model.addAttribute("portfolio", new Portfolio());
-        //model.addAttribute("wallet", new Wallet());
-        //model.addAttribute("coin", new Coin());
-		
 		
 		
 		model.addAttribute("coinList", coinRepository.findAllByOrderByCoinMarketCapCoinSymbol());
@@ -129,25 +130,9 @@ public class DepositController {
         model.addAttribute("numberOfResults", depositService.getNumberOfDeposits());
         model.addAttribute("page", pageNumber);
         
-//        long filterCoinId = 0;
-//        long filterWalletId = 0;
-//        long filterPortfolioId = 0;
-//        
-//        if(coinFilter != null) {
-//        		model.addAttribute("selectedCoin", coinFilter.getId());
-//        		filterCoinId = coinFilter.getId();
-//        }
-//        if(walletFilter != null) {
-//	    		model.addAttribute("selectedWallet", walletFilter.getId());
-//	    		filterWalletId = walletFilter.getId();
-//	    }
-//        if(portfolioFilter != null) {
-//	    		model.addAttribute("selectedPortfolio", portfolioFilter.getId());
-//	    		filterPortfolioId = portfolioFilter.getId();
-//	    }
         
         // get all the deposits
- 		List<Deposit> deposits = depositService.getPage(pageNumber, sortBy, direction);
+ 		List<Deposit> deposits = depositService.findByWalletPortfolioUsersEmail(pageNumber, sortBy, direction, userService.findLoggedInUsername());
  		
  		// create the Api Handler object
  		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
@@ -195,6 +180,16 @@ public class DepositController {
 	@RequestMapping(value = "/details/{depositId}", method = RequestMethod.GET)
 	public String showDepositDetails(@PathVariable("depositId") long depositId, Model model) {
 		
+		// check if the current user has access to this deposit
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToDeposit(depositId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "deposit");
+			return "not_authorized";
+		}
+		
+		
 		// get the entity
 		Deposit deposit = depositRepository.findById(depositId);
 		
@@ -209,6 +204,15 @@ public class DepositController {
 			@RequestParam(value="confirmDelete", required=true) boolean confirmDelete,
 			Model model) {
 
+		
+		// check if the current user has access to this deposit
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToDeposit(depositId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "deposit");
+			return "not_authorized";
+		}
 		
 		Deposit deposit = depositService.findById(depositId);
 		

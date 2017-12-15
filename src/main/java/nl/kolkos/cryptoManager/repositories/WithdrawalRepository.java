@@ -20,7 +20,8 @@ public interface WithdrawalRepository extends PagingAndSortingRepository<Withdra
 	
 	Withdrawal findById(Long id);
 	
-	Page<Deposit> findByWalletPortfolioUsersEmail(String email, Pageable pageable);
+	Page<Withdrawal> findByWalletPortfolioUsersEmail(String email, Pageable pageable);
+	
 	
 	
 	@Query(value="SELECT * FROM withdrawal WHERE id IN( " + 

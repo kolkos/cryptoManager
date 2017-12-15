@@ -20,12 +20,14 @@ import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinMarketCapCoin;
 import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
+import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
+import nl.kolkos.cryptoManager.services.UserService;
 import nl.kolkos.cryptoManager.services.WithdrawalService;
 
 @Controller    // This means that this class is a Controller
@@ -50,6 +52,9 @@ public class WithdrawalController {
 	@Autowired
 	private WithdrawalService withdrawalService;
 	
+	@Autowired
+	private UserService userService;
+	
 	@GetMapping("/")
     public String forwardWithdrawalForm(Model model) {
 
@@ -60,7 +65,7 @@ public class WithdrawalController {
     public String depositForm(Model model) {
 		model.addAttribute("withdrawal", new Withdrawal());
         model.addAttribute("wallet", new Wallet());
-        model.addAttribute("walletList", walletRepository.findAll());
+        model.addAttribute("walletList", walletRepository.findByPortfolioUsersEmail(userService.findLoggedInUsername()));
         
         return "withdrawal_form";
     }
@@ -153,7 +158,7 @@ public class WithdrawalController {
 //	    }5
         
         // get all the deposits
- 		List<Withdrawal> withdrawals = withdrawalService.getPage(pageNumber, sortBy, direction);
+ 		List<Withdrawal> withdrawals = withdrawalService.findByWalletPortfolioUsersEmail(pageNumber, sortBy, direction, userService.findLoggedInUsername());
  		
  		// create the Api Handler object
  		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
@@ -202,6 +207,15 @@ public class WithdrawalController {
 	@RequestMapping(value = "/details/{withdrawalId}", method = RequestMethod.GET)
 	public String showWithdrawalDetails(@PathVariable("withdrawalId") long withdrawalId, Model model) {
 		
+		// check if the current user has access to this deposit
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToWithdrawal(withdrawalId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "deposit");
+			return "not_authorized";
+		}
+		
 		// get the entity
 		Withdrawal withdrawal = withdrawalService.findById(withdrawalId);
 		
@@ -215,7 +229,15 @@ public class WithdrawalController {
 			@RequestParam(value="withdrawalId", required=true) long withdrawalId,
 			@RequestParam(value="confirmDelete", required=true) boolean confirmDelete,
 			Model model) {
-
+		
+		// check if the current user has access to this deposit
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToWithdrawal(withdrawalId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "deposit");
+			return "not_authorized";
+		}
 		
 		Withdrawal withdrawal = withdrawalService.findById(withdrawalId);
 		

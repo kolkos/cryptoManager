@@ -8,7 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-
+import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
@@ -62,6 +62,19 @@ public class WithdrawalService {
 	
 	public List<Withdrawal> filterResults(String coinId, String walletId, String PortfolioId){
 		return withdrawalRepository.filterResults(coinId, walletId, PortfolioId);
+	}
+	
+	public List<Withdrawal> findByWalletPortfolioUsersEmail(int pageNumber, String columnName, String direction, String email){
+		Sort.Direction sort = Sort.Direction.ASC;
+		if(direction.equals("DESC")) {
+			sort = Sort.Direction.DESC;
+		}
+		
+		PageRequest request = new PageRequest(pageNumber - 1, PAGESIZE, sort, columnName);
+		
+		
+		
+		return withdrawalRepository.findByWalletPortfolioUsersEmail(email, request).getContent();
 	}
 	
 	

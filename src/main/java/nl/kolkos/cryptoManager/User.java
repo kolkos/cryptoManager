@@ -54,11 +54,7 @@ public class User {
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles;
 	
-//	@ManyToMany(cascade = { 
-//	        CascadeType.PERSIST, 
-//	        CascadeType.MERGE
-//	    })
-//	@JoinTable(name = "user_portfolio", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "portfolio_id"))
+
 	@ManyToMany(mappedBy = "users")
 	private Set<Portfolio> portfolios;
 	

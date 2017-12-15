@@ -15,21 +15,15 @@ public class Portfolio {
 	private String name;
 	private String description;
 	
-	//@ManyToMany(mappedBy = "portfolios")
+	// user rights
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "user_portfolio", joinColumns = @JoinColumn(name = "portfolio_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users;
 	
-	public Portfolio() {
-		
-	}
-	
-//	public Portfolio(String name, String description, Set<User> users) {
-//		this.name = name;
-//		this.description = description;
-//		this.users = users;
-//	}
-	
+	// user rights
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "apikey_portfolio", joinColumns = @JoinColumn(name = "portfolio_id"), inverseJoinColumns = @JoinColumn(name = "api_key_id"))
+    private Set<ApiKey> apiKeys;
 	
 	public Long getId() {
 		return id;

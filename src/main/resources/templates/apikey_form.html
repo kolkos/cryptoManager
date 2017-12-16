@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>cryotoManager::Api::Create Key</title>
+	
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
+	
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	
+	<nav class="navbar navbar-inverse" id="menuHodler">
+		
+	</nav>
+
+	
+	<div class="container">
+		<div class="page-header">
+			<h1>Create API Key</h1>
+		</div>
+		<p class="lead">This page let's you generate a API key.</p>
+		
+		<div class="alert alert-success alert-dismissible" role="alert" th:if="${error == false && error != null && message != null}">
+  			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  			<strong>Success!</strong> <span th:if="${message != null}" th:text="${message}">message</span>
+		</div>
+		<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error == true && error != null && message != null}">
+  			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  			<strong>Error!</strong> <span th:if="${message != null}" th:text="${message}">message</span>
+		</div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+	    			<h3 class="panel-title">Create API Key</h3>
+	  		</div>
+	  		<div class="panel-body">
+		  		<form action="#" th:action="@{/api/add}" th:object="${apiKey}" method="post">
+					<label for="apiKey">API Key</label>
+					<div class="input-group">
+						<span class="input-group-addon" id="apiPrefix"><span class="glyphicon glyphicon-lock"></span></span>
+					  	<input type="text" class="form-control" th:field="*{apiKey}" aria-describedby="apiPrefix" />
+					  	<span class="input-group-btn">
+        						<button class="btn btn-default" type="button" id="generateKey"><span class="glyphicon glyphicon-random"></span></button>
+      					</span>
+					</div>
+					<br />
+					
+					<label for="description">Description</label>
+					<div class="input-group">
+						<span class="input-group-addon" id="descriptionPrefix"><span class="glyphicon glyphicon-tag"></span></span>
+					  	<input type="text" class="form-control" th:field="*{description}" aria-describedby="descriptionPrefix" />
+					</div>
+					<br />	
+								
+					<button type="submit" class="btn btn-primary">Submit</button>
+							
+				</form>
+			</div>
+	  	</div>
+		
+		<div class="page-header">
+			<h3>Your API Keys</h3>
+		</div>
+		<p class="lead">These are your registered API keys.</p>
+		
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>API Key</th>
+					<th>Description</th>
+					<th>Open</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="apiKey : ${apiKeys}">
+					<td th:text="${apiKey.apiKey}">apiKey</td>
+					<td th:text="${apiKey.description}">description</td>
+					<td>
+						<a th:href="@{/api/details/{id}(id=${apiKey.id})}">
+							<span class="glyphicon glyphicon-zoom-in"></span>
+						</a>
+					</td>
+				</tr>
+				
+				
+			</tbody>
+		</table>
+		
+      
+    </div>
+    
+    <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/loadMenu.js"></script>
+    <script type="text/javascript">
+		function generateKey(){
+			$.get("/api/generatekey", function(data) {
+				$("#apiKey").val(data);
+			});
+		}
+		$(function(){
+			generateKey();
+		});
+		
+		$('#generateKey').click(function(){
+			generateKey();
+		});
+    </script>
+
+</body>
+</html>

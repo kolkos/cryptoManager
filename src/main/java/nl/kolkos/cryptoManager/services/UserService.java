@@ -6,6 +6,7 @@ import nl.kolkos.cryptoManager.User;
 
 public interface UserService {
 	public User findUserByEmail(String email);
+	public User findById(int userId);
 	public void saveUser(User user);
 	public void updateUser(User user);
 	public String findLoggedInUsername();

@@ -295,7 +295,48 @@ public class PortfolioController {
 			model.addAttribute("error", mail + " does not exist.");
 		}
 		
+		// get the user with access to this portfolio
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		model.addAttribute("users", portfolio.getUsers());
 		return "portfolio_access";
+	}
+	
+	// handle revoking user access
+	@RequestMapping(value = "/revokeUserAccess", method = RequestMethod.POST)
+	public @ResponseBody String revokeUserAccessToPortfolio(@RequestParam(value="portfolioId", required=true) long portfolioId, 
+			@RequestParam(value="userId", required=true) int userId,
+			Model model) {
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			return "<div class='alert alert-danger'>You are not authorized to this portfolio</div>";
+		}
+		
+		// check how many users are left
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		int nrOfUsers = portfolio.getUsers().size();
+		if(nrOfUsers <= 1) {
+			return "<div class='alert alert-warning'>You can't remove the last user.</div>";
+		}
+		
+		// checks OK, remove the selected user
+		User user = userService.findById(userId);
+		// get the portfolios for this user
+		Set<Portfolio> portfolios = user.getPortfolios();
+		
+		// get the users for the portfolio
+		Set<User> users = portfolio.getUsers();
+		
+		// remove the elements from both objects
+		portfolios.remove(portfolio);
+		users.remove(user);
+		
+		// save both objects
+		userService.updateUser(user);
+		portfolioRepository.save(portfolio);
+		
+		
+		return "<div class='alert alert-success'>User removed.</div>";
 	}
 	
 	// handle get for the access page
@@ -390,7 +431,38 @@ public class PortfolioController {
 		return "portfolio_access_api";
 	}
 	
-	
+	// handle revoking user access
+	@RequestMapping(value = "/revokeApiAccess", method = RequestMethod.POST)
+	public @ResponseBody String revokeApiAccessToPortfolio(@RequestParam(value="portfolioId", required=true) long portfolioId, 
+			@RequestParam(value="apiKeyId", required=true) long apiKeyId,
+			Model model) {
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			return "<div class='alert alert-danger'>You are not authorized to this portfolio</div>";
+		}
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		
+		// checks OK, remove the selected API Key
+		ApiKey apiKey = apiKeyService.findById(apiKeyId);
+		
+		// get the portfolios for this user
+		Set<Portfolio> portfolios = apiKey.getPortfolios();
+		
+		// get the users for the portfolio
+		Set<ApiKey> apiKeys = portfolio.getApiKeys();
+		
+		// remove the elements from both objects
+		portfolios.remove(portfolio);
+		apiKeys.remove(apiKey);
+		
+		// save both objects
+		apiKeyService.saveApiKey(apiKey);
+		portfolioRepository.save(portfolio);
+		
+		
+		return "<div class='alert alert-success'>API Key removed.</div>";
+	}
 	
 	@RequestMapping(value = "/chart/{portfolioId}", method = RequestMethod.GET)
     public String coinChart(

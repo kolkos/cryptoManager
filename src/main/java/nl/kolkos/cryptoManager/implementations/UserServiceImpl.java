@@ -152,4 +152,8 @@ public class UserServiceImpl implements UserService{
 		return userRepository.findByPortfolios_Id(portfolioId);
 	}
 	
+	public User findById(int userId) {
+		return userRepository.findById(userId);
+	}
+	
 }

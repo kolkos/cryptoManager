@@ -8,8 +8,13 @@ import nl.kolkos.cryptoManager.ApiKey;
 import nl.kolkos.cryptoManager.User;
 
 
-public interface ApiKeyRepository extends CrudRepository<ApiKey, String> {
+public interface ApiKeyRepository extends CrudRepository<ApiKey, Long> {
 	ApiKey findApiKeyByApiKey(String apiKey);
+	
+	ApiKey findById(Long apiKeyId);
 
 	List<ApiKey> findByUser(User user);
+	
+	
+	
 }

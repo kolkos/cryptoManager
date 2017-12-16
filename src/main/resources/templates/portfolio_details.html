@@ -57,7 +57,8 @@
 		
 		<p>
 			<a th:href="@{/portfolio/chart/{id}(id=${portfolioId})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-stats"></span> Show chart</a>
-			<a th:href="@{/portfolio/access/{id}(id=${portfolioId})}" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-user"></span> Manage access</a>
+			<a th:href="@{/portfolio/access/{id}(id=${portfolioId})}" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-user"></span> Manage users</a>
+			<a th:href="@{/portfolio/apiAccess/{id}(id=${portfolioId})}" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-user"></span> Manage API Keys</a>
 			<a href="#" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
 			<a href="#" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> Delete</a>
 		</p>

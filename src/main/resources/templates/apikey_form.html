@@ -34,13 +34,13 @@
 		</div>
 		<p class="lead">This page let's you generate a API key.</p>
 		
-		<div class="alert alert-success alert-dismissible" role="alert" th:if="${error == false && error != null && message != null}">
+		<div class="alert alert-success alert-dismissible" role="alert" th:if="${success != null}">
   			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-  			<strong>Success!</strong> <span th:if="${message != null}" th:text="${message}">message</span>
+  			<strong>Success!</strong> <span th:text="${success}">message</span>
 		</div>
-		<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error == true && error != null && message != null}">
+		<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error != null}">
   			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-  			<strong>Error!</strong> <span th:if="${message != null}" th:text="${message}">message</span>
+  			<strong>Error!</strong> <span th:text="${error}">message</span>
 		</div>
 		
 		<div class="panel panel-default">
@@ -48,11 +48,11 @@
 	    			<h3 class="panel-title">Create API Key</h3>
 	  		</div>
 	  		<div class="panel-body">
-		  		<form action="#" th:action="@{/api/add}" th:object="${apiKey}" method="post">
+		  		<form action="#" th:action="@{/api/manageKeys}" th:object="${apiKey}" method="post">
 					<label for="apiKey">API Key</label>
 					<div class="input-group">
 						<span class="input-group-addon" id="apiPrefix"><span class="glyphicon glyphicon-lock"></span></span>
-					  	<input type="text" class="form-control" th:field="*{apiKey}" aria-describedby="apiPrefix" />
+					  	<input type="text" class="form-control" th:field="*{apiKey}" aria-describedby="apiPrefix" required="required"/>
 					  	<span class="input-group-btn">
         						<button class="btn btn-default" type="button" id="generateKey"><span class="glyphicon glyphicon-random"></span></button>
       					</span>
@@ -62,7 +62,7 @@
 					<label for="description">Description</label>
 					<div class="input-group">
 						<span class="input-group-addon" id="descriptionPrefix"><span class="glyphicon glyphicon-tag"></span></span>
-					  	<input type="text" class="form-control" th:field="*{description}" aria-describedby="descriptionPrefix" />
+					  	<input type="text" class="form-control" th:field="*{description}" aria-describedby="descriptionPrefix" required="required"/>
 					</div>
 					<br />	
 								

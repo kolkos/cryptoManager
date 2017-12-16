@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>cryotoManager::Portfolio::Add API Access</title>
+	
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
+	
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	
+	<nav class="navbar navbar-inverse" id="menuHodler">
+		
+	</nav>
+	
+	<div class="container">
+		<div class="page-header">
+			<h1>Grant access to API keys</h1>
+		</div>
+		<p class="lead">Use this page to grant access to this portfolio using API keys.</p>
+		
+		<div th:if="${success != null}" class="alert alert-success" role="alert" th:text="${success}"></div>
+		<div th:if="${error != null}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+	    			<h3 class="panel-title">Grant access to API key</h3>
+	  		</div>
+	  		<div class="panel-body">
+		  		<form action="#" th:action="@{/portfolio/apiAccess/{id}(id=${portfolioId})}" method="post">
+					<label for="apiKey">Select API Key</label>
+					<div class="form-group">
+			    			<select name="apiKey" id="apiKey" required="required" class="form-control" >
+							<option value="">-Select API Key-</option>
+							<option th:each="apiKey : ${apiKeysCurrentUser}" th:value="${apiKey.id}" th:text="${apiKey.apiKey + ' (' + apiKey.description + ')'}">API Key</option>
+						</select>
+			    		</div>
+					
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form>
+			</div>
+	  	</div>
+		
+		<div class="page-header">
+			<h2>Granted API keys</h2>
+		</div>
+		<p class="lead">The following API keys have access to this portfolio.</p>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Api key</th>
+					<th>Description</th>
+					<th>Owner</th>
+					<th>Revoke access</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="apiKey : ${apiKeysPortfolio}">
+					<td th:text="${apiKey.apiKey}">apiKey</td>
+					<td th:text="${apiKey.description}">description</td>
+					<td th:text="${apiKey.user.email}">email</td>
+					<td>
+						<a th:href="@{/portfolio/chart/{id}(id=${apiKey.id})}" >
+							<span class="glyphicon glyphicon-remove"></span>
+						</a>
+					</td>
+				</tr>
+				
+			</tbody>
+		</table>
+      
+    </div>
+    
+    <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/loadMenu.js"></script>
+
+</body>
+</html>

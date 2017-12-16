@@ -32,14 +32,9 @@ public class ApiKeyController {
 	
 	// the api generation form
 	@GetMapping("/manageKeys")
-    public String apiKeyForm(@RequestParam(value="message", required=false) String message,
-    		@RequestParam(value="error", required=false) boolean error,
-    		Model model) {
-		
-		
+    public String apiKeyForm(Model model) {
+				
 		model.addAttribute("apiKey", new ApiKey());
-		model.addAttribute("message", message);
-		model.addAttribute("error", error);
 		
 		// get the api keys for this user
 		User user = userService.findUserByEmail(userService.findLoggedInUsername());
@@ -51,11 +46,18 @@ public class ApiKeyController {
 	
 	
 	
-	@PostMapping(path="/add") // Map ONLY POST Requests
+	@PostMapping(path="/manageKeys") // Map ONLY POST Requests
 	public String registerNewKey (
 			@RequestParam String apiKey,
 			@RequestParam String description,
 			Model model) {
+		
+		model.addAttribute("apiKey", new ApiKey());
+		// get the api keys for this user
+		User user = userService.findUserByEmail(userService.findLoggedInUsername());
+		List<ApiKey> apiKeys = apiKeyService.findByUser(user);
+		model.addAttribute("apiKeys", apiKeys);
+		
 		
 		// check if the api key exists
 		ApiKey checkApiExists = apiKeyService.findApiKeyByApiKey(apiKey);
@@ -64,20 +66,19 @@ public class ApiKeyController {
 			// this is a one in a billion(?) change
 			// or someone tries to reuse a key
 			// anyway, create a error and send the user back from where they came from
-			return "redirect:/api/manageKeys?error=true&message=The API key has already been used.";
+			
+			model.addAttribute("error", "API Key already exists.");
+			return "apikey_form";
 		}
 		
 		// check if the api key is valid
 		if(!apiKeyService.checkValidApiKey(apiKey)) {
 			// the api key isn't valid
 			// redirect with an error
-			return "redirect:/api/manageKeys?error=true&message=The API key is not valid.";
+			model.addAttribute("error", "API Key is not valid.");
+			return "apikey_form";
 		}
 		
-		
-		// get the logged in user
-		String loggedInUser = userService.findLoggedInUsername();
-		User user = userService.findUserByEmail(loggedInUser);
 		
 		// create a empty portfolio set
 		Set<Portfolio> portfolios = new HashSet<>();
@@ -93,9 +94,12 @@ public class ApiKeyController {
 		// save the object
 		apiKeyService.saveApiKey(newApiKey);
 		
+		// refresh api keys
+		apiKeys = apiKeyService.findByUser(user);
+		model.addAttribute("apiKeys", apiKeys);
 		
-		
-		return "redirect:/api/manageKeys?error=false&message=The API key is successfully created.";
+		model.addAttribute("success", "API Key successfully added.");
+		return "apikey_form";
 	}
 	
 	@GetMapping(path="/generatekey")

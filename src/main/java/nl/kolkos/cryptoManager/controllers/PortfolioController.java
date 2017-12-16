@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import nl.kolkos.cryptoManager.ApiKey;
 import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinMarketCapCoin;
@@ -38,6 +39,7 @@ import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.UserRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
+import nl.kolkos.cryptoManager.services.ApiKeyService;
 import nl.kolkos.cryptoManager.services.UserService;
 
 @Controller    // This means that this class is a Controller
@@ -66,8 +68,8 @@ public class PortfolioController {
 	private UserService userService;
 	
 	@Autowired
-	private UserRepository userRepository;
-	
+	private ApiKeyService apiKeyService;
+			
 	// forward to list
 	@GetMapping("/")
     public String forwardRepositoryList(Model model) {
@@ -134,7 +136,6 @@ public class PortfolioController {
 		
         return "portfolio_results";
         
-        
     }
 	
 	// list all 
@@ -142,77 +143,6 @@ public class PortfolioController {
 	public @ResponseBody Iterable<Portfolio> getAllPortfolios() {
 		// This returns a JSON or XML with the users
 		return portfolioRepository.findAll();
-	}
-	
-	// handle get for the access page
-	@RequestMapping(value = "/access/{portfolioId}", method = RequestMethod.GET)
-	public String grantAccessToPortfolio(@PathVariable("portfolioId") long portfolioId, Model model) {
-		// check if the current user has access to this portfolio
-		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
-		if(!access) {
-			User user = userService.findUserByEmail(userService.findLoggedInUsername());
-			model.addAttribute("firstName", user.getName());
-			model.addAttribute("object", "portfolio");
-			return "not_authorized";
-		}
-		
-		// get the user with access to this portfolio
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
-		
-		model.addAttribute("users", portfolio.getUsers());
-		
-		return "portfolio_access";
-	}
-	
-	// handle post for the access page
-	@RequestMapping(value = "/access/{portfolioId}", method = RequestMethod.POST)
-	public String addUserAccessToPortfolio(@PathVariable("portfolioId") long portfolioId, 
-			@RequestParam(value="mail", required=false) String mail,
-			Model model) {
-		// check if the current user has access to this portfolio
-		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
-		if(!access) {
-			User user = userService.findUserByEmail(userService.findLoggedInUsername());
-			model.addAttribute("firstName", user.getName());
-			model.addAttribute("object", "portfolio");
-			return "not_authorized";
-		}
-		
-		// check if the e-mail address exists
-		if(userService.countByEmail(mail) > 0) {
-			
-			// get the user object for the mail address
-			User newtUserForPortfolio = userService.findUserByEmail(mail);
-			
-			// get the current portfolio object
-			Portfolio currentPortfolio = portfolioRepository.findById(portfolioId);
-			
-			// get the current list of users for the portfolio
-			Set<User> users = userService.findByPortfolios_Id(portfolioId);
-			// add the new user to the portfolio set
-			users.add(newtUserForPortfolio);
-						
-			// get the current portfolio set for this user
-			Set<Portfolio> portfolios = portfolioRepository.findByUsers_email(mail);
-			// add this portfolio to this set
-			portfolios.add(currentPortfolio);
-			
-			// set the portfolio set to the new user
-			newtUserForPortfolio.setPortfolios(portfolios);
-			
-			// set the user set to this portfolio
-			currentPortfolio.setUsers(users);
-			
-			// finally save the changes to the object
-			portfolioRepository.save(currentPortfolio);
-			userService.updateUser(newtUserForPortfolio);
-			
-			model.addAttribute("success", mail + " added");
-		}else {
-			model.addAttribute("error", mail + " does not exist.");
-		}
-		
-		return "portfolio_access";
 	}
 	
 	// get portfolio details
@@ -297,8 +227,168 @@ public class PortfolioController {
 		return "portfolio_details";
 	}
 	
+	// handle get for the access page
+	@RequestMapping(value = "/access/{portfolioId}", method = RequestMethod.GET)
+	public String grantAccessToPortfolio(@PathVariable("portfolioId") long portfolioId, Model model) {
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
+			return "not_authorized";
+		}
+		
+		// get the user with access to this portfolio
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		
+		model.addAttribute("users", portfolio.getUsers());
+		
+		return "portfolio_access";
+	}
 	
+	// handle post for the access page
+	@RequestMapping(value = "/access/{portfolioId}", method = RequestMethod.POST)
+	public String addUserAccessToPortfolio(@PathVariable("portfolioId") long portfolioId, 
+			@RequestParam(value="mail", required=false) String mail,
+			Model model) {
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
+			return "not_authorized";
+		}
+		
+		// check if the e-mail address exists
+		if(userService.countByEmail(mail) > 0) {
+			
+			// get the user object for the mail address
+			User newtUserForPortfolio = userService.findUserByEmail(mail);
+			
+			// get the current portfolio object
+			Portfolio currentPortfolio = portfolioRepository.findById(portfolioId);
+			
+			// get the current list of users for the portfolio
+			Set<User> users = userService.findByPortfolios_Id(portfolioId);
+			// add the new user to the portfolio set
+			users.add(newtUserForPortfolio);
+						
+			// get the current portfolio set for this user
+			Set<Portfolio> portfolios = portfolioRepository.findByUsers_email(mail);
+			// add this portfolio to this set
+			portfolios.add(currentPortfolio);
+			
+			// set the portfolio set to the new user
+			newtUserForPortfolio.setPortfolios(portfolios);
+			
+			// set the user set to this portfolio
+			currentPortfolio.setUsers(users);
+			
+			// finally save the changes to the object
+			portfolioRepository.save(currentPortfolio);
+			userService.updateUser(newtUserForPortfolio);
+			
+			model.addAttribute("success", mail + " added");
+		}else {
+			model.addAttribute("error", mail + " does not exist.");
+		}
+		
+		return "portfolio_access";
+	}
 	
+	// handle get for the access page
+	@RequestMapping(value = "/apiAccess/{portfolioId}", method = RequestMethod.GET)
+	public String grantAccessApiToPortfolio(@PathVariable("portfolioId") long portfolioId, Model model) {
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
+			return "not_authorized";
+		}
+		
+		// get the api keys with access to this portfolio
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		model.addAttribute("apiKeysPortfolio", portfolio.getApiKeys());
+		
+		// get the api keys of the current user
+		User user = userService.findUserByEmail(userService.findLoggedInUsername());
+		List<ApiKey> apiKeysCurrentUser = apiKeyService.findByUser(user);
+		model.addAttribute("apiKeysCurrentUser", apiKeysCurrentUser);
+		
+		
+		
+		return "portfolio_access_api";
+	}
+	
+	@RequestMapping(value = "/apiAccess/{portfolioId}", method = RequestMethod.POST)
+	public String handleNewApiAccess(@PathVariable("portfolioId") long portfolioId, 
+			@RequestParam(value="apiKey", required=false) long apiKeyId,
+			Model model) {
+		
+		// get the current logged in user
+		String username = userService.findLoggedInUsername();
+		User currentUser = userService.findUserByEmail(username);
+		
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			model.addAttribute("firstName", currentUser.getName());
+			model.addAttribute("object", "portfolio");
+			return "not_authorized";
+		}
+		
+		System.out.println("Voor user check");
+		
+		// get the API Key object
+		ApiKey apiKey = apiKeyService.findById(apiKeyId);
+		
+		// check if the apiKey exists
+		if(apiKey == null) {
+			model.addAttribute("firstName", currentUser.getName());
+			model.addAttribute("object", "API Key");
+			return "not_authorized";
+		}
+		
+		// check if the api key is registered by the current user
+		if(!apiKey.getUser().equals(currentUser)) {
+			model.addAttribute("firstName", currentUser.getName());
+			model.addAttribute("object", "API Key");
+			return "not_authorized";
+		}
+		System.out.println("Na user check");
+		// checks OK
+		
+		// get the current portfolios
+		Set<Portfolio> portfolios = apiKey.getPortfolios();
+		
+		
+		// get the portfolio
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		// get the list with api keys which currently have access
+		Set<ApiKey> apiKeys = portfolio.getApiKeys();
+		
+		// now add to both objects
+		apiKeys.add(apiKey);
+		portfolios.add(portfolio);
+		
+		// save both objects
+		apiKeyService.saveApiKey(apiKey);
+		portfolioRepository.save(portfolio);
+		
+		
+		// now add changes to the model
+		List<ApiKey> apiKeysCurrentUser = apiKeyService.findByUser(currentUser);
+		model.addAttribute("apiKeysCurrentUser", apiKeysCurrentUser);
+		model.addAttribute("apiKeysPortfolio", portfolio.getApiKeys());
+		
+		model.addAttribute("success", "API Key successfully added");
+		
+		return "portfolio_access_api";
+	}
 	
 	
 	

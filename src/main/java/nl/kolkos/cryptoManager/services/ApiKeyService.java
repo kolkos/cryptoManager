@@ -43,4 +43,8 @@ public class ApiKeyService {
 		UUID uuid = UUID.randomUUID();
 		return uuid.toString();
 	}
+		
+	public ApiKey findById(Long apiKeyId) {
+		return apiKeyRepository.findById(apiKeyId);
+	}
 }

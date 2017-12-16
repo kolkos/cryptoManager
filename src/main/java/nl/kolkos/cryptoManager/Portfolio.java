@@ -1,8 +1,6 @@
 package nl.kolkos.cryptoManager;
 
-import java.util.List;
 import java.util.Set;
-
 import javax.persistence.*;
 
 
@@ -48,6 +46,13 @@ public class Portfolio {
 	}
 	public void setUsers(Set<User> users) {
 		this.users = users;
+	}
+	
+	public Set<ApiKey> getApiKeys() {
+		return apiKeys;
+	}
+	public void setApiKeys(Set<ApiKey> apiKeys) {
+		this.apiKeys = apiKeys;
 	}
 	
 

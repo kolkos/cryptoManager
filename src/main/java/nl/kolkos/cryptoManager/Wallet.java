@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity // This tells Hibernate to make a table out of this class
 public class Wallet {
 	@Id
@@ -33,6 +35,9 @@ public class Wallet {
 	
 	@Transient
 	private double currentWalletAmount;
+	
+	@Transient
+	private double currentWalletInvestment;
 	
 	public Long getId() {
 		return id;
@@ -63,6 +68,7 @@ public class Wallet {
 		return this.coin;
 	}
 	
+	@JsonIgnore
 	public Portfolio getPortfolio() {
 		return portfolio;
 	}
@@ -83,6 +89,12 @@ public class Wallet {
 		this.currentWalletAmount = currentWalletAmount;
 	}
 	
+	public double getCurrentWalletInvestment() {
+		return currentWalletInvestment;
+	}
+	public void setCurrentWalletInvestment(double currentWalletInvestment) {
+		this.currentWalletInvestment = currentWalletInvestment;
+	}
 	/**
 	 * Because I use the google charts api, I don't want to send the whole wallet address to google
 	 * @return the first and last 5 characters of the wallet address

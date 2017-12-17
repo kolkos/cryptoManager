@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import nl.kolkos.cryptoManager.Portfolio;
-import nl.kolkos.cryptoManager.services.ApiKeyService;
+import nl.kolkos.cryptoManager.Wallet;
+import nl.kolkos.cryptoManager.api.objects.ApiPortfolio;
 import nl.kolkos.cryptoManager.services.ApiRequestService;
 
 
@@ -56,21 +57,52 @@ public class ApiRequestController {
 	}
 	
 	@GetMapping(path="/{apiKey}/portfolio/{portfolioId}")
-	public @ResponseBody Iterable<Portfolio> getPortfolioDetails(@PathVariable("apiKey") String apiKey,
+	public @ResponseBody ApiPortfolio getPortfolioDetails(@PathVariable("apiKey") String apiKey,
 			@PathVariable("portfolioId") long portfolioId) {
 		// check if api key exists
 		if(!apiRequestService.checkApiKeyExists(apiKey)) {
 			throw new IllegalArgumentException("Unknown API Key"); 
 		}
 		
-		Iterable<Portfolio> result = apiRequestService.getPortfoliosForKey(apiKey);
+		// check access for this api key
+		if(!apiRequestService.checkPortfolioAccessForApiKey(apiKey, portfolioId)) {
+			throw new IllegalArgumentException("The API key does not have access to this portfolio"); 
+		}
 		
-		return null;
+		
+		return apiRequestService.getPortfolioById(portfolioId);
 	}
 	
-	@GetMapping(path="/error")
-	public @ResponseBody Iterable<String> testError() {
-		throw new IllegalArgumentException("Test fout"); 
+	@GetMapping(path="/{apiKey}/wallet")
+	public @ResponseBody Iterable<Wallet> getWallets(@PathVariable("apiKey") String apiKey) {
+		// check if api key exists
+		if(!apiRequestService.checkApiKeyExists(apiKey)) {
+			throw new IllegalArgumentException("Unknown API Key"); 
+		}
+		
+		// get the wallets for this api key
+		Iterable<Wallet> result = apiRequestService.findByPortfolioApiKeysApiKey(apiKey);
+		
+		return result;
 	}
+	
+	@GetMapping(path="/{apiKey}/wallet/{walletId}")
+	public @ResponseBody Wallet getSingleWallet(@PathVariable("apiKey") String apiKey,
+			@PathVariable("walletId") long walletId) {
+		// check if api key exists
+		if(!apiRequestService.checkApiKeyExists(apiKey)) {
+			throw new IllegalArgumentException("Unknown API Key"); 
+		}
+		
+		// check if the api key has access
+		if(!apiRequestService.checkWalletAccessForApiKey(apiKey, walletId)) {
+			throw new IllegalArgumentException("The API key does not have access to this wallet"); 
+		}
+		
+		Wallet wallet = apiRequestService.getWalletById(walletId);
+		
+		return wallet;
+	}
+	
 	
 }

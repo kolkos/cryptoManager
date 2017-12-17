@@ -21,6 +21,8 @@ public interface WalletRepository extends CrudRepository<Wallet, Long> {
 	
 	List<Wallet> findByPortfolioUsersEmail(String email);
 	
+	List<Wallet> findByPortfolioApiKeysApiKey(String apiKey);
+	
 	Wallet findById(Long id);
 	
 }

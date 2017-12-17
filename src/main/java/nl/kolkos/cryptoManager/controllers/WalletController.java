@@ -136,19 +136,6 @@ public class WalletController {
 		return walletRepository.findAll();
 	}
 	
-//	@RequestMapping(value = "/byPortfolioId/{portfolioId}", method = RequestMethod.GET)
-//	public ResponseEntity<List<Wallet>> getWalletsByPortfolioId(@PathVariable("portfolioId") long portfolioId) {
-//		// This returns a JSON or XML with the users
-//		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
-//		if (wallets.isEmpty()) {
-//            System.out.println("Nothing found");
-//			return new ResponseEntity(HttpStatus.NO_CONTENT);
-//            // You many decide to return HttpStatus.NOT_FOUND
-//        }
-//        return new ResponseEntity<List<Wallet>>(wallets, HttpStatus.OK);
-//		
-//
-//	}
 	
 	// get wallet details
 	@RequestMapping(value = "/showWallet/{walletId}", method = RequestMethod.GET)

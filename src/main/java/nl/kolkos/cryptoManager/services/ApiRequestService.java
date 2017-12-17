@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import nl.kolkos.cryptoManager.ApiKey;
 import nl.kolkos.cryptoManager.Portfolio;
+import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 
 @Service
 public class ApiRequestService {
@@ -16,14 +17,22 @@ public class ApiRequestService {
 	@Autowired
 	private ApiKeyService apiKeyService;
 	
-	public Set<Portfolio> getPortfoliosForApiKey(String apiKey){
-		Set<Portfolio> portfolios = new HashSet<>();
-		
-		// check if the api key exists
+	@Autowired
+	private PortfolioRepository portfolioRepository;
+	
+	public boolean checkApiKeyExists(String apiKey) {
+		boolean keyExists = false;
 		ApiKey apiKeyRequester = apiKeyService.findApiKeyByApiKey(apiKey);
+		if(apiKeyRequester != null) {
+			keyExists = true;
+		}
+		return keyExists;
+	}
+	
+	public Set<Portfolio> getPortfoliosForKey(String apiKey){
 		
 		
-		return portfolios;
+		return portfolioRepository.findByApiKeys_apiKey(apiKey);
 	}
 	
 }

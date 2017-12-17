@@ -16,4 +16,6 @@ public interface PortfolioRepository extends CrudRepository<Portfolio, Long> {
 	
 	Set<Portfolio> findByUsers_email(String email);
 	
+	Set<Portfolio> findByApiKeys_apiKey(String apiKey);
+	
 }

@@ -3,6 +3,8 @@ package nl.kolkos.cryptoManager;
 import java.util.Set;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Portfolio {
@@ -41,6 +43,8 @@ public class Portfolio {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	@JsonIgnore
 	public Set<User> getUsers() {
 		return users;
 	}
@@ -48,6 +52,7 @@ public class Portfolio {
 		this.users = users;
 	}
 	
+	@JsonIgnore
 	public Set<ApiKey> getApiKeys() {
 		return apiKeys;
 	}

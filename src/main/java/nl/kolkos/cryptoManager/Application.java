@@ -35,33 +35,33 @@ import nl.kolkos.cryptoManager.services.UserService;
 @EnableJpaAuditing
 public class Application {
 	
-	@Autowired
-	@Qualifier(value = "walletRepository")
-	private WalletRepository walletRepository;
-	
-	@Autowired
-	@Qualifier(value = "coinRepository")
-	private CoinRepository coinRepository;
-	
-	@Autowired
-	@Qualifier(value = "portfolioRepository")
-	private PortfolioRepository portfolioRepository;
-	
-	@Autowired
-	@Qualifier(value = "settingsRepository")
-	private SettingsRepository settingsRepository;
-	
-	@Autowired
-	@Qualifier(value = "depositRepository")
-	private DepositRepository depositRepository;
-	
-	@Autowired
-	@Qualifier(value = "coinValueRepository")
-	private CoinValueRepository coinValueRepository;
-	
-	@Autowired
-	@Qualifier(value = "coinMarketCapCoinRepository")
-	private CoinMarketCapCoinRepository coinMarketCapCoinRepository;
+//	@Autowired
+//	@Qualifier(value = "walletRepository")
+//	private WalletRepository walletRepository;
+//	
+//	@Autowired
+//	@Qualifier(value = "coinRepository")
+//	private CoinRepository coinRepository;
+//	
+//	@Autowired
+//	@Qualifier(value = "portfolioRepository")
+//	private PortfolioRepository portfolioRepository;
+//	
+//	@Autowired
+//	@Qualifier(value = "settingsRepository")
+//	private SettingsRepository settingsRepository;
+//	
+//	@Autowired
+//	@Qualifier(value = "depositRepository")
+//	private DepositRepository depositRepository;
+//	
+//	@Autowired
+//	@Qualifier(value = "coinValueRepository")
+//	private CoinValueRepository coinValueRepository;
+//	
+//	@Autowired
+//	@Qualifier(value = "coinMarketCapCoinRepository")
+//	private CoinMarketCapCoinRepository coinMarketCapCoinRepository;
 	
 
 	

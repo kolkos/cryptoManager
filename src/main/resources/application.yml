@@ -1,0 +1,10 @@
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-alias: tomcat-localhost
+    key-password: changeme
+    key-store: classpath:keystore.jks
+    key-store-provider: SUN
+    key-store-type: JKS
+    key-store-password: changeme

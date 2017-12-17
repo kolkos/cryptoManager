@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import nl.kolkos.cryptoManager.ApiKey;
+import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.services.ApiKeyService;
@@ -108,5 +111,42 @@ public class ApiKeyController {
 		return apiKeyService.generateRandomKey();
 	}
 		
+	@RequestMapping(value = "/details/{apiKeyId}", method = RequestMethod.GET)
+	public String showDepositDetails(@PathVariable("apiKeyId") long apiKeyId, Model model) {
 		
+		// check if the selected key is owned by the current user
+		ApiKey apiKey = apiKeyService.findById(apiKeyId);
+		User user = userService.findUserByEmail(userService.findLoggedInUsername());
+		if(!apiKey.getUser().equals(user)) {
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "API Key");
+			return "not_authorized";
+		}
+		
+		// add the ApiKey to the model
+		model.addAttribute("apiKey", apiKey);
+		
+		
+		return "apikey_details";
+	}
+	
+	@PostMapping(path="/deleteKey") // Map ONLY POST Requests
+	public String removeApiKey (
+			@RequestParam long apiKeyId,
+			Model model) {
+		// check if the selected key is owned by the current user
+		ApiKey apiKey = apiKeyService.findById(apiKeyId);
+		User user = userService.findUserByEmail(userService.findLoggedInUsername());
+		if(!apiKey.getUser().equals(user)) {
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "API Key");
+			return "not_authorized";
+		}
+		
+		apiKeyService.removeApiKey(apiKey);
+		
+		
+		return "redirect:/api/manageKeys";
+	}
+	
 }

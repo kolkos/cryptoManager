@@ -22,3 +22,10 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+### Security ###
+# ignore the keystore
+keystore.jks
+# ignore the application yml, because it contains the password
+application.yml
+

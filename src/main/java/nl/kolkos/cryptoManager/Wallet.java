@@ -39,6 +39,21 @@ public class Wallet {
 	@Transient
 	private double currentWalletInvestment;
 	
+	public Wallet() {
+		
+	}
+	
+	public Wallet(Wallet walletToCopy) {
+		this.id = walletToCopy.id;
+		this.address = walletToCopy.address;
+		this.description = walletToCopy.description;
+		this.coin = walletToCopy.coin;
+		this.portfolio = walletToCopy.portfolio;
+		this.currentWalletValue = walletToCopy.currentWalletValue;
+		this.currentWalletAmount = walletToCopy.currentWalletAmount;
+		this.currentWalletInvestment = walletToCopy.currentWalletInvestment;
+	}
+	
 	public Long getId() {
 		return id;
 	}

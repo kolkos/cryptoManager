@@ -5,6 +5,8 @@ package nl.kolkos.cryptoManager;
 import javax.persistence.*;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 
 
@@ -24,14 +26,27 @@ public class Coin {
 	private double currentCoinValue;
 	
 	@Transient
+	@JsonIgnore
 	private double winLoss1h;
 	
 	@Transient
+	@JsonIgnore
 	private double winLoss1d;
 	
 	@Transient
+	@JsonIgnore
 	private double winLoss1w;
 	
+	public Coin() {
+		
+	}
+	
+	public Coin(Coin coinToCopy) {
+		this.id = coinToCopy.id;
+		this.coinMarketCapCoin = coinToCopy.coinMarketCapCoin;
+		this.currentCoinValue = coinToCopy.currentCoinValue;
+		
+	}
 			
 	public Long getId() {
 		return id;

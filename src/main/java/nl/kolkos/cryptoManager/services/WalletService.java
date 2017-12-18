@@ -1,6 +1,7 @@
 package nl.kolkos.cryptoManager.services;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,10 @@ public class WalletService {
 		return wallets;
 	}
 	
+	public List<Wallet> findByPortfolio_Id(Long portfolioId){
+		return walletRepository.findByPortfolio_Id(portfolioId);
+	}
+	
 	public Wallet findById(long walletId) {
 		return walletRepository.findById(walletId);
 	}
@@ -61,6 +66,42 @@ public class WalletService {
 		double totalWithdrawnToCash = withdrawalService.getSumOfWithdrawalsToCashForWalletId(wallet.getId());
 		double totalInvested = totalDeposited - totalWithdrawnToCash;
 				
+		wallet.setCurrentWalletAmount(currentBalance);
+		wallet.setCurrentWalletValue(currentValue);
+		wallet.setCurrentWalletInvestment(totalInvested);
+		
+		return wallet;
+	}
+	
+	public Wallet getWalletHistoricalValues(Wallet wallet, Date dateIntervalStart, Date dateIntervalEnd) {
+		// get the attached coin
+		Coin coin = wallet.getCoin();
+				
+		// get the average value for the coin in the interval
+		double avgCoinValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coin.getId(), dateIntervalStart, dateIntervalEnd);
+		// prevent 0 by using the last known value
+		if(avgCoinValue == 0) {
+			avgCoinValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coin.getId(), dateIntervalStart);
+		}
+		coin.setCurrentCoinValue(avgCoinValue);
+		
+		// get the amount of deposited coins
+		double totalAmountDeposited = depositService.getSumOfAmountForWalletIdAndBeforeDepositDate(wallet.getId(), dateIntervalEnd);
+		
+		// get the amount of withdrawn coins
+		double totalAmountWithdrawn = withdrawalService.getSumOfAmountForWalletIdAndBeforeWithdrawalDate(wallet.getId(), dateIntervalEnd);
+		
+		double currentBalance = totalAmountDeposited - totalAmountWithdrawn;
+		
+		// calculate the current value for this wallet
+		double currentValue = currentBalance * avgCoinValue;
+		
+		// now get the investment
+		double totalDeposited = depositService.getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(wallet.getId(), dateIntervalEnd);
+		double totalWithdrawnToCash = withdrawalService.getSumOfWithdrawalToCashValueForWalletIdAndBeforeWithdrawalDate(wallet.getId(), dateIntervalEnd);
+		double totalInvested = totalDeposited - totalWithdrawnToCash;
+		
+		wallet.setCoin(coin);
 		wallet.setCurrentWalletAmount(currentBalance);
 		wallet.setCurrentWalletValue(currentValue);
 		wallet.setCurrentWalletInvestment(totalInvested);

@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity // This tells Hibernate to make a table out of this class
 public class CoinMarketCapCoin {
 	@Id
@@ -12,6 +14,7 @@ public class CoinMarketCapCoin {
 	private String symbol;
 	
 	@Transient
+	@JsonIgnore
 	private boolean synced;
 	
 	

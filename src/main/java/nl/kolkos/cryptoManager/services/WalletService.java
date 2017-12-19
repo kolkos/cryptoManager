@@ -65,10 +65,20 @@ public class WalletService {
 		double totalDeposited = depositService.getSumOfPurchaseValueForWalletId(wallet.getId());
 		double totalWithdrawnToCash = withdrawalService.getSumOfWithdrawalsToCashForWalletId(wallet.getId());
 		double totalInvested = totalDeposited - totalWithdrawnToCash;
+		
+		// the win/loss
+		double profitLoss = currentValue - totalInvested;
+		
+		// calculate the roi
+		double roi = profitLoss / totalInvested;
+		
 				
 		wallet.setCurrentWalletAmount(currentBalance);
 		wallet.setCurrentWalletValue(currentValue);
 		wallet.setCurrentWalletInvestment(totalInvested);
+		wallet.setCurrentWalletProfitLoss(profitLoss);
+		wallet.setCurrentWalletROI(roi);
+		
 		
 		return wallet;
 	}
@@ -101,10 +111,18 @@ public class WalletService {
 		double totalWithdrawnToCash = withdrawalService.getSumOfWithdrawalToCashValueForWalletIdAndBeforeWithdrawalDate(wallet.getId(), dateIntervalEnd);
 		double totalInvested = totalDeposited - totalWithdrawnToCash;
 		
+		// the win/loss
+		double profitLoss = currentValue - totalInvested;
+		
+		// calculate the roi
+		double roi = profitLoss / totalInvested;
+		
 		wallet.setCoin(coin);
 		wallet.setCurrentWalletAmount(currentBalance);
 		wallet.setCurrentWalletValue(currentValue);
 		wallet.setCurrentWalletInvestment(totalInvested);
+		wallet.setCurrentWalletProfitLoss(profitLoss);
+		wallet.setCurrentWalletROI(roi);
 		
 		return wallet;
 	}

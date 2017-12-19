@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -19,6 +20,7 @@ import nl.kolkos.cryptoManager.PortfolioChartLine;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.api.objects.ApiPortfolio;
 import nl.kolkos.cryptoManager.api.objects.ApiPortfolioHistory;
+import nl.kolkos.cryptoManager.api.objects.ApiWalletHistory;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
@@ -41,7 +43,7 @@ public class ApiRequestService {
 	private CoinValueRepository coinValueRepository;
 	
 	@Autowired
-	private CoinRepository coinRepository;
+	private CoinService coinService;
 	
 	public boolean checkApiKeyExists(String apiKey) {
 		boolean keyExists = false;
@@ -143,7 +145,7 @@ public class ApiRequestService {
 	
 	public Iterable<Coin> getCoins(){
 		// first get all the registerd coins
-		Iterable<Coin> coins = coinRepository.findAll();
+		Iterable<Coin> coins = coinService.findAllCoins();
 		
 		// current time, used for the database query
 		Calendar now = Calendar.getInstance();
@@ -157,8 +159,26 @@ public class ApiRequestService {
 		return coins;
 	}
 	
+	public LinkedHashMap<String, String> updateCoins(){
+		
+		LinkedHashMap<String, String> result = new LinkedHashMap<>();
+		
+		// get the coins
+		Iterable<Coin> coins = coinService.findAllCoins();
+		
+		// loop through coins
+		for(Coin coin : coins) {
+			// actually update the coin
+			
+			
+			result.put(coin.getCoinMarketCapCoin().getSymbol(), coinService.updateCoinValues(coin));
+		}
+		
+		return result;
+	}
+	
 	public Coin getSingleCoin(long coinId) {
-		Coin coin = coinRepository.findById(coinId);
+		Coin coin = coinService.findById(coinId);
 		Calendar now = Calendar.getInstance();
 		double lastKnownValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coin.getId(), now.getTime());
 		coin.setCurrentCoinValue(lastKnownValue);
@@ -284,5 +304,52 @@ public class ApiRequestService {
 		}
 		
 		return apiPortfolioHistoryList;
+	}
+	
+	public Iterable<ApiWalletHistory> getWalletHistory(long walletId, int period, int interval){
+		// now determine the begin and end time
+		Calendar start = Calendar.getInstance();
+		start.add(Calendar.MINUTE, -period);
+		start.set(Calendar.SECOND, 0);
+		
+		Calendar end = Calendar.getInstance();
+		end.set(Calendar.SECOND, 0);
+		
+		List<ApiWalletHistory> apiWalletHistoryList = new ArrayList<>();
+		
+		// get the wallet
+		Wallet wallet = walletService.findById(walletId);
+		
+		for (Date date = start.getTime(); start.before(end) || start.equals(end); start.add(Calendar.MINUTE, interval), date = start.getTime()) {
+			Calendar startInterval = Calendar.getInstance();
+			startInterval.setTime(date);
+			startInterval.set(Calendar.SECOND, 0);
+			
+			Calendar endInterval = Calendar.getInstance();
+			endInterval.setTime(date);
+			endInterval.add(Calendar.MINUTE, interval);
+			endInterval.add(Calendar.SECOND, -1);
+			
+			// get the historical values for this wallet
+			wallet = walletService.getWalletHistoricalValues(wallet, startInterval.getTime(), endInterval.getTime());
+			
+			// create a copy of the wallet
+			Wallet historicalWallet = new Wallet(wallet);
+			
+			
+			// create the ApiWalletHistory object
+			ApiWalletHistory apiWalletHistory = new ApiWalletHistory();
+			apiWalletHistory.setDate(date);
+			// add the copy of the wallet
+			apiWalletHistory.setWallet(historicalWallet);
+			
+			Coin historicalCoin = new Coin(wallet.getCoin());
+			historicalWallet.setCoin(historicalCoin);
+			
+			
+			apiWalletHistoryList.add(apiWalletHistory);
+		}
+		
+		return apiWalletHistoryList;
 	}
 }

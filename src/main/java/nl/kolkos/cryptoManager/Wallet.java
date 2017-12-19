@@ -39,6 +39,12 @@ public class Wallet {
 	@Transient
 	private double currentWalletInvestment;
 	
+	@Transient
+	private double currentWalletProfitLoss;
+	
+	@Transient
+	private double currentWalletROI;
+	
 	public Wallet() {
 		
 	}
@@ -52,6 +58,9 @@ public class Wallet {
 		this.currentWalletValue = walletToCopy.currentWalletValue;
 		this.currentWalletAmount = walletToCopy.currentWalletAmount;
 		this.currentWalletInvestment = walletToCopy.currentWalletInvestment;
+		this.currentWalletProfitLoss = walletToCopy.currentWalletProfitLoss;
+		this.currentWalletROI = walletToCopy.currentWalletROI;
+		
 	}
 	
 	public Long getId() {
@@ -110,6 +119,22 @@ public class Wallet {
 	public void setCurrentWalletInvestment(double currentWalletInvestment) {
 		this.currentWalletInvestment = currentWalletInvestment;
 	}
+	public double getCurrentWalletProfitLoss() {
+		return currentWalletProfitLoss;
+	}
+
+	public void setCurrentWalletProfitLoss(double currentWalletProfitLoss) {
+		this.currentWalletProfitLoss = currentWalletProfitLoss;
+	}
+
+	public double getCurrentWalletROI() {
+		return currentWalletROI;
+	}
+
+	public void setCurrentWalletROI(double currentWalletROI) {
+		this.currentWalletROI = currentWalletROI;
+	}
+
 	/**
 	 * Because I use the google charts api, I don't want to send the whole wallet address to google
 	 * @return the first and last 5 characters of the wallet address

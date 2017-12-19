@@ -22,6 +22,7 @@ import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.api.objects.ApiPortfolio;
 import nl.kolkos.cryptoManager.api.objects.ApiPortfolioHistory;
+import nl.kolkos.cryptoManager.api.objects.ApiWalletHistory;
 import nl.kolkos.cryptoManager.services.ApiRequestService;
 
 
@@ -55,15 +56,27 @@ public class ApiRequestController {
 		helpMap.put("/api/request/help", "This help text");
 		helpMap.put("/api/request/{API Key}/portfolio", "Get all portfolio's this API key has access to");
 		helpMap.put("/api/request/{API Key}/portfolio/{Portfolio ID}", "Get detailed information for the chosen portfolio (by ID)");
+		helpMap.put("/api/request/{API Key}/portfolio/{Portfolio ID}/history/{period}/{interval}", "Get historical data for the chosen portfolio. Period and interval require the following format: 1m, 2h, 3d, 4w, etc.");
 		helpMap.put("/api/request/{API Key}/wallet", "Get all wallets this API key has access to");
 		helpMap.put("/api/request/{API Key}/wallet/{Wallet ID}", "Get detailed information for the chosen wallet (by ID)");
+		helpMap.put("/api/request/{API Key}/wallet/{Wallet ID}/history/{period}/{interval}", "Get historical data for the chosen wallet. Period and interval require the following format: 1m, 2h, 3d, 4w, etc.");
 		helpMap.put("/api/request/{API Key}/coin", "Get the current value for all the registered coins");
 		helpMap.put("/api/request/{API Key}/coin/{Coin ID}", "Get the current value of the selected coin (by ID)");
+		helpMap.put("/api/request/{API Key}/coin/update", "Request an update of the coin values (coin values are automatically updated every 5 minutes)");
 
 		
 		return helpMap;
 	}
 	
+	@GetMapping(path="/{apiKey}/coin/update")
+	public @ResponseBody HashMap<String, String> updateCoinValues(@PathVariable("apiKey") String apiKey) {
+		// check if api key exists
+		if(!apiRequestService.checkApiKeyExists(apiKey)) {
+			throw new IllegalArgumentException("Unknown API Key"); 
+		}
+		
+		return apiRequestService.updateCoins();
+	}
 	
 	@GetMapping(path="/{apiKey}/portfolio")
 	public @ResponseBody Iterable<Portfolio> getPortfolios(@PathVariable("apiKey") String apiKey) {
@@ -112,9 +125,6 @@ public class ApiRequestController {
 		int periodInMinutes = apiRequestService.translateTimeStringToMinutes(period);
 		int intervalInMinutes = apiRequestService.translateTimeStringToMinutes(interval);
 		
-		System.out.println("Period translates to: " + periodInMinutes + "minutes");
-		System.out.println("Interval translates to: " + intervalInMinutes + "minutes");
-		
 		// now check if the number of results is allowed
 		if(!apiRequestService.checkIfNumberOfResultsIsAllowed(periodInMinutes, intervalInMinutes)) {
 			// it isn't allowed, calculate the number of intervals and report to the user
@@ -155,6 +165,35 @@ public class ApiRequestController {
 		Wallet wallet = apiRequestService.getWalletById(walletId);
 		
 		return wallet;
+	}
+	
+	@GetMapping(path="/{apiKey}/wallet/{walletId}/history/{period}/{interval}")
+	public @ResponseBody Iterable<ApiWalletHistory> getHistoryForWallet(@PathVariable("apiKey") String apiKey,
+			@PathVariable("walletId") long walletId,
+			@PathVariable("period") String period,
+			@PathVariable("interval") String interval) {
+		// check if api key exists
+		if(!apiRequestService.checkApiKeyExists(apiKey)) {
+			throw new IllegalArgumentException("Unknown API Key"); 
+		}
+		
+		// check access for this api key
+		if(!apiRequestService.checkWalletAccessForApiKey(apiKey, walletId)) {
+			throw new IllegalArgumentException("The API key does not have access to this portfolio"); 
+		}
+		
+		int periodInMinutes = apiRequestService.translateTimeStringToMinutes(period);
+		int intervalInMinutes = apiRequestService.translateTimeStringToMinutes(interval);
+		
+		// now check if the number of results is allowed
+		if(!apiRequestService.checkIfNumberOfResultsIsAllowed(periodInMinutes, intervalInMinutes)) {
+			// it isn't allowed, calculate the number of intervals and report to the user
+			int nrOfResults = periodInMinutes / intervalInMinutes;
+			
+			throw new IllegalArgumentException("The requested period with interval creates " + nrOfResults + " results. This is too much. Please specify a smaller period or a larger interval."); 
+		}
+		
+		return apiRequestService.getWalletHistory(walletId, periodInMinutes, intervalInMinutes);
 	}
 	
 	@GetMapping(path="/{apiKey}/coin")

@@ -33,6 +33,11 @@
 		</div>
 		<p class="lead">Use this page to grant access to this portfolio using API keys.</p>
 		
+		<p>
+			<a th:href="@{/portfolio/showPortfolio/{id}(id=${portfolioId})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-zoom-in"></span> Return to details</a>
+			<a href="/portfolio/results" class="btn btn-info" role="button"><span class="glyphicon glyphicon-list"></span> Return to list</a>
+		</p>
+		
 		<div th:if="${success != null}" class="alert alert-success" role="alert" th:text="${success}"></div>
 		<div th:if="${error != null}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 		<div id="userActionResult" style="display: none;"></div>
@@ -51,7 +56,7 @@
 						</select>
 			    		</div>
 					
-					<button type="submit" class="btn btn-primary">Submit</button>
+					<button type="submit" class="btn btn-warning">Submit</button>
 				</form>
 			</div>
 	  	</div>

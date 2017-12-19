@@ -37,8 +37,12 @@
 		<div class="page-header">
 			<h1 th:text="${portfolioName}">portfolio</h1>
 		</div>
-		<p class="lead">This page let's you create charts for the selected portfolio. Return to the details page by clicking <a th:href="@{/portfolio/showPortfolio/{id}(id=${portfolioId})}">here</a>.</p>
+		<p class="lead">This page let's you create charts for the selected portfolio.</p>
 		
+		<p>
+			<a th:href="@{/portfolio/showPortfolio/{id}(id=${portfolioId})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-zoom-in"></span> Return to details</a>
+			<a href="/portfolio/results" class="btn btn-info" role="button"><span class="glyphicon glyphicon-list"></span> Return to list</a>
+		</p>
 		
 		<form action="#" id="chartCreatorForm">
 			<input type="hidden" name="portfolioId" id="portfolioId" th:value="${portfolioId}" />

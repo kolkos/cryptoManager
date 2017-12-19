@@ -30,35 +30,36 @@
 	
 	<div class="container">
 		<div class="page-header">
-			<h1>Create portfolio</h1>
+			<h1>Edit portfolio</h1>
 		</div>
-		<p class="lead">With this page you can create a portfolio. You can see the portfolio's you are authorized to <a href="/portfolio/results">here</a>.</p>
+		<p class="lead">With this page you can edit a portfolio. </p>
 		
 		<p>
+			<a th:href="@{/portfolio/showPortfolio/{id}(id=${portfolioId})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-zoom-in"></span> Return to details</a>
 			<a href="/portfolio/results" class="btn btn-info" role="button"><span class="glyphicon glyphicon-list"></span> Return to list</a>
 		</p>
 		
 		<div class="panel panel-default">
 			<div class="panel-heading">
-	    			<h3 class="panel-title">Create portfolio</h3>
+	    			<h3 class="panel-title">Edit portfolio</h3>
 	  		</div>
 	  		<div class="panel-body">
-		  		<form action="#" th:action="@{/portfolio/add}" th:object="${portfolio}" method="post">
+		  		<form action="#" th:action="@{/portfolio/edit/{id}(id=${portfolioId})}" th:object="${portfolio}" method="post">
 					<label for="name">Name</label>
 					<div class="input-group">
 						<span class="input-group-addon" id="namePrefix"><span class="glyphicon glyphicon-tag"></span></span>
-					  	<input type="text" class="form-control" th:field="*{name}" aria-describedby="namePrefix" required="required"/>
+					  	<input type="text" class="form-control" th:field="*{name}" aria-describedby="namePrefix" required="required" th:value="${portfolio.name}"/>
 					</div>
 					<br/>
 					
 					<label for="description">Description</label>
 					<div class="input-group">
 						<span class="input-group-addon" id="remarksPrefix"><span class="glyphicon glyphicon-pushpin"></span></span>
-					  	<input type="text" class="form-control" th:field="*{description}" aria-describedby="remarksPrefix"/>
+					  	<input type="text" class="form-control" th:field="*{description}" aria-describedby="remarksPrefix" th:value="${portfolio.description}"/>
 					</div>
 					<br />
 					
-					<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Submit</button>
+					<button type="submit" class="btn btn-warning">Update</button>
 				</form>
 			</div>
 	  	</div>

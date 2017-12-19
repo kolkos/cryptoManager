@@ -32,7 +32,11 @@
 		<div class="page-header">
 			<h1 th:text="${portfolio.name}">portfolio details</h1>
 		</div>
-		<p class="lead">See the details for the portfolio '<span th:text="${portfolio.name}">name</span>'. Return to the list by clicking <a href="/portfolio/results">here</a>.</p>
+		<p class="lead">See the details for the portfolio '<span th:text="${portfolio.name}">name</span>'.</p>
+		
+		<p>
+			<a href="/portfolio/results" class="btn btn-info" role="button"><span class="glyphicon glyphicon-list"></span> Return to list</a>
+		</p>
 		
 		<table class="table table-striped">
 			<tbody>
@@ -59,7 +63,7 @@
 			<a th:href="@{/portfolio/chart/{id}(id=${portfolioId})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-stats"></span> Show chart</a>
 			<a th:href="@{/portfolio/access/{id}(id=${portfolioId})}" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-user"></span> User access</a>
 			<a th:href="@{/portfolio/apiAccess/{id}(id=${portfolioId})}" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-tag"></span> API access</a>
-			<a href="#" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+			<a th:href="@{/portfolio/edit/{id}(id=${portfolioId})}" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
 			<a href="#" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> Delete</a>
 		</p>
 		

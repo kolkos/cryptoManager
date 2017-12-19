@@ -124,6 +124,36 @@ public class PortfolioController {
 		
 	}
 	
+	@GetMapping("/edit/{portfolioId}")
+    public String editPortfolio(@PathVariable("portfolioId") long portfolioId, Model model) {
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		
+		model.addAttribute("portfolio", portfolio);
+        return "portfolio_edit";
+    }
+	
+	@PostMapping(path="/edit/{portfolioId}")
+	public String updatePortfolio (
+			@PathVariable("portfolioId") long portfolioId,
+			@RequestParam String description,
+			@RequestParam String name, 
+			Model model) {
+		
+		// get the portfolio object
+		
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		// update the data
+		portfolio.setDescription(description);
+		portfolio.setName(name);
+		
+		// save the portfolio
+		portfolioRepository.save(portfolio);
+		
+		
+				
+		return "redirect:/portfolio/showPortfolio/" + portfolioId;
+		
+	}
 	
 	@GetMapping("/results")
     public String portfolioResults(Model model) {
@@ -137,13 +167,6 @@ public class PortfolioController {
         return "portfolio_results";
         
     }
-	
-	// list all 
-	@GetMapping(path="/list")
-	public @ResponseBody Iterable<Portfolio> getAllPortfolios() {
-		// This returns a JSON or XML with the users
-		return portfolioRepository.findAll();
-	}
 	
 	// get portfolio details
 	@RequestMapping(value = "/showPortfolio/{portfolioId}", method = RequestMethod.GET)

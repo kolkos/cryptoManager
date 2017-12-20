@@ -46,7 +46,7 @@ public class ApiRequestController {
 		testje.add("Regel 2");
 		testje.add("Regel 3");
 		
-		return testje;
+		return testje; 
 	}
 	
 	@GetMapping(path="/help")

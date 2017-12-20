@@ -53,7 +53,7 @@ public class ApiRequestService {
 		}
 		return keyExists;
 	}
-	
+	 
 	public boolean checkPortfolioAccessForApiKey(String apiKey, long portfolioId) {
 		ApiKey apiKeyRequester = apiKeyService.findApiKeyByApiKey(apiKey);
 		Portfolio portfolio = portfolioRepository.findById(portfolioId);

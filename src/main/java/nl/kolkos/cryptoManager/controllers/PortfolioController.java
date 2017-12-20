@@ -40,13 +40,14 @@ import nl.kolkos.cryptoManager.repositories.UserRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
 import nl.kolkos.cryptoManager.services.ApiKeyService;
+import nl.kolkos.cryptoManager.services.PortfolioService;
 import nl.kolkos.cryptoManager.services.UserService;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/portfolio") // This means URL's start with /portfolio (after Application path)
 public class PortfolioController {
 	@Autowired
-	private PortfolioRepository portfolioRepository;
+	private PortfolioService portfolioService;
 	
 	@Autowired
 	@Qualifier(value = "walletRepository")
@@ -90,33 +91,7 @@ public class PortfolioController {
 			@RequestParam String name, 
 			Model model) {
 				
-		Portfolio portfolio = new Portfolio();
-		portfolio.setDescription(description);
-		portfolio.setName(name);
-		
-		
-		String username = userService.findLoggedInUsername();
-		User currentUser = userService.findUserByEmail(username);
-		
-		
-		// create a empty set of users for this portfolio
-		Set<User> users = new HashSet<>();
-		// add this user
-		users.add(currentUser);
-		
-		// add this set to the portfolio
-		portfolio.setUsers(users);
-		
-		// get the current portfolio set for this user
-		Set<Portfolio> portfolios = portfolioRepository.findByUsers_email(username);
-		// add this portfolio to the set
-		portfolios.add(portfolio);
-		// now add the portfolio to the current user
-		currentUser.setPortfolios(portfolios);
-		
-		// finally save both objects
-		userService.updateUser(currentUser);
-		portfolioRepository.save(portfolio);
+		portfolioService.createNewPortfolio(name, description);
 		
 		
 				
@@ -126,7 +101,16 @@ public class PortfolioController {
 	
 	@GetMapping("/edit/{portfolioId}")
     public String editPortfolio(@PathVariable("portfolioId") long portfolioId, Model model) {
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		Portfolio portfolio = portfolioService.findById(portfolioId);
+		
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
+			return "not_authorized";
+		}
 		
 		model.addAttribute("portfolio", portfolio);
         return "portfolio_edit";
@@ -139,15 +123,17 @@ public class PortfolioController {
 			@RequestParam String name, 
 			Model model) {
 		
-		// get the portfolio object
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
+			return "not_authorized";
+		}
 		
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
-		// update the data
-		portfolio.setDescription(description);
-		portfolio.setName(name);
 		
-		// save the portfolio
-		portfolioRepository.save(portfolio);
+		portfolioService.updatePortfolio(portfolioId, name, description);
 		
 		
 				
@@ -159,7 +145,7 @@ public class PortfolioController {
     public String portfolioResults(Model model) {
 
 		// get the portfolios for the logged in user
-		Set<Portfolio> portfolioList = portfolioRepository.findByUsers_email(userService.findLoggedInUsername());
+		Set<Portfolio> portfolioList = portfolioService.findByUsers_email(userService.findLoggedInUsername());
 		
 		model.addAttribute("portfolioList", portfolioList);
 		
@@ -183,7 +169,7 @@ public class PortfolioController {
 		
 		
 		// get the details
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		Portfolio portfolio = portfolioService.findById(portfolioId);
 		// add to model		
 		model.addAttribute("portfolio", portfolio);
 		model.addAttribute("portfolioId", portfolioId);
@@ -263,7 +249,7 @@ public class PortfolioController {
 		}
 		
 		// get the user with access to this portfolio
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		Portfolio portfolio = portfolioService.findById(portfolioId);
 		
 		model.addAttribute("users", portfolio.getUsers());
 		
@@ -287,31 +273,7 @@ public class PortfolioController {
 		// check if the e-mail address exists
 		if(userService.countByEmail(mail) > 0) {
 			
-			// get the user object for the mail address
-			User newtUserForPortfolio = userService.findUserByEmail(mail);
-			
-			// get the current portfolio object
-			Portfolio currentPortfolio = portfolioRepository.findById(portfolioId);
-			
-			// get the current list of users for the portfolio
-			Set<User> users = userService.findByPortfolios_Id(portfolioId);
-			// add the new user to the portfolio set
-			users.add(newtUserForPortfolio);
-						
-			// get the current portfolio set for this user
-			Set<Portfolio> portfolios = portfolioRepository.findByUsers_email(mail);
-			// add this portfolio to this set
-			portfolios.add(currentPortfolio);
-			
-			// set the portfolio set to the new user
-			newtUserForPortfolio.setPortfolios(portfolios);
-			
-			// set the user set to this portfolio
-			currentPortfolio.setUsers(users);
-			
-			// finally save the changes to the object
-			portfolioRepository.save(currentPortfolio);
-			userService.updateUser(newtUserForPortfolio);
+			portfolioService.addUserAccessToPortfolio(portfolioId, mail);
 			
 			model.addAttribute("success", mail + " added");
 		}else {
@@ -319,7 +281,7 @@ public class PortfolioController {
 		}
 		
 		// get the user with access to this portfolio
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		Portfolio portfolio = portfolioService.findById(portfolioId);
 		model.addAttribute("users", portfolio.getUsers());
 		return "portfolio_access";
 	}
@@ -335,31 +297,7 @@ public class PortfolioController {
 			return "<div class='alert alert-danger'>You are not authorized to this portfolio</div>";
 		}
 		
-		// check how many users are left
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
-		int nrOfUsers = portfolio.getUsers().size();
-		if(nrOfUsers <= 1) {
-			return "<div class='alert alert-warning'>You can't remove the last user.</div>";
-		}
-		
-		// checks OK, remove the selected user
-		User user = userService.findById(userId);
-		// get the portfolios for this user
-		Set<Portfolio> portfolios = user.getPortfolios();
-		
-		// get the users for the portfolio
-		Set<User> users = portfolio.getUsers();
-		
-		// remove the elements from both objects
-		portfolios.remove(portfolio);
-		users.remove(user);
-		
-		// save both objects
-		userService.updateUser(user);
-		portfolioRepository.save(portfolio);
-		
-		
-		return "<div class='alert alert-success'>User removed.</div>";
+		return portfolioService.removeUserAccessToPortfolio(portfolioId, userId);
 	}
 	
 	// handle get for the access page
@@ -375,16 +313,14 @@ public class PortfolioController {
 		}
 		
 		// get the api keys with access to this portfolio
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		Portfolio portfolio = portfolioService.findById(portfolioId);
 		model.addAttribute("apiKeysPortfolio", portfolio.getApiKeys());
 		
 		// get the api keys of the current user
 		User user = userService.findUserByEmail(userService.findLoggedInUsername());
 		List<ApiKey> apiKeysCurrentUser = apiKeyService.findByUser(user);
 		model.addAttribute("apiKeysCurrentUser", apiKeysCurrentUser);
-		
-		
-		
+				
 		return "portfolio_access_api";
 	}
 	
@@ -405,8 +341,6 @@ public class PortfolioController {
 			return "not_authorized";
 		}
 		
-		System.out.println("Voor user check");
-		
 		// get the API Key object
 		ApiKey apiKey = apiKeyService.findById(apiKeyId);
 		
@@ -423,30 +357,15 @@ public class PortfolioController {
 			model.addAttribute("object", "API Key");
 			return "not_authorized";
 		}
-		System.out.println("Na user check");
+
 		// checks OK
-		
-		// get the current portfolios
-		Set<Portfolio> portfolios = apiKey.getPortfolios();
-		
-		
-		// get the portfolio
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
-		// get the list with api keys which currently have access
-		Set<ApiKey> apiKeys = portfolio.getApiKeys();
-		
-		// now add to both objects
-		apiKeys.add(apiKey);
-		portfolios.add(portfolio);
-		
-		// save both objects
-		apiKeyService.saveApiKey(apiKey);
-		portfolioRepository.save(portfolio);
+		portfolioService.addApiAccessToPortfolio(apiKey, portfolioId);
 		
 		
 		// now add changes to the model
 		List<ApiKey> apiKeysCurrentUser = apiKeyService.findByUser(currentUser);
 		model.addAttribute("apiKeysCurrentUser", apiKeysCurrentUser);
+		Portfolio portfolio = portfolioService.findById(portfolioId);
 		model.addAttribute("apiKeysPortfolio", portfolio.getApiKeys());
 		
 		model.addAttribute("success", "API Key successfully added");
@@ -464,27 +383,8 @@ public class PortfolioController {
 		if(!access) {
 			return "<div class='alert alert-danger'>You are not authorized to this portfolio</div>";
 		}
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
 		
-		// checks OK, remove the selected API Key
-		ApiKey apiKey = apiKeyService.findById(apiKeyId);
-		
-		// get the portfolios for this user
-		Set<Portfolio> portfolios = apiKey.getPortfolios();
-		
-		// get the users for the portfolio
-		Set<ApiKey> apiKeys = portfolio.getApiKeys();
-		
-		// remove the elements from both objects
-		portfolios.remove(portfolio);
-		apiKeys.remove(apiKey);
-		
-		// save both objects
-		apiKeyService.saveApiKey(apiKey);
-		portfolioRepository.save(portfolio);
-		
-		
-		return "<div class='alert alert-success'>API Key removed.</div>";
+		return portfolioService.removeApiAccessToPortfolio(portfolioId, apiKeyId);
 	}
 	
 	@RequestMapping(value = "/chart/{portfolioId}", method = RequestMethod.GET)
@@ -516,7 +416,7 @@ public class PortfolioController {
 		model.addAttribute("intervalInMinutes", intervalInMinutes);
 		model.addAttribute("portfolioId", portfolioId);
 		
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		Portfolio portfolio = portfolioService.findById(portfolioId);
 		model.addAttribute("portfolioName", portfolio.getName());
 		
 		
@@ -693,7 +593,7 @@ public class PortfolioController {
 		}
 		
 		// get the portfolio
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		Portfolio portfolio = portfolioService.findById(portfolioId);
 		
 		// get the wallets
 		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
@@ -773,7 +673,7 @@ public class PortfolioController {
 		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
 		
 		// get the portfolio
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		Portfolio portfolio = portfolioService.findById(portfolioId);
 		
 		// loop the wallets to update the current coin value
 		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();

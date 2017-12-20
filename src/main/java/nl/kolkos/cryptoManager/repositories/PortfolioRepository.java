@@ -14,6 +14,8 @@ import nl.kolkos.cryptoManager.Portfolio;
 public interface PortfolioRepository extends CrudRepository<Portfolio, Long> {
 	Portfolio findById(Long id);	
 	
+	Portfolio findByName(String name);
+	
 	Set<Portfolio> findByUsers_email(String email);
 	
 	Set<Portfolio> findByApiKeys_apiKey(String apiKey);

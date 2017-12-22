@@ -14,5 +14,8 @@ public interface CoinRepository extends CrudRepository<Coin, Long> {
 	Coin findById(Long id);
 	
 	List<Coin> findAllByOrderByCoinMarketCapCoinSymbol();
+	
+	Coin findByCoinMarketCapCoinSymbol(String coinMarketCapSymbol);
+	
 }
 

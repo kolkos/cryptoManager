@@ -20,6 +20,8 @@ public interface WithdrawalRepository extends PagingAndSortingRepository<Withdra
 	
 	Withdrawal findById(Long id);
 	
+	Withdrawal findByWithdrawalDateAndAmountAndWithdrawalValue(Date withdrawalDate, double amount, double withdrawalValue);
+	
 	Page<Withdrawal> findByWalletPortfolioUsersEmail(String email, Pageable pageable);
 	
 	

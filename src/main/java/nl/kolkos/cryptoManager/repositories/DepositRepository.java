@@ -20,6 +20,8 @@ public interface DepositRepository extends PagingAndSortingRepository<Deposit, L
 
 	Deposit findById(Long id);
 	
+	Deposit findByDepositDateAndAmountAndPurchaseValue(Date depositDate, double amount, double purchaseValue);
+	
 	List<Deposit> findByWallet(Wallet wallet);
 	
 	List<Deposit> findAllByOrderByDepositDateAsc();

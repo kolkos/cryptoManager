@@ -44,6 +44,23 @@ public class WalletService {
 	public Wallet findById(long walletId) {
 		return walletRepository.findById(walletId);
 	}
+	
+	public Wallet findByAddress(String address) {
+		return walletRepository.findByAddress(address);
+	}
+	
+	public Wallet createWallet(String address, String description, Portfolio portfolio, Coin coin) {
+		Wallet wallet = new Wallet();
+		wallet.setAddress(address);
+		wallet.setDescription(description);
+		wallet.setCoin(coin);
+		wallet.setPortfolio(portfolio);
+		
+		// save it
+		walletRepository.save(wallet);
+		
+		return wallet;
+	}
 		
 	public Wallet getWalletValues(Wallet wallet) {
 		// get the attached coin

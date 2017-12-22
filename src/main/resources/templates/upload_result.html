@@ -33,9 +33,18 @@
 			<h1>Upload status</h1>
 		</div>
 		<p>
-			Upload status: <span th:text="${message}">message</span>
+			Upload status: <span th:text="${message}">message</span><br/>
 		</p>
 		
+		
+		<ul th:each="result : ${results}">
+			<li>Result line:</li>
+			<li th:each="instance : ${result}">
+				<ul >
+					<li th:text="${instance.key + ' - ' + instance.value}">key/value</li>
+				</ul>
+			</li>
+		</ul>
 		
 		
 		

@@ -14,19 +14,41 @@ import java.text.SimpleDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import nl.kolkos.cryptoManager.Coin;
+import nl.kolkos.cryptoManager.CoinMarketCapCoin;
+import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
+import nl.kolkos.cryptoManager.Wallet;
+import nl.kolkos.cryptoManager.Withdrawal;
+import nl.kolkos.cryptoManager.repositories.CoinMarketCapCoinRepository;
+import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 
 @Service
 public class UploadService {
 	
 	@Autowired
-	private PortfolioRepository portfolioRepository;
+	private PortfolioService portfolioService;
+	
+	@Autowired
+	private WalletService walletService;
+	
+	@Autowired
+	private CoinRepository coinRepository;
+	
+	@Autowired
+	private DepositService depositService;
+	
+	@Autowired
+	private WithdrawalService withdrawalService;
+	
+	@Autowired
+	private CoinMarketCapCoinRepository coinMarketCapCoinRepository;
 	
 	
-	public Date parseDate(String date) throws IllegalArgumentException, ParseException{
+	private Date parseDate(String date) throws IllegalArgumentException, ParseException{
 		if(!date.matches("^\\d{4}\\-\\d{2}\\-\\d{2}$")) {
-			throw new IllegalArgumentException("The transaction date should be in the following format: yyyy-mm-dd");
+			throw new IllegalArgumentException("The transaction date should be in the following format: yyyy-MM-dd");
 		}
 		
 		// try to parse the date
@@ -37,28 +59,98 @@ public class UploadService {
 		return newDate;
 	}
 	
-	public Double parseStringToDouble(String transactionAmount) throws ParseException {
+	private Double parseStringToDouble(String transactionAmount) throws ParseException {
 		// first replace the comma with a dot
-		transactionAmount = transactionAmount.replace(",", ".");
+		System.out.println(transactionAmount);
+		//transactionAmount = transactionAmount.replace(",", ".");
+		//System.out.println(transactionAmount);
 		
-		DecimalFormat decimalFormat = new DecimalFormat("#");
+		DecimalFormat decimalFormat = new DecimalFormat("0.00######");
 		double newAmount = decimalFormat.parse(transactionAmount).doubleValue();
-				
+		System.out.println(newAmount);
 		
 		return newAmount;
 	}
 	
-	public Portfolio getOrCreatePortfolio(String portfolioName, String portfolioDescription) {
+	private Portfolio getOrCreatePortfolio(String portfolioName, String portfolioDescription) {
 		// check if the portfolio exists
-		Portfolio portfolio = portfolioRepository.findByName(portfolioName);
+		Portfolio portfolio = portfolioService.findByName(portfolioName);
 		if(portfolio == null) {
 			// portfolio does not exist, create it
+			portfolio = portfolioService.createNewPortfolio(portfolioName, portfolioDescription);
 			
 		}
 		
-		
-		return null;
+		return portfolio;
 	}
+	
+	private Coin getOrCreateCoin(String coinMarketCapSymbol) {
+		Coin coin = coinRepository.findByCoinMarketCapCoinSymbol(coinMarketCapSymbol);
+		if(coin == null) {
+			coin = new Coin();
+			// get the coin market cap coin
+			CoinMarketCapCoin cmcCoin = coinMarketCapCoinRepository.findBySymbol(coinMarketCapSymbol);
+			coin.setCoinMarketCapCoin(cmcCoin);
+			// save the coin
+			coinRepository.save(coin);
+			
+		}
+		
+		return coin;
+	}
+	
+	private boolean checkIfCoinMarketCapSymbolExists(String coinMarketCapSymbol) {
+		CoinMarketCapCoin cmcCoin = coinMarketCapCoinRepository.findBySymbol(coinMarketCapSymbol);
+		boolean exists = false;
+		
+		if(cmcCoin != null) {
+			exists = true;
+		}
+		
+		return exists;
+	}
+	
+	private Wallet getOrCreateWallet(String walletAddress, String walletDescription, Portfolio portfolio, Coin coin) {
+		// check if wallet exists
+		Wallet wallet = walletService.findByAddress(walletAddress);
+		if(wallet == null) {
+			// wallet does not exist, create it
+			wallet = walletService.createWallet(walletAddress, walletDescription, portfolio, coin);
+		}
+		
+		return wallet;
+	}
+	
+	private String createDeposit(Date depositDate, double amount, double purchaseValue, Wallet wallet, String transactionRemarks) {
+		// check if the deposit already exists
+		// I can't know for sure, but I assume if the date, the amount and the purchase value are equal, the deposit already exists.
+		Deposit deposit = depositService.findByDepositDateAndAmountAndPurchaseValue(depositDate, amount, purchaseValue);
+		if(deposit != null) {
+			// deposit exists, return
+			return "Deposit already exists, skipping...";
+			
+		}
+		// create a deposit
+		depositService.createDeposit(depositDate, amount, purchaseValue, wallet, transactionRemarks);
+		
+		return String.format("Deposit of '%f' on '%s' for '€%f' registered", amount, depositDate, purchaseValue);
+	}
+	
+	private String createWithdrawal(Date withdrawalDate, double amount, double withdrawalValue, Wallet wallet, String transactionRemarks, boolean toCash) {
+		// check if the deposit already exists
+		// I can't know for sure, but I assume if the date, the amount and the withdrawal value are equal, the withdrawal already exists.
+		Withdrawal withdrawal = withdrawalService.findByWithdrawalDateAndAmountAndWithdrawalValue(withdrawalDate, amount, withdrawalValue);
+		if(withdrawal != null) {
+			return "Withdrawal already exists, skipping...";
+		}
+				
+				
+		withdrawalService.createWithdrawal(withdrawalDate, amount, withdrawalValue, wallet, transactionRemarks, toCash);
+		
+		return String.format("Withdrawal of '%f' on '%s' for '€%f' registered", amount, withdrawalDate, withdrawalValue);
+	}
+	
+	 
 	
 	public List<LinkedHashMap<String, String>> handleFile(String filePath, boolean containsHeader, String separator){
 		/*
@@ -105,8 +197,8 @@ public class UploadService {
             		String[] fields = line.split(separator);
             		
             		// check if the line contains 10 fields
-            		if(fields.length != 10) {
-            			lineResults.put("Error", "The line needs to have exactly 10 fields.");
+            		if(fields.length != 11) {
+            			lineResults.put("Error", "The line needs to have exactly 11 fields.");
             			results.add(lineResults);
             			// skip this line
             			continue;
@@ -138,7 +230,7 @@ public class UploadService {
             		
             		String transactionType = fields[6].toLowerCase();
             		
-            		if(! transactionType.equals("withdrawal") || ! transactionType.equals("deposit")) {
+            		if(! transactionType.equals("withdrawal") && ! transactionType.equals("deposit")) {
             			// unknown transaction type
             			lineResults.put("Error", "Transaction type must be 'deposit' or 'withdrawal'.");
 	        			results.add(lineResults);
@@ -192,8 +284,40 @@ public class UploadService {
             		
             		String transactionRemarks = fields[10];
             		
+            		// get or create the portfolio
+            		Portfolio portfolio = this.getOrCreatePortfolio(portfolioName, portfolioDescription);
+            		lineResults.put("Portfolio", String.format("Using portfolio '%s'", portfolioName));
             		
             		
+            		// check if the CoinMarketCap coin exists
+            		if(! this.checkIfCoinMarketCapSymbolExists(coinSymbol)) {
+            			// add to the results
+    					lineResults.put("Error", "Unknown coin '" + coinSymbol + "'");
+    	        			results.add(lineResults);
+    	        			// skip this line
+    	        			continue;
+            		}
+            		
+            		// get or create the coin
+            		Coin coin = this.getOrCreateCoin(coinSymbol);
+            		lineResults.put("Coin", String.format("Using coin '%s'", coinSymbol));
+            		
+            		// get or create the wallet
+            		Wallet wallet = this.getOrCreateWallet(walletAddress, walletDescription, portfolio, coin);
+            		lineResults.put("Wallet", String.format("Using wallet '%s'", walletAddress));
+            		
+            		// now check if a deposit or a withdrawal needs to be created
+            		if(transactionType.equals("deposit")) {
+            			// create deposit
+            			String depositResult = this.createDeposit(transactionDate, transactionAmount, transactionValue, wallet, transactionRemarks);
+            			lineResults.put("Deposit", depositResult);
+            		}else {
+            			// create a withdrawal
+            			String withdrawalResult = this.createWithdrawal(transactionDate, transactionAmount, transactionValue, wallet, transactionRemarks, toCash);
+            			lineResults.put("Withdrawal", withdrawalResult);
+            		}
+            		            		
+            		results.add(lineResults);
             	
 
 
@@ -201,6 +325,9 @@ public class UploadService {
 
         } catch (IOException e) {
             e.printStackTrace();
+            LinkedHashMap<String, String> lineResults = new LinkedHashMap<>();
+            lineResults.put("Error", "Error handling file.");
+            results.add(lineResults);
         }
 		
 		return results;

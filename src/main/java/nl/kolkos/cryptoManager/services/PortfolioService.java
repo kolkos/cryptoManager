@@ -49,7 +49,7 @@ public class PortfolioService {
 	}
 	
 	// custom function
-	public void createNewPortfolio(String name, String description) {
+	public Portfolio createNewPortfolio(String name, String description) {
 		Portfolio portfolio = new Portfolio();
 		portfolio.setDescription(description);
 		portfolio.setName(name);
@@ -77,6 +77,8 @@ public class PortfolioService {
 		// finally save both objects
 		userService.updateUser(currentUser);
 		portfolioRepository.save(portfolio);
+		
+		return portfolio;
 	}
 	
 	public void updatePortfolio(long portfolioId, String name, String description) {

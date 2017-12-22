@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,18 +32,21 @@ public class UploadController {
 	}
     
 	@PostMapping("/upload")
-	public ModelAndView fileUpload(
+	public String fileUpload(
 			@RequestParam("file") MultipartFile file, 
 			@RequestParam("separator") String separator, 
 			@RequestParam("containsHeader") boolean containsHeader, 
-			RedirectAttributes redirectAttributes) {
+			RedirectAttributes redirectAttributes,
+			Model model) {
 
 		if (file.isEmpty()) {
-			return new ModelAndView("upload_result", "message", "Please select a file and try again");
+			model.addAttribute("message", "Please select a file and try again");
+			return "upload_result";
 		}
 		
 		if(!file.getContentType().equals("text/csv")) {
-			return new ModelAndView("upload_result", "message", "Only *.csv files are allowed");
+			model.addAttribute("message", "Only *.csv files are allowed");
+			return "upload_result";
 		}
 		
 		try {
@@ -54,9 +60,10 @@ public class UploadController {
 		}
 		
 		// now it is time to process the file
-		
+		List<LinkedHashMap<String, String>> results = uploadService.handleFile(UPLOAD_FOLDER + file.getOriginalFilename(), containsHeader, separator);
+		model.addAttribute("results", results);
 
-		return new ModelAndView("upload_result", "message", "File Uploaded sucessfully");
+		return "upload_result";
 	}
 	
 }

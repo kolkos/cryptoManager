@@ -32,6 +32,10 @@ public class WithdrawalService {
 		return withdrawalRepository.findById(id);
 	}
 	
+	public Withdrawal findByWithdrawalDateAndAmountAndWithdrawalValue(Date withdrawalDate, double amount, double withdrawalValue) {
+		return withdrawalRepository.findByWithdrawalDateAndAmountAndWithdrawalValue(withdrawalDate, amount, withdrawalValue);
+	}
+	
 	public List<Withdrawal> findByWallet(Wallet wallet){
 		return withdrawalRepository.findByWallet(wallet);
 	}
@@ -87,6 +91,20 @@ public class WithdrawalService {
 		PageRequest request = new PageRequest(pageNumber - 1, PAGESIZE, sort, columnName);
 		
 		return withdrawalRepository.findAll(request).getContent();
+		
+	}
+	
+	public void createWithdrawal(Date withdrawalDate, double amount, double withdrawalValue, Wallet wallet, String transactionRemarks, boolean toCash) {
+		Withdrawal withdrawal = new Withdrawal();
+		withdrawal.setWithdrawalDate(new java.sql.Date(withdrawalDate.getTime()));
+		withdrawal.setAmount(amount);
+		withdrawal.setWithdrawalValue(withdrawalValue);
+		withdrawal.setWallet(wallet);
+		withdrawal.setRemarks(transactionRemarks);
+		withdrawal.setToCash(toCash);
+		
+		// save it
+		withdrawalRepository.save(withdrawal);
 		
 	}
 	

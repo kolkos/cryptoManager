@@ -25,4 +25,6 @@ public interface WalletRepository extends CrudRepository<Wallet, Long> {
 	
 	Wallet findById(Long id);
 	
+	Wallet findByAddress(String address);
+	
 }

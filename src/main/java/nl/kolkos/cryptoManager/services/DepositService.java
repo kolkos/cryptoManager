@@ -32,6 +32,11 @@ public class DepositService {
 		return depositRepository.findById(id);
 	}
 	
+	public Deposit findByDepositDateAndAmountAndPurchaseValue(Date depositDate, double amount, double purchaseVale) {
+		return depositRepository.findByDepositDateAndAmountAndPurchaseValue(depositDate, amount, purchaseVale);
+	}
+	
+	
 	public List<Deposit> findByWallet(Wallet wallet){
 		return depositRepository.findByWallet(wallet);
 	}
@@ -83,5 +88,18 @@ public class DepositService {
 		
 		return depositRepository.findAll(request).getContent();
 		
+	}
+	
+	public void createDeposit(Date depositDate, double amount, double purchaseValue, Wallet wallet, String transactionRemarks) {
+		// create a new deposit
+		Deposit deposit = new Deposit();
+		deposit.setDepositDate(new java.sql.Date(depositDate.getTime()));
+		deposit.setAmount(amount);
+		deposit.setPurchaseValue(purchaseValue);
+		deposit.setRemarks(transactionRemarks);
+		deposit.setWallet(wallet);
+		
+		// save the deposit
+		depositRepository.save(deposit);
 	}
 }

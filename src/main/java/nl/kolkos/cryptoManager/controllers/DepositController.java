@@ -53,13 +53,7 @@ public class DepositController {
 	
 	@Autowired
 	private UserService userService;
-	
-	@GetMapping("/")
-    public String forwardDepositForm(Model model) {
-        model.addAttribute("deposit", new Deposit());
-        return "redirect:/deposit/add";
-    }
-	
+		
 	@GetMapping("/add")
     public String depositForm(Model model) {
         model.addAttribute("deposit", new Deposit());
@@ -102,12 +96,6 @@ public class DepositController {
 		
 		
 		return redirect;
-	}
-
-	@GetMapping(path="/list")
-	public @ResponseBody Iterable<Deposit> getAllDeposits() {
-		// This returns a JSON or XML with the users
-		return depositRepository.findAll();
 	}
 	
 	@GetMapping("/results")

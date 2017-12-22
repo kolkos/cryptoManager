@@ -72,12 +72,6 @@ public class WalletController {
 	@Autowired
 	private UserService userService;
 	
-	@GetMapping("/")
-    public String forwardWalletList(Model model) {
-        model.addAttribute("wallet", new Wallet());
-        return "redirect:/wallet/list";
-    }
-	
 		
 	@GetMapping("/add")
     public String walletForm(Model model) {
@@ -129,14 +123,7 @@ public class WalletController {
 		return "redirect:/wallet/results";
 		
 	}
-	
-	@GetMapping(path="/list")
-	public @ResponseBody Iterable<Wallet> getAllWallets() {
-		// This returns a JSON or XML with the users
-		return walletRepository.findAll();
-	}
-	
-	
+		
 	// get wallet details
 	@RequestMapping(value = "/showWallet/{walletId}", method = RequestMethod.GET)
 	public String getWalletsByPortfolioId(@PathVariable("walletId") long walletId, Model model) {

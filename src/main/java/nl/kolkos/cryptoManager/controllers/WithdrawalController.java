@@ -55,12 +55,6 @@ public class WithdrawalController {
 	@Autowired
 	private UserService userService;
 	
-	@GetMapping("/")
-    public String forwardWithdrawalForm(Model model) {
-
-        return "redirect:/withdrawal/results";
-    }
-	
 	@GetMapping("/add")
     public String depositForm(Model model) {
 		model.addAttribute("withdrawal", new Withdrawal());
@@ -107,15 +101,7 @@ public class WithdrawalController {
 		
 		return redirect;
 	}
-	
-	
-	
-	@GetMapping(path="/list")
-	public @ResponseBody Iterable<Withdrawal> getAllDeposits() {
-		// This returns a JSON or XML with the users
-		return withdrawalRepository.findAll();
-	}
-	
+		
 	@GetMapping("/results")
     public String depositResults(
     		@RequestParam(value="filterByCoin", required=false) Coin coinFilter,

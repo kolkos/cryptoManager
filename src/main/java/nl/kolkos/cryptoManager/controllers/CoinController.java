@@ -45,12 +45,7 @@ public class CoinController {
 	@Autowired
 	@Qualifier(value = "coinMarketCapCoinRepository")
 	private CoinMarketCapCoinRepository coinMarketCapCoinRepository;
-	
-	@GetMapping("/")
-    public String forwardRepositoryList(Model model) {
-        return "redirect:/portfolio/list";
-    }
-	
+		
 	// send the form
 	@GetMapping("/add")
     public String coinForm(Model model) {
@@ -77,13 +72,6 @@ public class CoinController {
 		
 	}
 	
-	// list all 
-	@GetMapping(path="/list")
-	public @ResponseBody Iterable<Coin> getAllCoins() {
-		// This returns a JSON or XML with the users
-		
-		return coinRepository.findAll();
-	}
 	
 	@GetMapping("/results")
     public String coinResults(

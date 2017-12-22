@@ -71,12 +71,7 @@ public class PortfolioController {
 	@Autowired
 	private ApiKeyService apiKeyService;
 			
-	// forward to list
-	@GetMapping("/")
-    public String forwardRepositoryList(Model model) {
-        return "redirect:/portfolio/list";
-    }
-	
+
 	// send the form
 	@GetMapping("/add")
     public String portfolioForm(Model model) {

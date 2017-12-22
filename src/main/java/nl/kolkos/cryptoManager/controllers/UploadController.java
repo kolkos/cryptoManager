@@ -35,7 +35,7 @@ public class UploadController {
 	public String fileUpload(
 			@RequestParam("file") MultipartFile file, 
 			@RequestParam("separator") String separator, 
-			@RequestParam("containsHeader") boolean containsHeader, 
+			@RequestParam(name = "page", defaultValue = "false")  boolean containsHeader, 
 			RedirectAttributes redirectAttributes,
 			Model model) {
 
@@ -61,6 +61,8 @@ public class UploadController {
 		
 		// now it is time to process the file
 		List<LinkedHashMap<String, String>> results = uploadService.handleFile(UPLOAD_FOLDER + file.getOriginalFilename(), containsHeader, separator);
+		
+		model.addAttribute("message", "Upload OK!");
 		model.addAttribute("results", results);
 
 		return "upload_result";

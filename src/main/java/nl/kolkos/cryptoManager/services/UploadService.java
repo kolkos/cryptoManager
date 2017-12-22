@@ -60,10 +60,6 @@ public class UploadService {
 	}
 	
 	private Double parseStringToDouble(String transactionAmount) throws ParseException {
-		// first replace the comma with a dot
-		System.out.println(transactionAmount);
-		//transactionAmount = transactionAmount.replace(",", ".");
-		//System.out.println(transactionAmount);
 		
 		DecimalFormat decimalFormat = new DecimalFormat("0.00######");
 		double newAmount = decimalFormat.parse(transactionAmount).doubleValue();
@@ -198,7 +194,7 @@ public class UploadService {
             		
             		// check if the line contains 10 fields
             		if(fields.length != 11) {
-            			lineResults.put("Error", "The line needs to have exactly 11 fields.");
+            			lineResults.put("Error", "Each line needs to have exactly 11 fields.");
             			results.add(lineResults);
             			// skip this line
             			continue;

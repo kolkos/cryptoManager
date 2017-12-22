@@ -37,14 +37,20 @@
 		</p>
 		
 		
-		<ul th:each="result : ${results}">
-			<li>Result line:</li>
-			<li th:each="instance : ${result}">
-				<ul >
-					<li th:text="${instance.key + ' - ' + instance.value}">key/value</li>
+		
+		
+		
+		
+		<ol>
+			<li th:each="result : ${results}">Result line:
+				<ul>
+					<li th:each="instance : ${result}" th:text="${instance.key + ' - ' + instance.value}">key/value</li>
 				</ul>
+			
+				
 			</li>
-		</ul>
+		</ol>
+		
 		
 		
 		

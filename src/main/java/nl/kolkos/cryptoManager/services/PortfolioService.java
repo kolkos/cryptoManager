@@ -48,6 +48,15 @@ public class PortfolioService {
 		return portfolioRepository.findAll();
 	}
 	
+	public boolean checkIfPortfolioExists(long portfolioId) {
+		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		boolean exists = true;
+		if(portfolio == null) {
+			exists = false;
+		}
+		return exists;
+	}
+	
 	// custom function
 	public Portfolio createNewPortfolio(String name, String description) {
 		Portfolio portfolio = new Portfolio();

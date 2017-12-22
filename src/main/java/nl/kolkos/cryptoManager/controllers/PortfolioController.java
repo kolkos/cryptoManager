@@ -92,8 +92,6 @@ public class PortfolioController {
 			Model model) {
 				
 		portfolioService.createNewPortfolio(name, description);
-		
-		
 				
 		return "redirect:/portfolio/results";
 		
@@ -103,13 +101,21 @@ public class PortfolioController {
     public String editPortfolio(@PathVariable("portfolioId") long portfolioId, Model model) {
 		Portfolio portfolio = portfolioService.findById(portfolioId);
 		
+		// check if the object exists
+		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "portfolio");
+			return "error_page";
+		}
+		
 		// check if the current user has access to this portfolio
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
 			model.addAttribute("firstName", user.getName());
 			model.addAttribute("object", "portfolio");
-			return "not_authorized";
+			return "error_page";
 		}
 		
 		model.addAttribute("portfolio", portfolio);
@@ -123,19 +129,24 @@ public class PortfolioController {
 			@RequestParam String name, 
 			Model model) {
 		
+		// check if the object exists
+		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "portfolio");
+			return "error_page";
+		}
+		
 		// check if the current user has access to this portfolio
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
 			model.addAttribute("firstName", user.getName());
 			model.addAttribute("object", "portfolio");
-			return "not_authorized";
+			return "error_page";
 		}
 		
-		
 		portfolioService.updatePortfolio(portfolioId, name, description);
-		
-		
 				
 		return "redirect:/portfolio/showPortfolio/" + portfolioId;
 		
@@ -157,14 +168,21 @@ public class PortfolioController {
 	// get portfolio details
 	@RequestMapping(value = "/showPortfolio/{portfolioId}", method = RequestMethod.GET)
 	public String getWalletsByPortfolioId(@PathVariable("portfolioId") long portfolioId, Model model) {
+		// check if the object exists
+		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "portfolio");
+			return "error_page";
+		}
 		
 		// check if the current user has access to this portfolio
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
 			model.addAttribute("firstName", user.getName());
 			model.addAttribute("object", "portfolio");
-			return "not_authorized";
+			return "error_page";
 		}
 		
 		
@@ -194,8 +212,23 @@ public class PortfolioController {
 			// get the cmc coin
 			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
 			
-			// get the total number of coins
-			double currentWalletAmount = depositRepository.getSumOfAmountForWalletId(wallet.getId());
+			
+			// ---- get the totals for deposits
+			// get the total purchase value
+			//double totalPurchaseValue = depositRepository.getSumOfPurchaseValueForWalletId(wallet.getId());
+			// get the amount purchased
+			double totalAmountDeposited = depositRepository.getSumOfAmountForWalletId(wallet.getId());
+			
+			// --- get the values for the withdrawals
+			// get the to cash value
+			//double totalWithDrawnToCashValue = withdrawalRepository.getSumOfWithdrawalsForWalletId(wallet.getId());
+			// get the total amount of withdrawals
+			double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletId(wallet.getId());
+			
+			// get the total amount
+			double currentWalletAmount = totalAmountDeposited - totalAmountWithdrawn;
+			
+					
 			
 			// get the current market value for this coin
 			double currentCoinValue = 0;
@@ -239,13 +272,21 @@ public class PortfolioController {
 	// handle get for the access page
 	@RequestMapping(value = "/access/{portfolioId}", method = RequestMethod.GET)
 	public String grantAccessToPortfolio(@PathVariable("portfolioId") long portfolioId, Model model) {
+		// check if the object exists
+		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "portfolio");
+			return "error_page";
+		}
+		
 		// check if the current user has access to this portfolio
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
 			model.addAttribute("firstName", user.getName());
 			model.addAttribute("object", "portfolio");
-			return "not_authorized";
+			return "error_page";
 		}
 		
 		// get the user with access to this portfolio
@@ -261,20 +302,26 @@ public class PortfolioController {
 	public String addUserAccessToPortfolio(@PathVariable("portfolioId") long portfolioId, 
 			@RequestParam(value="mail", required=false) String mail,
 			Model model) {
+		// check if the object exists
+		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "portfolio");
+			return "error_page";
+		}
+		
 		// check if the current user has access to this portfolio
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
 			model.addAttribute("firstName", user.getName());
 			model.addAttribute("object", "portfolio");
-			return "not_authorized";
+			return "error_page";
 		}
 		
 		// check if the e-mail address exists
 		if(userService.countByEmail(mail) > 0) {
-			
 			portfolioService.addUserAccessToPortfolio(portfolioId, mail);
-			
 			model.addAttribute("success", mail + " added");
 		}else {
 			model.addAttribute("error", mail + " does not exist.");
@@ -291,6 +338,11 @@ public class PortfolioController {
 	public @ResponseBody String revokeUserAccessToPortfolio(@RequestParam(value="portfolioId", required=true) long portfolioId, 
 			@RequestParam(value="userId", required=true) int userId,
 			Model model) {
+		// check if the object exists
+		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
+			return "<div class='alert alert-danger'>This portfolio does not exist</div>";
+		}
+		
 		// check if the current user has access to this portfolio
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
@@ -303,13 +355,21 @@ public class PortfolioController {
 	// handle get for the access page
 	@RequestMapping(value = "/apiAccess/{portfolioId}", method = RequestMethod.GET)
 	public String grantAccessApiToPortfolio(@PathVariable("portfolioId") long portfolioId, Model model) {
+		// check if the object exists
+		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "portfolio");
+			return "error_page";
+		}
+		
 		// check if the current user has access to this portfolio
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
 			model.addAttribute("firstName", user.getName());
 			model.addAttribute("object", "portfolio");
-			return "not_authorized";
+			return "error_page";
 		}
 		
 		// get the api keys with access to this portfolio
@@ -328,6 +388,13 @@ public class PortfolioController {
 	public String handleNewApiAccess(@PathVariable("portfolioId") long portfolioId, 
 			@RequestParam(value="apiKey", required=false) long apiKeyId,
 			Model model) {
+		// check if the object exists
+		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "portfolio");
+			return "error_page";
+		}
+		
 		
 		// get the current logged in user
 		String username = userService.findLoggedInUsername();
@@ -336,9 +403,10 @@ public class PortfolioController {
 		// check if the current user has access to this portfolio
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
+			model.addAttribute("authorizationError", true);
 			model.addAttribute("firstName", currentUser.getName());
 			model.addAttribute("object", "portfolio");
-			return "not_authorized";
+			return "error_page";
 		}
 		
 		// get the API Key object
@@ -346,21 +414,20 @@ public class PortfolioController {
 		
 		// check if the apiKey exists
 		if(apiKey == null) {
-			model.addAttribute("firstName", currentUser.getName());
-			model.addAttribute("object", "API Key");
-			return "not_authorized";
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "portfolio");
+			return "error_page";
 		}
 		
 		// check if the api key is registered by the current user
 		if(!apiKey.getUser().equals(currentUser)) {
 			model.addAttribute("firstName", currentUser.getName());
 			model.addAttribute("object", "API Key");
-			return "not_authorized";
+			return "error_page";
 		}
 
 		// checks OK
 		portfolioService.addApiAccessToPortfolio(apiKey, portfolioId);
-		
 		
 		// now add changes to the model
 		List<ApiKey> apiKeysCurrentUser = apiKeyService.findByUser(currentUser);
@@ -378,6 +445,11 @@ public class PortfolioController {
 	public @ResponseBody String revokeApiAccessToPortfolio(@RequestParam(value="portfolioId", required=true) long portfolioId, 
 			@RequestParam(value="apiKeyId", required=true) long apiKeyId,
 			Model model) {
+		// check if the object exists
+		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
+			return "<div class='alert alert-danger'>This portfolio does not exist</div>";
+		}
+		
 		// check if the current user has access to this portfolio
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 		if(!access) {
@@ -385,6 +457,41 @@ public class PortfolioController {
 		}
 		
 		return portfolioService.removeApiAccessToPortfolio(portfolioId, apiKeyId);
+	}
+	
+	// handle revoking user access
+	@RequestMapping(value = "/delete/{portfolioId}", method = RequestMethod.GET)
+	public String confirmDelete(@PathVariable("portfolioId") long portfolioId, 
+			Model model) {
+		// check if the object exists
+		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "portfolio");
+			return "error_page";
+		}
+		
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
+			return "error_page";
+		}
+		
+		// get the portfolio, and add it to the object
+		Portfolio portfolio = portfolioService.findById(portfolioId);
+		// add to model		
+		model.addAttribute("portfolio", portfolio);
+		model.addAttribute("portfolioId", portfolioId);
+		
+		// now get the attached wallets
+		List<Wallet> wallets = walletRepository.findByPortfolio(portfolio);
+		model.addAttribute("wallets", wallets);
+		
+		
+		return "portfolio_confirm_delete";
 	}
 	
 	@RequestMapping(value = "/chart/{portfolioId}", method = RequestMethod.GET)
@@ -429,10 +536,6 @@ public class PortfolioController {
 		List<FormOption> minuteOptions = formOptions.defaultSetMinuteOptions();
 		// now add to the model
 		model.addAttribute("minuteOptions",minuteOptions);
-		
-		
-		
-		
 		
 		return "portfolio_chart";
 	}

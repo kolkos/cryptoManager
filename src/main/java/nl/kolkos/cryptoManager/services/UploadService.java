@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -60,8 +62,13 @@ public class UploadService {
 	}
 	
 	private Double parseStringToDouble(String transactionAmount) throws ParseException {
+		Locale locale  = new Locale("nl", "NL");
 		
-		DecimalFormat decimalFormat = new DecimalFormat("0.00######");
+		String pattern = "0.00######";
+		
+		DecimalFormat decimalFormat = (DecimalFormat)NumberFormat.getNumberInstance(locale);
+		decimalFormat.applyPattern(pattern);
+		
 		double newAmount = decimalFormat.parse(transactionAmount).doubleValue();
 		System.out.println(newAmount);
 		

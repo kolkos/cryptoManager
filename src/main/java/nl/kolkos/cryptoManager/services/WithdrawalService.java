@@ -108,4 +108,14 @@ public class WithdrawalService {
 		
 	}
 	
+	public void deleteWithdrawal(Withdrawal withdrawal) {
+		withdrawalRepository.delete(withdrawal);
+	}
+	
+	public void deleteWithdrawal(List<Withdrawal> withdrawals) {
+		for(Withdrawal withdrawal : withdrawals) {
+			this.deleteWithdrawal(withdrawal);
+		}
+	}
+	
 }

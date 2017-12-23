@@ -49,8 +49,20 @@
 					<td th:text="${portfolio.description}">walletAddress</td>
 				</tr>
 				<tr>
-					<td>Total attached wallets:</td>
+					<td>Number attached wallets:</td>
 					<td th:text="${countWallets}">countWallets</td>
+				</tr>
+				<tr>
+					<td>Total value investment:</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(totalInvestment, 1, 'POINT', 2, 'COMMA')}">totalInvestment</td>
+				</tr>
+				<tr>
+					<td>Total withdrawn to cash:</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(totalWithdrawnToCash, 1, 'POINT', 2, 'COMMA')}">totalWithdrawnToCash</td>
+				</tr>
+				<tr>
+					<td>Total value in wallets:</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(totalValueInWallets, 1, 'POINT', 2, 'COMMA')}">totalValueInWallets</td>
 				</tr>
 				<tr>
 					<td>Total portfolio value:</td>
@@ -64,7 +76,7 @@
 			<a th:href="@{/portfolio/access/{id}(id=${portfolioId})}" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-user"></span> User access</a>
 			<a th:href="@{/portfolio/apiAccess/{id}(id=${portfolioId})}" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-tag"></span> API access</a>
 			<a th:href="@{/portfolio/edit/{id}(id=${portfolioId})}" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
-			<a href="#" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+			<a th:href="@{/portfolio/delete/{id}(id=${portfolioId})}" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> Delete</a>
 		</p>
 		
 		<div class="page-header">

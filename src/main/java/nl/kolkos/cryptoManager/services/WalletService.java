@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import nl.kolkos.cryptoManager.Coin;
+import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Wallet;
+import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 
@@ -142,5 +144,24 @@ public class WalletService {
 		wallet.setCurrentWalletROI(roi);
 		
 		return wallet;
+	}
+	
+	public void deleteWallet(Wallet wallet) {
+		// find the deposits
+		List<Deposit> deposits = depositService.findByWallet(wallet);
+		depositService.deleteDeposit(deposits);
+		
+		// find the withdralwas
+		List<Withdrawal> withdrawals = withdrawalService.findByWallet(wallet);
+		withdrawalService.deleteWithdrawal(withdrawals);
+		
+		// now delete the wallet itself
+		walletRepository.delete(wallet);
+	}
+	
+	public void deleteWallet(List<Wallet> wallets) {
+		for(Wallet wallet : wallets) {
+			this.deleteWallet(wallet);
+		}
 	}
 }

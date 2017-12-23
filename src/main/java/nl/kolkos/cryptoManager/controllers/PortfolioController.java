@@ -161,7 +161,7 @@ public class PortfolioController {
     }
 	
 	// get portfolio details
-	@RequestMapping(value = "/showPortfolio/{portfolioId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/details/{portfolioId}", method = RequestMethod.GET)
 	public String getWalletsByPortfolioId(@PathVariable("portfolioId") long portfolioId, Model model) {
 		// check if the object exists
 		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
@@ -199,7 +199,12 @@ public class PortfolioController {
 		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
 		
 		// loop the wallets to get their values
-		double totalPortfolioValue = 0;
+		double totalInvestment = 0;			// this is the value of all ivestments
+		double totalPortfolioValue = 0;		// this is the total value of the portfolio (the value of all the coins + the amount withdrawn)
+		double totalWithdrawnToCash = 0;		// the total value withdrawn to cash
+		double totalValueInWallets = 0;		// this is the value of the coins inside the attached wallets
+		
+		
 		for(Wallet wallet : wallets) {
 			// get the coin from this wallet
 			Coin coin = wallet.getCoin();
@@ -210,18 +215,21 @@ public class PortfolioController {
 			
 			// ---- get the totals for deposits
 			// get the total purchase value
-			//double totalPurchaseValue = depositRepository.getSumOfPurchaseValueForWalletId(wallet.getId());
+			double totalPurchaseValue = depositRepository.getSumOfPurchaseValueForWalletId(wallet.getId());
 			// get the amount purchased
 			double totalAmountDeposited = depositRepository.getSumOfAmountForWalletId(wallet.getId());
 			
 			// --- get the values for the withdrawals
 			// get the to cash value
-			//double totalWithDrawnToCashValue = withdrawalRepository.getSumOfWithdrawalsForWalletId(wallet.getId());
+			
 			// get the total amount of withdrawals
 			double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletId(wallet.getId());
 			
 			// get the total amount
 			double currentWalletAmount = totalAmountDeposited - totalAmountWithdrawn;
+			
+			// get the value withdrawn to cash
+			double totalWithDrawnToCashValue = withdrawalRepository.getSumOfWithdrawalsForWalletId(wallet.getId());
 			
 					
 			
@@ -238,8 +246,14 @@ public class PortfolioController {
 			// calculate the value of this wallet
 			double currentWalletValue = currentWalletAmount * currentCoinValue;
 			
+			// total wallet value (current value + withdrawn to cash)
+			double totalWalletValue = currentWalletValue + totalWithDrawnToCashValue;
+			
 			// add this value to the totalPortfolioValue
-			totalPortfolioValue += currentWalletValue;
+			totalPortfolioValue += totalWalletValue;
+			totalInvestment += totalPurchaseValue;
+			totalWithdrawnToCash += totalWithDrawnToCashValue;
+			totalValueInWallets += currentWalletValue;
 			
 			// add this values to the wallet
 			wallet.setCurrentWalletAmount(currentWalletAmount);
@@ -256,6 +270,9 @@ public class PortfolioController {
 		
 		// add the total portfolio value to the model
 		model.addAttribute("totalPortfolioValue", totalPortfolioValue);
+		model.addAttribute("totalInvestment", totalInvestment);
+		model.addAttribute("totalWithdrawnToCash", totalWithdrawnToCash);
+		model.addAttribute("totalValueInWallets", totalValueInWallets);
 		
 		// add the wallets to the model
 		model.addAttribute("wallets", wallets);
@@ -489,6 +506,36 @@ public class PortfolioController {
 		return "portfolio_confirm_delete";
 	}
 	
+	// handle revoking user access
+	@RequestMapping(value = "/delete/{portfolioId}", method = RequestMethod.POST)
+	public String deletePortfolio(@PathVariable("portfolioId") long portfolioId, 
+			Model model) {
+		// check if the object exists
+		if(!portfolioService.checkIfPortfolioExists(portfolioId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "portfolio");
+			return "error_page";
+		}
+		
+		// check if the current user has access to this portfolio
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "portfolio");
+			return "error_page";
+		}
+		
+		// get the portfolio, and add it to the object
+		Portfolio portfolio = portfolioService.findById(portfolioId);
+		
+		portfolioService.deletePortfolio(portfolio);
+		
+		
+		return "redirect:/portfolio/results";
+	}
+	
 	@RequestMapping(value = "/chart/{portfolioId}", method = RequestMethod.GET)
     public String coinChart(
     		@PathVariable("portfolioId") long portfolioId,
@@ -534,6 +581,8 @@ public class PortfolioController {
 		
 		return "portfolio_chart";
 	}
+	
+	
 	
 	@RequestMapping(value = "/areachart", method = RequestMethod.GET)
     public String createAreaChartPortfolioValue(
@@ -634,23 +683,22 @@ public class PortfolioController {
 				
 				// get the total amount
 				double totalAmount = totalAmountDeposited - totalAmountWithdrawn;
-				// calculate the investment
-				double totalInvested = totalPurchaseValue - totalWithDrawnToCashValue;
+				
 				
 				// get the value of the coin for this moment
 				double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), endInterval.getTime());
 				
 				// prevent 0 by using the last known value
 				if(avgValue == 0) {
-					System.out.println("avgValue = 0...");
 					avgValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coinId, startInterval.getTime());
 				}
 				
 				
 				// add this investment to the total investment
-				totalInvestment += totalInvested;
+				totalInvestment += totalPurchaseValue;
 				
-				double value = avgValue * totalAmount;
+				// add the total withdrawn to cash to the wallet value
+				double value = (avgValue * totalAmount) + totalWithDrawnToCashValue;
 				
 				PortfolioChartLineWallet portfolioChartLineWallet = new PortfolioChartLineWallet();
 				portfolioChartLineWallet.setWalletName(wallet.getCensoredWalletAddress() + " (" + wallet.getCoin().getCoinMarketCapCoin().getSymbol() + ")");
@@ -827,8 +875,10 @@ public class PortfolioController {
 			PortfolioLineChartRoiValue portfolioLineChartRoiValue = new PortfolioLineChartRoiValue();
 			
 			
-			double totalValue = 0;
-			double totalInvestment = 0;
+			// portfolio values
+			double totalValue = 0;			// the total value of the portfolio
+			double totalInvestment = 0; 		// the total amount of investment
+			
 			
 			// loop through the wallets again
 			for(Wallet wallet : wallets) {
@@ -850,8 +900,7 @@ public class PortfolioController {
 				
 				// get the total amount
 				double totalAmount = totalAmountDeposited - totalAmountWithdrawn;
-				// calculate the investment
-				double totalInvested = totalPurchaseValue - totalWithDrawnToCashValue;
+				
 				
 				double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), endInterval.getTime());
 				
@@ -862,12 +911,14 @@ public class PortfolioController {
 				}
 				
 				// calculate the value
-				double value = avgValue * totalAmount;
+				// in this case the withdrawals to cash are added to the current portfolio value
+				// so it is the wallet value + the value withdrawn to cash
+				double value = (avgValue * totalAmount) + totalWithDrawnToCashValue;
 				// add to the totalValue
 				totalValue += value;
 				
 				// calculate the investment for this wallet
-				totalInvestment += totalInvested;
+				totalInvestment += totalPurchaseValue;
 			}
 			
 			// add to the portfolioLineChartRoiValue

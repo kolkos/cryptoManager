@@ -102,4 +102,14 @@ public class DepositService {
 		// save the deposit
 		depositRepository.save(deposit);
 	}
+	
+	public void deleteDeposit(Deposit deposit) {
+		depositRepository.delete(deposit);
+	}
+	
+	public void deleteDeposit(List<Deposit> deposits) {
+		for(Deposit deposit : deposits) {
+			this.deleteDeposit(deposit);
+		}
+	}
 }

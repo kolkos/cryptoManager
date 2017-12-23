@@ -1,6 +1,7 @@
 package nl.kolkos.cryptoManager.services;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import nl.kolkos.cryptoManager.ApiKey;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.User;
+import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 
 @Service
@@ -18,6 +20,9 @@ public class PortfolioService {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private WalletService walletService;
 	
 	@Autowired
 	private ApiKeyService apiKeyService;
@@ -196,6 +201,32 @@ public class PortfolioService {
 		
 		
 		return "<div class='alert alert-success'>API Key removed.</div>";
+	}
+	
+	public void deletePortfolio(Portfolio portfolio) {
+		// get the attached wallets
+		List<Wallet> wallets = walletService.findByPortfolio_Id(portfolio.getId());
+		// delete these wallets
+		walletService.deleteWallet(wallets);
+		
+		
+		// just create a empty set of users
+		Set<User> users = new HashSet<>();
+		// and overwrite the existing users in the portfolio
+		portfolio.setUsers(users);
+				
+		// create a empty set of opi keys
+		Set<ApiKey> apiKeys = new HashSet<>();
+		// and overwrite the existing api keys
+		portfolio.setApiKeys(apiKeys);
+		
+		// first update the portfolio
+		portfolioRepository.save(portfolio);
+		
+		
+		
+		// now delete the portfolio
+		portfolioRepository.delete(portfolio);
 	}
 	
 	

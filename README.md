@@ -11,6 +11,7 @@ First create a clone of this repository
 git clone https://github.com/kolkos/cryptoManager.git
 ```
 
+### Create keystore, change the passwords
 Now you have to create a keystore (for https to work)
 source: https://memorynotfound.com/spring-boot-configure-tomcat-ssl-https/
 ```
@@ -45,3 +46,18 @@ server:
     key-store-password: changeme
 ```
 
+### Run with docker
+The app can run in docker containers. The stack contains a application and a database container. 
+
+Run the stack with the following command
+```
+# first open the root folder of this project
+docker-compose up -d
+```
+
+After updating the application, run the following command to rebuild the app
+```
+docker-compose build
+```
+
+This will rebuild the application

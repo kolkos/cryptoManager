@@ -51,6 +51,24 @@ public class WalletService {
 		return walletRepository.findByAddress(address);
 	}
 	
+	public List<Wallet> findByPortfolioUsersEmail(String email){
+		return walletRepository.findByPortfolioUsersEmail(email);
+	}
+	
+	public void saveWallet(Wallet wallet) {
+		walletRepository.save(wallet);
+	}
+	
+	public boolean checkIfWalletExists(long walletId) {
+		boolean exists = false;
+		Wallet wallet = walletRepository.findById(walletId);
+		if(wallet != null) {
+			exists = true;
+		}
+		wallet = null;
+		return exists;
+	}
+	
 	public Wallet createWallet(String address, String description, Portfolio portfolio, Coin coin) {
 		Wallet wallet = new Wallet();
 		wallet.setAddress(address);

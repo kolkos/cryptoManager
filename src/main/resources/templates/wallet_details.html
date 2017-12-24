@@ -103,7 +103,7 @@
 		
 		<p>
 			<a th:href="@{/wallet/chart/{id}(id=${wallet.id})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-stats"></span> Show chart</a>
-			<a href="#" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+			<a th:href="@{/wallet/edit/{id}(id=${wallet.id})}" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
 			<a href="#" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> Delete</a>
 		</p>
 		

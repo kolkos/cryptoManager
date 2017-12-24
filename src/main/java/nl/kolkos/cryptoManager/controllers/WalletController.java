@@ -34,7 +34,9 @@ import nl.kolkos.cryptoManager.repositories.DepositRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
+import nl.kolkos.cryptoManager.services.PortfolioService;
 import nl.kolkos.cryptoManager.services.UserService;
+import nl.kolkos.cryptoManager.services.WalletService;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -45,9 +47,10 @@ import org.springframework.http.ResponseEntity;
 @RequestMapping(path="/wallet") // This means URL's start with /demo (after Application path)
 public class WalletController {
 
+	
 	@Autowired
-	@Qualifier(value = "walletRepository")
-	private WalletRepository walletRepository;
+	private WalletService walletService;
+	
 	
 	@Autowired
 	@Qualifier(value = "coinRepository")
@@ -58,8 +61,7 @@ public class WalletController {
 	private CoinValueRepository coinValueRepository;	
 	
 	@Autowired
-	@Qualifier(value = "portfolioRepository")
-	private PortfolioRepository portfolioRepository;
+	private PortfolioService portfolioService;
 	
 	@Autowired
 	@Qualifier(value = "depositRepository")
@@ -80,7 +82,7 @@ public class WalletController {
 		//model.addAttribute("portfolio", new Portfolio());
 		
 		model.addAttribute("coinList", coinRepository.findAllByOrderByCoinMarketCapCoinSymbol());
-		model.addAttribute("portfolioList", portfolioRepository.findByUsers_email(userService.findLoggedInUsername()));
+		model.addAttribute("portfolioList", portfolioService.findByUsers_email(userService.findLoggedInUsername()));
 		
         return "wallet_form";
     }
@@ -92,7 +94,7 @@ public class WalletController {
 		model.addAttribute("portfolio", new Portfolio());
 		
 
-		model.addAttribute("walletList", walletRepository.findByPortfolioUsersEmail(userService.findLoggedInUsername()));
+		model.addAttribute("walletList", walletService.findByPortfolioUsersEmail(userService.findLoggedInUsername()));
 		
         return "wallet_results";
     }
@@ -115,30 +117,98 @@ public class WalletController {
 		wallet.setDescription(description);
 		wallet.setPortfolio(portfolio);
 		wallet.setCoin(coin);
-		walletRepository.save(wallet);
-				
-		
+		walletService.saveWallet(wallet);
 		
 		//return message;
 		return "redirect:/wallet/results";
 		
 	}
-		
-	// get wallet details
-	@RequestMapping(value = "/details/{walletId}", method = RequestMethod.GET)
-	public String getWalletsByPortfolioId(@PathVariable("walletId") long walletId, Model model) {
-		
+	
+	// edit wallet - GET
+	@RequestMapping(value = "/edit/{walletId}", method = RequestMethod.GET)
+	public String editWalletForm(@PathVariable("walletId") long walletId, Model model) {
+		// check if the wallet exists
+		if(!walletService.checkIfWalletExists(walletId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "wallet");
+			return "error_page";
+		}
 		// check if the current user has access to this wallet
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToWallet(walletId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
 			model.addAttribute("firstName", user.getName());
 			model.addAttribute("object", "wallet");
-			return "not_authorized";
+			return "error_page";
+		}
+		
+		// get the wallet
+		Wallet wallet = walletService.findById(walletId);
+		model.addAttribute("wallet", wallet);
+		
+		model.addAttribute("coinList", coinRepository.findAllByOrderByCoinMarketCapCoinSymbol());
+		model.addAttribute("portfolioList", portfolioService.findByUsers_email(userService.findLoggedInUsername()));
+		
+		return "wallet_edit"; 
+	}
+	
+	// edit wallet - POST
+	@RequestMapping(value = "/edit/{walletId}", method = RequestMethod.POST)
+	public String editWallet(@PathVariable("walletId") long walletId, 
+			@RequestParam Portfolio portfolio,
+			@RequestParam Coin coin,
+			@RequestParam String address,
+			@RequestParam String description,
+			Model model) {
+		// check if the wallet exists
+		if(!walletService.checkIfWalletExists(walletId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "wallet");
+			return "error_page";
+		}
+		// check if the current user has access to this wallet
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToWallet(walletId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "wallet");
+			return "error_page";
+		}
+		
+		// get the wallet
+		Wallet wallet = walletService.findById(walletId);
+		wallet.setAddress(address);
+		wallet.setDescription(description);
+		wallet.setPortfolio(portfolio);
+		wallet.setCoin(coin);
+		walletService.saveWallet(wallet);
+				
+		return "redirect:/wallet/details/" + walletId;
+	}
+		
+	// get wallet details
+	@RequestMapping(value = "/details/{walletId}", method = RequestMethod.GET)
+	public String getWalletsByPortfolioId(@PathVariable("walletId") long walletId, Model model) {
+		// check if the wallet exists
+		if(!walletService.checkIfWalletExists(walletId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "wallet");
+			return "error_page";
+		}
+		// check if the current user has access to this wallet
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToWallet(walletId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "wallet");
+			return "error_page";
 		}
 		
 		
-		Wallet wallet = walletRepository.findById(walletId);
+		Wallet wallet = walletService.findById(walletId);
 		
 		// add this wallet to the model
 		model.addAttribute("wallet", wallet);
@@ -257,13 +327,20 @@ public class WalletController {
     		@RequestParam(value="intervalInMinutes", required=false) Integer intervalInMinutes,
     		Model model) {
         
+		// check if the wallet exists
+		if(!walletService.checkIfWalletExists(walletId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "wallet");
+			return "error_page";
+		}
 		// check if the current user has access to this wallet
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToWallet(walletId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
 			model.addAttribute("firstName", user.getName());
 			model.addAttribute("object", "wallet");
-			return "not_authorized";
+			return "error_page";
 		}
 		
 		
@@ -291,7 +368,7 @@ public class WalletController {
 		model.addAttribute("minuteOptions",minuteOptions);
 		
 		// get the wallet
-		Wallet wallet = walletRepository.findById(walletId);
+		Wallet wallet = walletService.findById(walletId);
 		
 		model.addAttribute("walletId",walletId);
 		

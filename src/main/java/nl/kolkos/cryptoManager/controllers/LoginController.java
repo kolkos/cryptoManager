@@ -67,11 +67,16 @@ public class LoginController {
 	
 	@RequestMapping(value="/install", method = RequestMethod.GET)
 	public @ResponseBody String initialInstall(){
+		// check if the ADMIN role exists
+		Role testAdminRole = roleRepository.findByRole("ADMIN");
+		if(testAdminRole != null) {
+			return "The initial installation has already been done...";
+		}
 		
-		String usernameAdministrator = "admin@admin.com";
+		String usernameAdministrator = "admin@localhost";
 		String passwordAdministrator = "admin";
 		
-		String usernameUser = "user@user.com";
+		String usernameUser = "user@localhost";
 		String passwordUser = "user";
 		
 		// create roles
@@ -145,11 +150,19 @@ public class LoginController {
 					.rejectValue("email", "error.user",
 							"There is already a user registered with the email provided");
 		}
+		if(!user.getPassword().equals(user.getRepeatPassword())) {
+			bindingResult
+					.rejectValue("password", "error.user",
+						"The passwords are not equal");
+			bindingResult
+					.rejectValue("repeatPassword", "error.user",
+						"The passwords are not equal");
+		}
 		if (bindingResult.hasErrors()) {
 			modelAndView.setViewName("registration");
 		} else {
 			userService.saveUser(user);
-			modelAndView.addObject("successMessage", "User has been registered successfully");
+			modelAndView.addObject("successMessage", "<strong>Registration successfull!<strong>. You can now <a href='/login'>login</a>.");
 			modelAndView.addObject("user", new User());
 			modelAndView.setViewName("registration");
 			
@@ -167,4 +180,6 @@ public class LoginController {
 		modelAndView.setViewName("admin/home");
 		return modelAndView;
 	}
+	
+	
 }

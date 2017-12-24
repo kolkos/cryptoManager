@@ -65,14 +65,18 @@
 				aria-expanded="false">Profile <span class="caret"></span></a>
 				<ul class="dropdown-menu">
 					<li class="disabled"><a href="#" th:text="${username}">username</a></li>
+					<li><a href="/legal.html">Legal information</a></li>
 					<li role="separator" class="divider"></li>
-					<li><a href="#">Settings</a></li>
+					<li><a href="#">Edit profile</a></li>
 					<li><a href="/api/manageKeys">API keys</a></li>
-					<li><a href="/logout">Log off</a></li>
+					
+					<!-- 
 					<li role="separator" class="divider"></li>
 					<li><a href="#">Administrator page</a></li>
+					 -->
 					<li role="separator" class="divider"></li>
-					<li><a href="/legal.html">Legal information</a></li>
+					
+					<li><a href="/logout">Log off</a></li>
 				</ul>
 			</li>
 		</ul>

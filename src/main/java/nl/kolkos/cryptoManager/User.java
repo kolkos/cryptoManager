@@ -32,21 +32,32 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "user_id")
 	private int id;
+	
 	@Column(name = "email")
 	@Email(message = "*Please provide a valid Email")
 	@NotEmpty(message = "*Please provide an email")
 	private String email;
+	
 	@Column(name = "password")
-	@Length(min = 5, message = "*Your password must have at least 5 characters")
+	@Length(min = 8, message = "*Your password must have at least 8 characters")
 	@NotEmpty(message = "*Please provide your password")
 	@Transient
 	private String password;
+	
+	@Column(name = "repeatPassword")
+	@Length(min = 8, message = "*Your password must have at least 8 characters")
+	@NotEmpty(message = "*Please repeat your password")
+	@Transient
+	private String repeatPassword;
+	
 	@Column(name = "name")
 	@NotEmpty(message = "*Please provide your name")
 	private String name;
+	
 	@Column(name = "last_name")
 	@NotEmpty(message = "*Please provide your last name")
 	private String lastName;
+	
 	@Column(name = "active")
 	private int active;
 	
@@ -73,6 +84,14 @@ public class User {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getRepeatPassword() {
+		return repeatPassword;
+	}
+
+	public void setRepeatPassword(String repeatPassword) {
+		this.repeatPassword = repeatPassword;
 	}
 
 	public String getName() {

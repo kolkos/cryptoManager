@@ -42,7 +42,7 @@
 		</div>
 		<p class="lead">Use this form to create an account.</p>
 		
-
+		<p th:if="${successMessage != null}" th:utext="${successMessage}" class="alert alert-success" role="alert">successMessage</p>
 			
 		<form autocomplete="off" action="#" th:action="@{/registration}" 	th:object="${user}" method="post" role="form">
 			
@@ -77,15 +77,19 @@
 				<label th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="label label-danger"></label>
 				
 			</div>
+			<label for="password">Repeat password</label>
+			<div class="input-group form-group">
+				<span class="input-group-addon" id="passPrefix"><span class="glyphicon glyphicon-lock"></span></span>
+				<input type="password" th:field="*{repeatPassword}" placeholder="Password" class="form-control" aria-describedby="passPrefix"/>
+				<label th:if="${#fields.hasErrors('repeatPassword')}" th:errors="*{repeatPassword}" class="label label-danger"></label>
+				
+			</div>
 			<br />
 			<div class="form-group">
 				
 					<button type="submit" class="btn btn-primary btn-block">Register User</button>
 				
 			</div>
-			
-			<span th:utext="${successMessage}"></span>
-			
 			
 		</form>
 	</div>

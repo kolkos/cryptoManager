@@ -77,10 +77,14 @@
 	
 	<div class="container">
 		<div class="page-header">
-			<h1 th:text="${coinName}">coin</h1>
+			<h1 th:text="${walletAddressFull}">coin</h1>
 		</div>
-		<p class="lead">See the value for this the wallet over time. Return to the details page by clicking <a th:href="@{/wallet/showWallet/{id}(id=${walletId})}">here</a>.</p>
+		<p class="lead">See the value for this the wallet over time.</p>
 		
+		<p>
+			<a th:href="@{/wallet/details/{id}(id=${walletId})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-zoom-in"></span> Return to details</a>
+			<a href="/wallet/results" class="btn btn-info" role="button"><span class="glyphicon glyphicon-list"></span> Return to list</a>
+		</p>
 		
 		<form action="#" method="get">
 			<table class="table table-striped">

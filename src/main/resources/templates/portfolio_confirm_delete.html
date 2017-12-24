@@ -73,7 +73,7 @@
 					<td th:text="${wallet.description}">description</td>
 					<td th:text="${wallet.coin.coinMarketCapCoin.symbol}">coinName</td>
 					<td>
-						<a th:href="@{/wallet/showWallet/{id}(id=${wallet.id})}">
+						<a th:href="@{/wallet/details/{id}(id=${wallet.id})}">
 							<span class="glyphicon glyphicon-zoom-in"></span>
 							
 						</a>
@@ -87,7 +87,7 @@
 		</p>
 		<p>
 			<button type="button" class="btn btn-danger" id="deletePortfolioButton">Yes</button>
-			<a th:href="@{/portfolio/showPortfolio/{id}(id=${portfolio.id})}" class="btn btn-success" role="button">No</a>
+			<a th:href="@{/portfolio/details/{id}(id=${portfolio.id})}" class="btn btn-success" role="button">No</a>
 		</p>
 		
 		<form action="#" th:action="@{/portfolio/delete/{id}(id=${portfolio.id})}" method="post">

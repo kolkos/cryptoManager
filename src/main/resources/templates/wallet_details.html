@@ -32,7 +32,11 @@
 		<div class="page-header">
 			<h1>Wallet details</h1>
 		</div>
-		<p class="lead">See the details for wallet '<span th:text="${wallet.address}">name</span>'. Return to the list by clicking <a href="/wallet/results">here</a>.</p>
+		<p class="lead">See the details for wallet '<span th:text="${wallet.address}">name</span>'.</p>
+		
+		<p>
+			<a href="/wallet/results" class="btn btn-info" role="button"><span class="glyphicon glyphicon-list"></span> Return to list</a>
+		</p>
 		
 		<table class="table table-striped">
 			<thead>

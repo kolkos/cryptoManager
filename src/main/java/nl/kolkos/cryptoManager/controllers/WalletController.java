@@ -125,7 +125,7 @@ public class WalletController {
 	}
 		
 	// get wallet details
-	@RequestMapping(value = "/showWallet/{walletId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/details/{walletId}", method = RequestMethod.GET)
 	public String getWalletsByPortfolioId(@PathVariable("walletId") long walletId, Model model) {
 		
 		// check if the current user has access to this wallet
@@ -303,6 +303,7 @@ public class WalletController {
 		
 		CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
 		model.addAttribute("coinName",cmcCoin.getName());
+		model.addAttribute("walletAddressFull",wallet.getAddress());
 		model.addAttribute("walletAddress",wallet.getCensoredWalletAddress());
 		
 		// set the get parameters

@@ -32,7 +32,11 @@
 		<div class="page-header">
 			<h1>Registered wallets</h1>
 		</div>
-		<p class="lead">This page shows the registered wallets. You can add a new wallet <a href="/wallet/add">here</a>.</p>
+		<p class="lead">This page shows the registered wallets.</p>
+		
+		<p>
+			<a href="/wallet/add" class="btn btn-success" role="button"><span class="glyphicon glyphicon-asterisk"></span> Register new wallet</a>
+		</p>
 		
 		<table class="table table-striped">
 			<thead>
@@ -52,7 +56,7 @@
 					<td th:text="${wallet.coin.coinMarketCapCoin.symbol}">coinName</td>
 					<td th:text="${wallet.portfolio.name}">portfolioName</td>
 					<td>
-						<a th:href="@{/wallet/showWallet/{id}(id=${wallet.id})}">
+						<a th:href="@{/wallet/details/{id}(id=${wallet.id})}">
 							<span class="glyphicon glyphicon-zoom-in"></span>
 						</a>
 					</td>

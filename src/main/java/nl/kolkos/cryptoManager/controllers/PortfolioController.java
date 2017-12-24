@@ -143,7 +143,7 @@ public class PortfolioController {
 		
 		portfolioService.updatePortfolio(portfolioId, name, description);
 				
-		return "redirect:/portfolio/showPortfolio/" + portfolioId;
+		return "redirect:/portfolio/details/" + portfolioId;
 		
 	}
 	

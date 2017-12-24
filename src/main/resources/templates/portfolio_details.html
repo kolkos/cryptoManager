@@ -103,7 +103,7 @@
 					<td th:text="${#numbers.formatDecimal(wallet.currentWalletAmount, 1, 'POINT', 8, 'COMMA')}">currentWalletAmount</td>
 					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletValue, 1, 'POINT', 2, 'COMMA')}">currentWalletValue</td>
 					<td>
-						<a th:href="@{/wallet/showWallet/{id}(id=${wallet.id})}">
+						<a th:href="@{/wallet/details/{id}(id=${wallet.id})}">
 							<span class="glyphicon glyphicon-zoom-in"></span>
 							
 						</a>

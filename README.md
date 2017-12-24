@@ -61,3 +61,13 @@ docker-compose build
 ```
 
 This will rebuild the application
+
+### First run
+By default the database is empty. You can create two users (and their necessary roles) by opening a browser and go to:
+```
+https://your.host.name:8443/install
+```
+
+This will create a administrator and normal user. 
+
+At this moment there is no administration panel available. So the administrator can do exactly the same as a normal user. 

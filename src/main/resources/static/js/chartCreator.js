@@ -22,6 +22,9 @@ $(function() {
 				break;
 		}
 		
+		// temporary show waiting message
+		$('#chartHolder').html("<p>The chart is being generated. Please wait...</p>");
+		
 		$.get(url, 
 			{
 				portfolioId: portfolioId,

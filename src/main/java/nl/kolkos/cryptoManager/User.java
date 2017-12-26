@@ -44,7 +44,6 @@ public class User {
 	@Transient
 	private String password;
 	
-	@Column(name = "repeatPassword")
 	@Length(min = 8, message = "*Your password must have at least 8 characters")
 	@NotEmpty(message = "*Please repeat your password")
 	@Transient

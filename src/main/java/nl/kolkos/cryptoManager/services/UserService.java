@@ -9,6 +9,7 @@ public interface UserService {
 	public User findById(int userId);
 	public void saveUser(User user);
 	public void updateUser(User user);
+	public void updateUser(User user, boolean passwordChanged);
 	public String findLoggedInUsername();
 	public boolean checkIfCurrentUserIsAuthorizedToPortfolio(long portfolioId);
 	public boolean checkIfCurrentUserIsAuthorizedToWallet(long walletId);

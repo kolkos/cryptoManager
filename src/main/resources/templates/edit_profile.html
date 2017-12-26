@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>cryptoManager::Registration Form</title>
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
+</head>
+<body>
+	<nav class="navbar navbar-inverse" id="menuHodler">
+		
+	</nav>
+	
+	<div class="container">
+		<div class="page-header">
+			<h1>Register</h1>
+		</div>
+		<p class="lead">Use this form to create an account.</p>
+		
+		<p th:if="${success != null}" th:utext="${success}" class="alert alert-success" role="alert">successMessage</p>
+		<p th:if="${error != null}" th:utext="${error}" class="alert alert-danger" role="alert">successMessage</p>
+			
+		<form autocomplete="off" action="#" th:action="@{/profile/edit}" method="post" role="form">
+			
+			<label for="name">Name</label>
+			<div class="form-group">
+			
+				<input type="text" th:field="${user.name}" class="form-control" placeholder="name"/> 
+				
+				
+			</div>
+			
+			<label for="lastname">Last name</label>
+			<div class="form-group">
+
+				<input type="text" th:field="${user.lastName}" placeholder="Last Name" class="form-control" /> 
+			</div>
+			
+			
+			<label for="password">Password</label>
+			<div class="input-group form-group">
+				<span class="input-group-addon" id="passPrefix"><span class="glyphicon glyphicon-lock"></span></span>
+				<input type="password" th:field="${user.password}" placeholder="Password" class="form-control" aria-describedby="passPrefix"/>
+				
+			</div>
+			<label for="password">Repeat password</label>
+			<div class="input-group form-group">
+				<span class="input-group-addon" id="passPrefix"><span class="glyphicon glyphicon-lock"></span></span>
+				<input type="password" th:field="${user.repeatPassword}" placeholder="Password" class="form-control" aria-describedby="passPrefix"/>
+				
+			</div>
+			<br />
+			<div class="form-group">
+				
+					<button type="submit" class="btn btn-primary btn-block">Update settings</button>
+				
+			</div>
+			
+		</form>
+	</div>
+	<script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/loadMenu.js"></script>
+
+</body>
+</html>

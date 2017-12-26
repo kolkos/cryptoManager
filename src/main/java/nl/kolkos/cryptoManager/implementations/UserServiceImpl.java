@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void saveUser(User user) {		
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		user.setRepeatPassword(bCryptPasswordEncoder.encode(user.getRepeatPassword()));
         user.setActive(1);
         Role userRole = roleRepository.findByRole("USER");
         
@@ -83,7 +84,13 @@ public class UserServiceImpl implements UserService{
 		userRepository.save(user);
 	}
 	
-	
+	public void updateUser(User user, boolean passwordChanged) {
+		if(passwordChanged) {
+			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+			user.setRepeatPassword(bCryptPasswordEncoder.encode(user.getRepeatPassword()));
+		}
+		userRepository.save(user);
+	}
 	
 	public boolean checkIfCurrentUserIsAuthorizedToPortfolio(long portfolioId) {
 		boolean userHasAccess = false;

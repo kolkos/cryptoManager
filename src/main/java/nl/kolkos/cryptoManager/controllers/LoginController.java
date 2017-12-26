@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -63,6 +64,53 @@ public class LoginController {
 		modelAndView.addObject("user", user);
 		modelAndView.setViewName("registration");
 		return modelAndView;
+	}
+	
+	@RequestMapping(value="/profile/edit", method = RequestMethod.GET)
+	public ModelAndView editProfile(){
+		ModelAndView modelAndView = new ModelAndView();
+		User user = userService.findUserByEmail(userService.findLoggedInUsername());
+		modelAndView.addObject("user", user);
+		modelAndView.setViewName("edit_profile");
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/profile/edit", method = RequestMethod.POST)
+	public String updateUserProfile(
+			@RequestParam(value="name", required=true) String name,
+			@RequestParam(value="lastName", required=true) String lastName,
+			@RequestParam(value="password", required=false) String password,
+			@RequestParam(value="repeatPassword", required=false) String repeatPassword,
+			Model model) {
+		
+		// get the current logged in user
+		User user = userService.findUserByEmail(userService.findLoggedInUsername());
+		//user.setEmail(userService.findLoggedInUsername());
+		
+		// change (or don't) the name and last name
+		user.setName(name);
+		user.setLastName(lastName);
+		
+		boolean passwordChanged = false;
+		
+		// check if the password is filled
+		if(password != null) {
+			// check if the passwords are equal
+			if(!password.equals(repeatPassword)) {
+				model.addAttribute("error", "<strong>Error!</strong> Passwords are not equal");
+			}else {
+				// set the password
+				user.setPassword(repeatPassword);
+				user.setRepeatPassword(repeatPassword);
+				passwordChanged = true;
+			}
+		}
+		
+		userService.updateUser(user, passwordChanged);
+		model.addAttribute("success", "<strong>Success!<strong>. Profile updated.");
+		model.addAttribute("user", user);
+		
+		return "edit_profile";
 	}
 	
 	@RequestMapping(value="/install", method = RequestMethod.GET)

@@ -32,7 +32,11 @@
 		<div class="page-header">
 			<h1>Deposit details</h1>
 		</div>
-		<p class="lead">Details for this deposit. Return to the deposit list by clicking <a href="/deposit/results">here</a>.</p>
+		<p class="lead">Details for this deposit.</p>
+		
+		<p>
+			<a href="/deposit/results" class="btn btn-info" role="button"><span class="glyphicon glyphicon-list"></span> Return to list</a>
+		</p>
 		
 		<table class="table table-striped">
 			<thead>
@@ -71,7 +75,7 @@
 		</table>
 		
 		<p>
-			<a href="#" class="btn btn-warning" role="button" ><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+			<a th:href="@{/deposit/edit/{id}(id=${deposit.id})}" class="btn btn-warning" role="button" ><span class="glyphicon glyphicon-pencil"></span> Edit</a>
 			<a href="#" class="btn btn-danger" role="button" id="deleteDepositButton"><span class="glyphicon glyphicon-trash"></span> Delete</a>
 		</p>
 		

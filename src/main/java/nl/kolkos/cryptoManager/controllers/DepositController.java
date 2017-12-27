@@ -98,6 +98,72 @@ public class DepositController {
 		return redirect;
 	}
 	
+	@RequestMapping(value = "/edit/{depositId}", method = RequestMethod.GET)
+    public String editDepositForm(@PathVariable("depositId") long depositId, Model model) {
+		// check if the deposit exists
+		if(!depositService.checkIfDepositExists(depositId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "deposit");
+			return "error_page";
+		}
+		
+		// check if the current user has access to this deposit
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToDeposit(depositId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "deposit");
+			return "error_page";
+		}
+		
+		Deposit deposit = depositService.findById(depositId);
+		model.addAttribute("deposit", deposit);
+        
+        
+        model.addAttribute("walletList", walletRepository.findByPortfolioUsersEmail(userService.findLoggedInUsername()));
+        
+        return "deposit_edit";
+    }
+	
+	@RequestMapping(value = "/edit/{depositId}", method = RequestMethod.POST)
+    public String updateDeposit(@PathVariable("depositId") long depositId, 
+    		@RequestParam Date depositDate,
+		@RequestParam Wallet wallet,
+		@RequestParam double amount,
+		@RequestParam double purchaseValue,
+		@RequestParam String remarks,
+    		Model model) {
+		// check if the deposit exists
+		if(!depositService.checkIfDepositExists(depositId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "deposit");
+			return "error_page";
+		}
+		
+		// check if the current user has access to this deposit
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToDeposit(depositId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "deposit");
+			return "error_page";
+		}
+		
+		Deposit deposit = depositService.findById(depositId);
+		deposit.setDepositDate(depositDate);
+		deposit.setWallet(wallet);
+		deposit.setAmount(amount);
+		deposit.setPurchaseValue(purchaseValue);
+		deposit.setRemarks(remarks);
+		
+		depositService.save(deposit);
+		
+        return "redirect:/deposit/details/" + depositId;
+    }
+	
+	
 	@GetMapping("/results")
     public String depositResults(
     		@RequestParam(value="filterByCoin", required=false) Coin coinFilter,
@@ -167,14 +233,21 @@ public class DepositController {
 	
 	@RequestMapping(value = "/details/{depositId}", method = RequestMethod.GET)
 	public String showDepositDetails(@PathVariable("depositId") long depositId, Model model) {
+		// check if the deposit exists
+		if(!depositService.checkIfDepositExists(depositId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "deposit");
+			return "error_page";
+		}
 		
 		// check if the current user has access to this deposit
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToDeposit(depositId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
 			model.addAttribute("firstName", user.getName());
 			model.addAttribute("object", "deposit");
-			return "not_authorized";
+			return "error_page";
 		}
 		
 		
@@ -191,15 +264,21 @@ public class DepositController {
 			@RequestParam(value="depositId", required=true) long depositId,
 			@RequestParam(value="confirmDelete", required=true) boolean confirmDelete,
 			Model model) {
-
+		// check if the deposit exists
+		if(!depositService.checkIfDepositExists(depositId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "deposit");
+			return "error_page";
+		}
 		
 		// check if the current user has access to this deposit
 		boolean access = userService.checkIfCurrentUserIsAuthorizedToDeposit(depositId);
 		if(!access) {
 			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
 			model.addAttribute("firstName", user.getName());
 			model.addAttribute("object", "deposit");
-			return "not_authorized";
+			return "error_page";
 		}
 		
 		Deposit deposit = depositService.findById(depositId);

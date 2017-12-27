@@ -65,6 +65,16 @@ public class DepositService {
 		return depositRepository.getNumberOfDeposits();
 	}
 	
+	public boolean checkIfDepositExists(long depositId) {
+		Deposit deposit = depositRepository.findById(depositId);
+		boolean exists = false;
+		if(deposit != null) {
+			exists = true;
+		}
+		deposit = null;
+		return exists;		
+	}
+	
 	public List<Deposit> findByWalletPortfolioUsersEmail(int pageNumber, String columnName, String direction, String email){
 		Sort.Direction sort = Sort.Direction.ASC;
 		if(direction.equals("DESC")) {

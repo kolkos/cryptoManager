@@ -30,11 +30,12 @@
 	
 	<div class="container">
 		<div class="page-header">
-			<h1>Register a deposit</h1>
+			<h1>Edit the deposit</h1>
 		</div>
 		<p class="lead">This page let's you register a deposit.</p>
 		
 		<p>
+			<a th:href="@{/deposit/details/{id}(id=${deposit.id})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-zoom-in"></span> Return to details</a>
 			<a href="/deposit/results" class="btn btn-info" role="button"><span class="glyphicon glyphicon-list"></span> Return to list</a>
 		</p>
 		
@@ -43,7 +44,7 @@
 	    			<h3 class="panel-title">Register deposit</h3>
 	  		</div>
 	  		<div class="panel-body">
-		  		<form action="#" th:action="@{/deposit/add}" th:object="${deposit}" method="post" id="addDeposit">
+		  		<form action="#" th:action="@{/deposit/edit/{id}(id=${deposit.id})}" th:object="${deposit}" method="post" id="addDeposit">
 					
 					<label for="depositDate">Deposit date</label>
 					<div class="input-group">
@@ -83,20 +84,9 @@
 					<br />
 										
 					<div class="btn-group">
-  						<button type="button" class="btn btn-primary" id="submitForm">Submit</button>
-  						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    							<span class="caret"></span>
-    							<span class="sr-only">Toggle Dropdown</span>
-  						</button>
-					  	<ul class="dropdown-menu">
-					    		<li><a href="#" id="submitForm">Submit</a></li>
-					    		<li><a href="#" id="submitFormAndReloadPage">Submit and add another deposit</a></li>
-					  	</ul>
+  						<button type="submit" class="btn btn-warning" id="submitForm">Update</button>
+  						
 					</div>
-
-					<!-- Hidden input items, these are used for the 'add another ... functionality' -->
-					<input type="checkbox" name="addAnotherDeposit" id="addAnotherDeposit" value="true" style="display: none;"/>
-					<button type="submit" id="actualSubmitFormButton" style="display: none;">This button should be hidden</button>
 
 				</form>
 			</div>

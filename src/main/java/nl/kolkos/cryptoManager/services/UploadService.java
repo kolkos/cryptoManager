@@ -76,7 +76,6 @@ public class UploadService {
 		decimalFormat.applyPattern(pattern);
 		
 		double newAmount = decimalFormat.parse(transactionAmount).doubleValue();
-		System.out.println(newAmount);
 		
 		return newAmount;
 	}
@@ -408,8 +407,6 @@ public class UploadService {
 			fileContentBuffer += this.createLine(titleFields, separator);
 		}
 		
-		//System.out.println(fileContent);
-		
 		// now get the portfolios
 		Set<Portfolio> portfolios = portfolioService.findByUsers_email(userService.findLoggedInUsername());
 		// loop through portfolios
@@ -494,8 +491,6 @@ public class UploadService {
 				
 			}
 		}
-		
-		System.out.println(fileContentBuffer);
 		
 		// write the content to a file
 		UUID uuid = UUID.randomUUID();

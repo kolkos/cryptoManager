@@ -5,7 +5,10 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -43,6 +46,9 @@ public class UploadService {
 	
 	@Autowired
 	private WithdrawalService withdrawalService;
+	
+	@Autowired
+	private UserService userService;
 	
 	@Autowired
 	private CoinMarketCapCoinRepository coinMarketCapCoinRepository;
@@ -334,6 +340,174 @@ public class UploadService {
         }
 		
 		return results;
+	}
+	
+	public String createLine(List<String> values, String seperator) {
+		String line = "";
+		
+		int listLength = values.size();
+		
+		// loop through the values
+		int iterationNr = 1;
+		for(String value : values) {
+			line += value;
+			if(iterationNr == listLength) {
+				// if this is the last value, append a line break
+				line += "\r\n";
+			}else {
+				// not the last value, append a sperator
+				line += seperator;
+			}
+			
+			iterationNr++;
+		}
+		
+		return line;
+	}
+	
+	/**
+	 * This method creates an export of all the transactions (including wallets and portfolio's the user is authorized to.
+	 * @param containsHeader when true, an header is included
+	 * @param separator the field seperator
+	 * @return string of the file location
+	 * @throws IOException 
+	 */
+	public String exportTransactions(boolean containsHeader, String separator) throws IOException {
+		/*
+		 * The export contains the following fields:
+		 * 		00 Portfolio name 			-> (Required) String
+		 * 		01 Portfolio description 	-> (Optional) String
+		 * 		02 Wallet address 			-> (Required) String 
+		 * 		03 Wallet description 		-> (Optional) String 
+		 * 		04 Coin Symbol 				-> (Required) String 
+		 * 		05 Transaction date 			-> (Required) Date		-> convert to Date
+		 * 		06 Transaction type 			-> (Required) String		-> must be Deposit or Withdrawal
+		 * 		07 Withdrawal to cash 		-> (Required) String		-> ignored if type is deposit. value must be Yes or No
+		 * 		08 Transaction amount		-> (Required) Double		-> convert to Double, replace comma with point
+		 * 		09 Transaction value			-> (Required) Double 	-> convert to Double, replace comma with point	
+		 * 		10 Trasaction remarks		-> (Optional) String
+		 * 
+		 * These are the same fields as in the import
+		 */
+		String fileContentBuffer = "";
+		
+		if(containsHeader) {
+			List<String> titleFields = new ArrayList<>();
+			titleFields.add("Portfolio name");
+			titleFields.add("Portfolio description");
+			titleFields.add("Wallet address");
+			titleFields.add("Wallet description");
+			titleFields.add("Coin Symbol");
+			titleFields.add("Transaction date");
+			titleFields.add("Transaction type");
+			titleFields.add("Withdrawal to cash");
+			titleFields.add("Transaction amount");
+			titleFields.add("Transaction value");
+			titleFields.add("Trasaction remarks");
+			
+			fileContentBuffer += this.createLine(titleFields, separator);
+		}
+		
+		//System.out.println(fileContent);
+		
+		// now get the portfolios
+		Set<Portfolio> portfolios = portfolioService.findByUsers_email(userService.findLoggedInUsername());
+		// loop through portfolios
+		for(Portfolio portfolio : portfolios) {
+			String portfolioName = portfolio.getName();
+			String portfolioDescription = portfolio.getDescription();
+			
+			// get the wallets in this portfolio
+			List<Wallet> wallets = walletService.getWalletsByPortfolio(portfolio);
+			// loop through the wallets
+			for(Wallet wallet : wallets) {
+				// get the wallet values
+				String walletAddress = wallet.getAddress();
+				String walletDescription = wallet.getDescription();
+				// get the attached coin symbol
+				String coinSymbol = wallet.getCoin().getCoinMarketCapCoin().getSymbol();
+				
+				// start with the deposits
+				// get the deposits for this wallet
+				List<Deposit> deposits = depositService.findByWallet(wallet);
+				
+				// loop through the deposits
+				for(Deposit deposit : deposits) {
+					// get the deposit values
+					String transactionDate = deposit.getDepositDate().toString();
+					String transactionType = "deposit";
+					String withdrawalToCash = "";
+					String transactionAmount = String.format("%f", deposit.getAmount());
+					String transactionValue = String.format("%f", deposit.getPurchaseValue());
+					String transactionRemarks = deposit.getRemarks();
+					
+					// now add all the values to a list, and parse it to a line
+					List<String> depositLine = new ArrayList<>();
+					depositLine.add(portfolioName);
+					depositLine.add(portfolioDescription);
+					depositLine.add(walletAddress);
+					depositLine.add(walletDescription);
+					depositLine.add(coinSymbol);
+					depositLine.add(transactionDate);
+					depositLine.add(transactionType);
+					depositLine.add(withdrawalToCash);
+					depositLine.add(transactionAmount);
+					depositLine.add(transactionValue);
+					depositLine.add(transactionRemarks);
+					
+					fileContentBuffer += this.createLine(depositLine, separator);
+				}
+				
+				// same trick, but now for the withdrawals
+				List<Withdrawal> withdrawals = withdrawalService.findByWallet(wallet);
+				for(Withdrawal withdrawal : withdrawals) {
+					// get the deposit values
+					String transactionDate = withdrawal.getWithdrawalDate().toString();
+					String transactionType = "withdrawal";
+					
+					String withdrawalToCash = "no";
+					// if toCash is true, the values is yes
+					if(withdrawal.isToCash()) {
+						withdrawalToCash = "yes";
+					}
+					
+					String transactionAmount = String.format("%f", withdrawal.getAmount());
+					String transactionValue = String.format("%f", withdrawal.getWithdrawalValue());
+					String transactionRemarks = withdrawal.getRemarks();
+					
+					// now add all the values to a list, and parse it to a line
+					List<String> withdrawalLine = new ArrayList<>();
+					withdrawalLine.add(portfolioName);
+					withdrawalLine.add(portfolioDescription);
+					withdrawalLine.add(walletAddress);
+					withdrawalLine.add(walletDescription);
+					withdrawalLine.add(coinSymbol);
+					withdrawalLine.add(transactionDate);
+					withdrawalLine.add(transactionType);
+					withdrawalLine.add(withdrawalToCash);
+					withdrawalLine.add(transactionAmount);
+					withdrawalLine.add(transactionValue);
+					withdrawalLine.add(transactionRemarks);
+					
+					fileContentBuffer += this.createLine(withdrawalLine, separator);
+				}
+				
+			}
+		}
+		
+		System.out.println(fileContentBuffer);
+		
+		// write the content to a file
+		UUID uuid = UUID.randomUUID();
+		String filePath = "/tmp/" + uuid + ".csv";
+		
+		FileOutputStream outputStream = new FileOutputStream(filePath);
+	    byte[] strToBytes = fileContentBuffer.getBytes();
+	    outputStream.write(strToBytes);
+	    outputStream.close();
+		
+		
+		return filePath;
 	}
 	
 } 

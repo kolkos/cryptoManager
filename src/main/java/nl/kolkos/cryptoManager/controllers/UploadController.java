@@ -1,5 +1,6 @@
 package nl.kolkos.cryptoManager.controllers;
 
+import java.io.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,12 +8,16 @@ import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -30,12 +35,12 @@ public class UploadController {
 	public ModelAndView showUpload() {
 		return new ModelAndView("upload_file");
 	}
-    
+	    
 	@PostMapping("/upload")
 	public String fileUpload(
 			@RequestParam("file") MultipartFile file, 
 			@RequestParam("separator") String separator, 
-			@RequestParam(name = "page", defaultValue = "false")  boolean containsHeader, 
+			@RequestParam(name = "containsHeader", defaultValue = "false")  boolean containsHeader, 
 			RedirectAttributes redirectAttributes,
 			Model model) {
 
@@ -66,6 +71,37 @@ public class UploadController {
 		model.addAttribute("results", results);
 
 		return "upload_result";
+	}
+	
+	
+
+	@RequestMapping("/export")
+	public ModelAndView showDownload() {
+		return new ModelAndView("download_file");
+	}
+	
+	@PostMapping("/export")
+	public @ResponseBody void downloadFile(@RequestParam("separator") String separator, 
+			@RequestParam(name = "containsHeader", defaultValue = "false")  boolean containsHeader, 
+			HttpServletResponse response) {
+		
+		try {
+			String filePath = uploadService.exportTransactions(containsHeader, separator);
+			
+			
+			File file = new File(filePath);
+	        InputStream in = new FileInputStream(file);
+
+	        response.setContentType("text/csv");
+	        response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
+	        response.setHeader("Content-Length", String.valueOf(file.length()));
+	        FileCopyUtils.copy(in, response.getOutputStream());
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 }

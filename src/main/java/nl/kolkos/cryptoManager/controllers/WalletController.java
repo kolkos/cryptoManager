@@ -153,6 +153,35 @@ public class WalletController {
 		return "wallet_edit"; 
 	}
 	
+	// edit wallet - GET
+	@RequestMapping(value = "/delete/{walletId}", method = RequestMethod.POST)
+	public String deleteWallet(@PathVariable("walletId") long walletId, Model model) {
+		// check if the wallet exists
+		if(!walletService.checkIfWalletExists(walletId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "wallet");
+			return "error_page";
+		}
+		// check if the current user has access to this wallet
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToWallet(walletId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "wallet");
+			return "error_page";
+		}
+		
+		Wallet wallet = walletService.findById(walletId);
+		
+		// use the service to delete the wallet
+		// this will automatically delete the attached deposits and withdrawals
+		walletService.deleteWallet(wallet);
+		
+		
+		return "redirect:/wallet/results";
+	}
+	
 	// edit wallet - POST
 	@RequestMapping(value = "/edit/{walletId}", method = RequestMethod.POST)
 	public String editWallet(@PathVariable("walletId") long walletId, 

@@ -104,8 +104,13 @@
 		<p>
 			<a th:href="@{/wallet/chart/{id}(id=${wallet.id})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-stats"></span> Show chart</a>
 			<a th:href="@{/wallet/edit/{id}(id=${wallet.id})}" class="btn btn-warning" role="button"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
-			<a href="#" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+			<button class="btn btn-danger" role="button" id="deleteWalletButton"><span class="glyphicon glyphicon-trash"></span> Delete</button>
 		</p>
+		
+		<form action="#" th:action="@{/wallet/delete/{id}(id=${wallet.id})}" method="post">
+			<input type="checkbox" name="confirmDelete" id="confirmDelete" value="true" style="display: none;"/>
+			<button type="submit" id="actualDeleteButton" style="display: none;">Hidden button</button>
+		</form>
 		
 		<div class="page-header">
 			<h2>Deposits</h2>
@@ -175,6 +180,17 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/loadMenu.js"></script>
     <script src="/js/profitLossFix.js"></script>
-
+	
+	<script type="text/javascript">
+	    $('#deleteWalletButton').click(function(){
+			
+			if (confirm('Are you sure you want to delete this wallet?')) {
+				$('#confirmDelete').prop('checked', true);
+				$('#actualDeleteButton').trigger('click');
+			}
+			
+		});
+    </script>
+	
 </body>
 </html>

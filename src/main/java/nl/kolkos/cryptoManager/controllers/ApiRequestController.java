@@ -54,6 +54,7 @@ public class ApiRequestController {
 		LinkedHashMap<String, String> helpMap = new LinkedHashMap<>();
 		
 		helpMap.put("/api/request/help", "This help text");
+		helpMap.put("/api/request/{API Key}/test", "Test API key existence");
 		helpMap.put("/api/request/{API Key}/portfolio", "Get all portfolio's this API key has access to");
 		helpMap.put("/api/request/{API Key}/portfolio/{Portfolio ID}", "Get detailed information for the chosen portfolio (by ID)");
 		helpMap.put("/api/request/{API Key}/portfolio/{Portfolio ID}/history/{period}/{interval}", "Get historical data for the chosen portfolio. Period and interval require the following format: 1m, 2h, 3d, 4w, etc.");
@@ -61,11 +62,27 @@ public class ApiRequestController {
 		helpMap.put("/api/request/{API Key}/wallet/{Wallet ID}", "Get detailed information for the chosen wallet (by ID)");
 		helpMap.put("/api/request/{API Key}/wallet/{Wallet ID}/history/{period}/{interval}", "Get historical data for the chosen wallet. Period and interval require the following format: 1m, 2h, 3d, 4w, etc.");
 		helpMap.put("/api/request/{API Key}/coin", "Get the current value for all the registered coins");
-		helpMap.put("/api/request/{API Key}/coin/{Coin ID}", "Get the current value of the selected coin (by ID)");
+		helpMap.put("/api/request/{API Key}/coin/id/{Coin ID}", "Get the current value of the selected coin (by ID)");
+		helpMap.put("/api/request/{API Key}/coin/symbol/{Coin Symbol}", "Get the current value of the selected coin (by Symbol)");
 		helpMap.put("/api/request/{API Key}/coin/update", "Request an update of the coin values (coin values are automatically updated every 5 minutes)");
 
 		
 		return helpMap;
+	}
+	
+	@GetMapping(path="/{apiKey}/test")
+	public @ResponseBody HashMap<String, String> testApiKey(@PathVariable("apiKey") String apiKey) {
+		LinkedHashMap<String, String> reply = new LinkedHashMap<>();
+		
+		// check if api key exists
+		if(apiRequestService.checkApiKeyExists(apiKey)) {
+			reply.put("status", "ok");
+		}else {
+			reply.put("status", "error");
+			reply.put("reason", "unknown API key");
+		}
+		
+		return reply;
 	}
 	
 	@GetMapping(path="/{apiKey}/coin/update")
@@ -209,7 +226,7 @@ public class ApiRequestController {
 		return result;
 	}
 	
-	@GetMapping(path="/{apiKey}/coin/{coinId}")
+	@GetMapping(path="/{apiKey}/coin/id/{coinId}")
 	public @ResponseBody Coin getSingleCoin(@PathVariable("apiKey") String apiKey,
 			@PathVariable("coinId") long coinId) {
 		// check if api key exists
@@ -219,6 +236,20 @@ public class ApiRequestController {
 		
 				
 		Coin coin = apiRequestService.getSingleCoin(coinId);
+		
+		return coin;
+	}
+	
+	@GetMapping(path="/{apiKey}/coin/symbol/{coinSymbol}")
+	public @ResponseBody Coin getSingleCoinBySymbol(@PathVariable("apiKey") String apiKey,
+			@PathVariable("coinSymbol") String coinSymbol) {
+		// check if api key exists
+		if(!apiRequestService.checkApiKeyExists(apiKey)) {
+			throw new IllegalArgumentException("Unknown API Key"); 
+		}
+		
+				
+		Coin coin = apiRequestService.getCoinBySymbol(coinSymbol);
 		
 		return coin;
 	}

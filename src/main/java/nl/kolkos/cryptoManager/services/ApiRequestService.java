@@ -352,4 +352,8 @@ public class ApiRequestService {
 		
 		return apiWalletHistoryList;
 	}
+	
+	public Coin getCoinBySymbol(String symbol) {
+		return coinService.findByCoinMarketCapCoinSymbol(symbol);
+	}
 }

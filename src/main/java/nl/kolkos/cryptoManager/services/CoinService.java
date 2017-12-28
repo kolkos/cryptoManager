@@ -1,5 +1,6 @@
 package nl.kolkos.cryptoManager.services;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,16 @@ public class CoinService {
 	
 	public Iterable<Coin> findAllCoins(){
 		return coinRepository.findAll();
+	}
+	
+	public Coin findByCoinMarketCapCoinSymbol(String coinMarketCapSymbol) {
+		Coin coin = coinRepository.findByCoinMarketCapCoinSymbol(coinMarketCapSymbol);
+		
+		Calendar now = Calendar.getInstance();
+		double lastKnownValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coin.getId(), now.getTime());
+		coin.setCurrentCoinValue(lastKnownValue);
+		
+		return coin;
 	}
 	
 	public String updateCoinValues(Coin coin) {

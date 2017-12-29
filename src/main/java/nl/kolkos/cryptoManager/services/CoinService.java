@@ -35,6 +35,9 @@ public class CoinService {
 	
 	public Coin findByCoinMarketCapCoinSymbol(String coinMarketCapSymbol) {
 		Coin coin = coinRepository.findByCoinMarketCapCoinSymbol(coinMarketCapSymbol);
+		if(coin == null) {
+			return null;
+		}
 		
 		Calendar now = Calendar.getInstance();
 		double lastKnownValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coin.getId(), now.getTime());

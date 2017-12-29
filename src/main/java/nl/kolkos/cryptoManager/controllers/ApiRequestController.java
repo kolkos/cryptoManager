@@ -248,8 +248,11 @@ public class ApiRequestController {
 			throw new IllegalArgumentException("Unknown API Key"); 
 		}
 		
-				
 		Coin coin = apiRequestService.getCoinBySymbol(coinSymbol);
+		System.out.println(coin);
+		if(coin == null) {
+			throw new IllegalArgumentException("Unknown coin '" + coinSymbol + "'"); 
+		}
 		
 		return coin;
 	}

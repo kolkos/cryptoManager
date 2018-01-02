@@ -6,6 +6,7 @@ $(function() {
 		// get the current sorting options
 		var sortBy = $('#sortBy').val();
 		var direction = $('#direction').val();
+		var search = $('#search').val();
 
 	    // get the current page number
 	    var curPageNr = parseInt($('#page').val());
@@ -15,7 +16,7 @@ $(function() {
 	    // calculate the number of pages
 	    var nrOfPages = Math.ceil(nrOfResults / resultsPerPage);
 	    // form base href
-	    var href = '&sortBy=' + sortBy + '&direction=' + direction;
+	    var href = '&sortBy=' + sortBy + '&direction=' + direction + '&search=' + search;
 
 		// now generate the new html
 		var newHtml = "";

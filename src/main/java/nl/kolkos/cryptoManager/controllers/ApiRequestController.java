@@ -32,22 +32,6 @@ public class ApiRequestController {
 	@Autowired
 	private ApiRequestService apiRequestService;
 
-
-	@ExceptionHandler(IllegalArgumentException.class)
-	void handleBadRequests(HttpServletResponse response, String message) throws IOException {
-	    response.sendError(HttpStatus.BAD_REQUEST.value(), message);
-	}
-	
-	@GetMapping(path="/test")
-	public @ResponseBody Iterable<String> testApiAccess() {
-		List<String> testje = new ArrayList<>();
-		
-		testje.add("Regel 1");
-		testje.add("Regel 2");
-		testje.add("Regel 3");
-		
-		return testje; 
-	}
 	
 	@GetMapping(path="/help")
 	public @ResponseBody HashMap<String, String> apiHelp() {
@@ -249,7 +233,6 @@ public class ApiRequestController {
 		}
 		
 		Coin coin = apiRequestService.getCoinBySymbol(coinSymbol);
-		System.out.println(coin);
 		if(coin == null) {
 			throw new IllegalArgumentException("Unknown coin '" + coinSymbol + "'"); 
 		}

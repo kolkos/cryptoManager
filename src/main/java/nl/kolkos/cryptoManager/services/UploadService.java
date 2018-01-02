@@ -67,15 +67,12 @@ public class UploadService {
 		return newDate;
 	}
 	
-	private Double parseStringToDouble(String transactionAmount) throws ParseException {
-		Locale locale  = new Locale("nl", "NL");
+	private Double parseStringToDouble(String transactionAmount) throws IllegalArgumentException {
+		if(!transactionAmount.matches("(^\\d{1,})(\\,|\\.)(\\d{2,}$)")) {
+			throw new IllegalArgumentException("The value, or amount, may only contain numbers and . or ,.");
+		}
 		
-		String pattern = "0.00######";
-		
-		DecimalFormat decimalFormat = (DecimalFormat)NumberFormat.getNumberInstance(locale);
-		decimalFormat.applyPattern(pattern);
-		
-		double newAmount = decimalFormat.parse(transactionAmount).doubleValue();
+		double newAmount = new Double(transactionAmount);
 		
 		return newAmount;
 	}
@@ -270,7 +267,7 @@ public class UploadService {
             		Double transactionAmount = 0D;
             		try {
             			transactionAmount = this.parseStringToDouble(fields[8]);
-            		} catch(ParseException e) {
+            		} catch(IllegalArgumentException e) {
             			// add to the results
     					lineResults.put("Error", e.getMessage());
     	        			results.add(lineResults);
@@ -282,7 +279,7 @@ public class UploadService {
             		Double transactionValue = 0D;
             		try {
             			transactionValue = this.parseStringToDouble(fields[9]);
-            		} catch(ParseException e) {
+            		} catch(IllegalArgumentException e) {
             			// add to the results
     					lineResults.put("Error", e.getMessage());
     	        			results.add(lineResults);

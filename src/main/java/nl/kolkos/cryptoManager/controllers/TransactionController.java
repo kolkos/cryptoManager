@@ -105,33 +105,25 @@ public class TransactionController {
 	@RequestMapping(method = RequestMethod.GET, value = "/results")
 	public String showResults(Model model, 
 			@RequestParam(name = "search", required=false) String search,
-			@RequestParam(name = "page", defaultValue = "1") int pageNumber,
     			@RequestParam(name = "sortBy", defaultValue = "transactionDate") String sortBy,
     			@RequestParam(name = "direction", defaultValue = "DESC") String direction) {
 		
 		String usersEmail = userService.findLoggedInUsername();
 		
-		System.out.println("------------- Search: " + search);
-		
 		model.addAttribute("coinList", CoinService.findAllByOrderByCoinMarketCapCoinSymbol());
+		model.addAttribute("transactionTypes", transactionTypeRepository.findAll());
         model.addAttribute("walletList", walletService.findByPortfolioUsersEmail(usersEmail));
         model.addAttribute("portfolioList", portfolioService.findByUsers_email(usersEmail));
+		
+        
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("direction", direction);
         model.addAttribute("search", search);
         
-        model.addAttribute("numberOfResults", transactionService.countByWalletPortfolioUsersEmail(usersEmail));
-        model.addAttribute("page", pageNumber);
-		
-		
         
-        if(search == null) {
-        		model.addAttribute("transactions", transactionService.findByWalletPortfolioUsersEmail(pageNumber, sortBy, direction, usersEmail));
-        }else {
-        		model.addAttribute("transactions", transactionService.findByWalletPortfolioUsersEmail(pageNumber, sortBy, direction, usersEmail, search));
-        		//model.addAttribute("transactions", transactionRepository.findAll(spec));
-        		
-        }
+        
+        	model.addAttribute("transactions", transactionService.findByWalletPortfolioUsersEmail(usersEmail, search, sortBy, direction));
+        	
         
 		
         

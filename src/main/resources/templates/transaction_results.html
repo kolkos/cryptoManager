@@ -5,7 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-	<title>cryotoManager::Withdrawal::Results</title>
+	<title>cryotoManager::Transactions::Results</title>
 	
 	<!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.css" rel="stylesheet">
@@ -22,39 +22,89 @@
     <![endif]-->
 </head>
 <body>
-	<input type="hidden" id="sortBy" th:value="${sortBy}" />
-	<input type="hidden" id="direction" th:value="${direction}" />
-	<input type="hidden" id="page" th:value="${page}" />
-	<input type="hidden" id="nrOfResults" th:value="${numberOfResults}" />
-	<input type="hidden" id="search" th:value="${search}" />
-	
 	<nav class="navbar navbar-inverse" id="menuHodler">
 		
 	</nav>
 
 	
-	<div class="container">
+	<div class="container" style="width: 80%;">
 		<div class="page-header">
-			<h1>Withdrawals</h1>
+			<h1>Transactions</h1>
 		</div>
-		<p class="lead">This page shows the registered withdrawals. You can register a new withdrawal <a href="/withdrawal/add">here</a>.</p>
+		<p class="lead">This page shows the registered transactions. You can register a new transaction <a href="/withdrawal/add">here</a>.</p>
 		
-		<nav aria-label="Page navigation">
-			<ul class="pagination" id="paginationTop"></ul>
-		</nav>
+				
+		<div class="panel panel-default">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">
+				<a data-toggle="collapse" href="#collapseTable">Filter results</a>
+			</h3>
+		  </div>
+		  <div id="collapseTable" class="panel-collapse collapse">
+			  <table class="table">
+			  	<tr>
+			  		<td>Transaction type:</td>
+			  		<td>
+			  			<select name="type" id="type" class="form-control filterField">
+							<option value="">-Select type-</option>
+							<option th:each="transactionType : ${transactionTypes}" th:value="${transactionType.id}" th:text="${transactionType.type}">type</option>
+						</select>
+			  		</td>
+			  	</tr>
+			  	<tr>
+			  		<td width="20%">Wallet:</td>
+			  		<td>
+			  			<select id="wallet" name="wallet" class="form-control filterField">
+							<option value="">-Select wallet-</option>
+							<option th:each="wallet : ${walletList}" th:value="${wallet.id}" th:text="${wallet.address + ' (' + wallet.coin.coinMarketCapCoin.symbol + ')'}">address (coinName)</option>
+						</select>
+			  		</td>
+			  	</tr>
+			  	<tr>
+			  		<td width="20%">Coin:</td>
+			  		<td>
+			  			<select id="coin" name="coin" class="form-control filterField">
+							<option value="">-Select coin-</option>
+							<option th:each="coin : ${coinList}" th:value="${coin.id}" th:text="${coin.coinMarketCapCoin.symbol + ' (' + coin.coinMarketCapCoin.name + ')'}">symbol (name)</option>
+						</select>
+			  		</td>
+			  	</tr>
+			  	<tr>
+			  		<td width="20%">Portfolio:</td>
+			  		<td>
+			  			<select id="portfolio" name="portfolio" class="form-control filterField">
+							<option value="">-Select portfolio-</option>
+							<option th:each="portfolio : ${portfolioList}" th:value="${portfolio.id}" th:text="${portfolio.name}">portfolio</option>
+						</select>
+			  		</td>
+			  	</tr>
+			  	<tr>
+			  		<td colspan="2">
+			  			<form action="#" th:action="@{/transaction/results}" method="get">
+			  				<input type="hidden" id="search" name="search" th:value="${search}" />
+			  				<input type="hidden" id="sortBy" name="sortBy" th:value="${sortBy}" />
+							<input type="hidden" id="direction" name="direction" th:value="${direction}" />
+			  				<button type="submit" id="actualSubmitButton" style="display:none;">Hidden</button>
+			  			</form>
+			  			<button type="button" class="btn btn-info" id="filterResults">Filter results</button>
+			  		</td>
+			  	</tr>
+			  </table>
+			</div>
+		</div>
 		
 		<table class="table table-striped">
 			<thead>
 				<tr>
 					<th><span>Date</span> <span class="buttonHolder transactionDate numeric"></span></th>
 					<th><span>Type</span> <span class="buttonHolder transactionType alphabet"></span></th>
-					<th><span>Wallet</span> <span class="buttonHolder wallet.address alphabet"></span></th>
-					<th><span>Coin</span> <span class="buttonHolder wallet.coin.coinMarketCapCoin.symbol alphabet"></span></th>
-					<th><span>Portfolio</span> <span class="buttonHolder wallet.portfolio.name alphabet"></span></th>
+					<th><span>Wallet</span> <span class="buttonHolder walletAddress alphabet"></span></th>
+					<th><span>Coin</span> <span class="buttonHolder coinSymbol alphabet"></span></th>
+					<th><span>Portfolio</span> <span class="buttonHolder portfolioName alphabet"></span></th>
 					<th><span>Amount</span> <span class="buttonHolder amount numeric"></span></th>
 					<th><span>Value</span> <span class="buttonHolder value numeric"></span></th>
-					<th>Current value</th>
-					<th>Difference</th>
+					<th><span>Current value</span> <span class="buttonHolder currentValue numeric"></span></th>
+					<th><span>Difference</span> <span class="buttonHolder difference numeric"></span></th>
 					<th><span>To cash</span> <span class="buttonHolder withdrawnToCash other"></span></th>
 					<th><span>Remarks</span> <span class="buttonHolder remarks alphabet"></span></th>
 					<th>Open withdrawal</th>
@@ -89,11 +139,7 @@
 				
 			</tbody>
 		</table>
-		
-		<nav aria-label="Page navigation">
-			<ul class="pagination" id="paginationBottom"></ul>
-		</nav>
-		      
+				      
     </div>
     
     <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
@@ -103,9 +149,77 @@
     
     <script src="/js/cutOffText.js"></script>
     
-    <script src="/js/pagination.js"></script>
+    
     <script src="/js/sortingButtons.js"></script>
 	
+	<script type="text/javascript">
+		$(function() {
+			var searchString = $('#search').val();
+			fillFilterFields(searchString);
+
+			$('#filterResults').click(function(){
+				createSearchString();
+			});
+	    });
+	
+		function fillFilterFields(searchString)
+		{
+			//console.log(searchString);
+			
+			// check if the field is filled
+			if(searchString == ""){
+				return;
+			}
+
+			// fill the filter fields with the selected values
+			var keyValuePairs = searchString.split(",");
+			// loop through the key value pairs
+			for(var i = 0; i < keyValuePairs.length; i++){
+				console.log(keyValuePairs[i]);
+
+				// now split the keyvaluepairs
+				var keyValuePair = keyValuePairs[i];
+				var keyValue = keyValuePair.split(":");
+
+				// get the id of the field and the value
+				var id = keyValue[0];
+				var value = keyValue[1];
+
+				// now select the option
+				$('#' + id + ' option:eq(' + value + ')').prop('selected', true);
+			}
+		}
+
+		function createSearchString(){
+			var searchString = "";
+
+			// loop through the filter fields
+			$('.filterField').each(function() {
+				// get the id of this object
+				var id = $(this).attr('id');
+
+				// get the value
+				var value = $(this).val();
+
+				// check if the value is not empty
+				if(value != ""){
+					// append field and value to the search string
+					searchString = searchString + id + ":" + value + ",";
+				}
+				
+			});
+
+			// now remove the last comma
+			searchString = searchString.substring(0, searchString.length - 1);
+			console.log(searchString);
+
+			// set the value
+			$('#search').val(searchString);
+
+			// now actually send the form
+			$('#actualSubmitButton').trigger('click');
+		}
+	</script>
 
 </body>
 </html>

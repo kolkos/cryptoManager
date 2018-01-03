@@ -40,6 +40,8 @@ public class Transaction {
 	
 	@Transient
 	private double currentDifference;
+	
+	
 
 	public Long getId() {
 		return id;

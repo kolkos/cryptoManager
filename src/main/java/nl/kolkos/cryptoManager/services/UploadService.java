@@ -23,11 +23,14 @@ import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinMarketCapCoin;
 import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
+import nl.kolkos.cryptoManager.Transaction;
+import nl.kolkos.cryptoManager.TransactionType;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.CoinMarketCapCoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
+import nl.kolkos.cryptoManager.repositories.TransactionTypeRepository;
 
 @Service
 public class UploadService {
@@ -41,14 +44,20 @@ public class UploadService {
 	@Autowired
 	private CoinRepository coinRepository;
 	
-	@Autowired
-	private DepositService depositService;
+//	@Autowired
+//	private DepositService depositService;
+//	
+//	@Autowired
+//	private WithdrawalService withdrawalService;
 	
 	@Autowired
-	private WithdrawalService withdrawalService;
+	private TransactionService transactionService;
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private TransactionTypeRepository transactionTypeRepository;
 	
 	@Autowired
 	private CoinMarketCapCoinRepository coinMarketCapCoinRepository;
@@ -126,35 +135,48 @@ public class UploadService {
 		return wallet;
 	}
 	
-	private String createDeposit(Date depositDate, double amount, double purchaseValue, Wallet wallet, String transactionRemarks) {
-		// check if the deposit already exists
-		// I can't know for sure, but I assume if the date, the amount and the purchase value are equal, the deposit already exists.
-		Deposit deposit = depositService.findByDepositDateAndAmountAndPurchaseValue(depositDate, amount, purchaseValue);
-		if(deposit != null) {
-			// deposit exists, return
-			return "Deposit already exists, skipping...";
-			
-		}
-		// create a deposit
-		depositService.createDeposit(depositDate, amount, purchaseValue, wallet, transactionRemarks);
-		
-		return String.format("Deposit of '%f' on '%s' for '€%f' registered", amount, depositDate, purchaseValue);
-	}
+//	private String createDeposit(Date depositDate, double amount, double purchaseValue, Wallet wallet, String transactionRemarks) {
+//		// check if the deposit already exists
+//		// I can't know for sure, but I assume if the date, the amount and the purchase value are equal, the deposit already exists.
+//		Deposit deposit = depositService.findByDepositDateAndAmountAndPurchaseValue(depositDate, amount, purchaseValue);
+//		if(deposit != null) {
+//			// deposit exists, return
+//			return "Deposit already exists, skipping...";
+//			
+//		}
+//		// create a deposit
+//		depositService.createDeposit(depositDate, amount, purchaseValue, wallet, transactionRemarks);
+//		
+//		return String.format("Deposit of '%f' on '%s' for '€%f' registered", amount, depositDate, purchaseValue);
+//	}
+//	
+//	private String createWithdrawal(Date withdrawalDate, double amount, double withdrawalValue, Wallet wallet, String transactionRemarks, boolean toCash) {
+//		// check if the deposit already exists
+//		// I can't know for sure, but I assume if the date, the amount and the withdrawal value are equal, the withdrawal already exists.
+//		Withdrawal withdrawal = withdrawalService.findByWithdrawalDateAndAmountAndWithdrawalValue(withdrawalDate, amount, withdrawalValue);
+//		if(withdrawal != null) {
+//			return "Withdrawal already exists, skipping...";
+//		}
+//				
+//				
+//		withdrawalService.createWithdrawal(withdrawalDate, amount, withdrawalValue, wallet, transactionRemarks, toCash);
+//		
+//		return String.format("Withdrawal of '%f' on '%s' for '€%f' registered", amount, withdrawalDate, withdrawalValue);
+//	}
 	
-	private String createWithdrawal(Date withdrawalDate, double amount, double withdrawalValue, Wallet wallet, String transactionRemarks, boolean toCash) {
+	private String createTransaction(Date transactionDate, double amount, double value, Wallet wallet, String transactionRemarks, boolean toCash, TransactionType transactionType) {
 		// check if the deposit already exists
 		// I can't know for sure, but I assume if the date, the amount and the withdrawal value are equal, the withdrawal already exists.
-		Withdrawal withdrawal = withdrawalService.findByWithdrawalDateAndAmountAndWithdrawalValue(withdrawalDate, amount, withdrawalValue);
-		if(withdrawal != null) {
-			return "Withdrawal already exists, skipping...";
+		Transaction transaction = transactionService.findByTransactionDateAndTransactionTypeAndAmountAndValue(transactionDate, transactionType, amount, value);
+		if(transaction != null) {
+			return "Transaction already exists, skipping...";
 		}
 				
-				
-		withdrawalService.createWithdrawal(withdrawalDate, amount, withdrawalValue, wallet, transactionRemarks, toCash);
+		transactionService.createTransaction(transactionDate, amount, value, wallet, transactionRemarks, toCash, transactionType);		
 		
-		return String.format("Withdrawal of '%f' on '%s' for '€%f' registered", amount, withdrawalDate, withdrawalValue);
+		
+		return String.format("Transaction of '%f' on '%s' for '€%f' registered", amount, transactionDate, value);
 	}
-	
 	 
 	
 	public List<LinkedHashMap<String, String>> handleFile(String filePath, boolean containsHeader, String separator){
@@ -242,8 +264,7 @@ public class UploadService {
 	        			// skip this line
 	        			continue;
             		}
-            		
-            		
+            		            		
             		boolean toCash = false;
             		if(transactionType.equals("withdrawal")) {
             			// if the transaction type is withdrawal (which it is), the field withdrawalToCash plays a part
@@ -311,16 +332,16 @@ public class UploadService {
             		Wallet wallet = this.getOrCreateWallet(walletAddress, walletDescription, portfolio, coin);
             		lineResults.put("Wallet", String.format("Using wallet '%s'", walletAddress));
             		
-            		// now check if a deposit or a withdrawal needs to be created
-            		if(transactionType.equals("deposit")) {
-            			// create deposit
-            			String depositResult = this.createDeposit(transactionDate, transactionAmount, transactionValue, wallet, transactionRemarks);
-            			lineResults.put("Deposit", depositResult);
-            		}else {
-            			// create a withdrawal
-            			String withdrawalResult = this.createWithdrawal(transactionDate, transactionAmount, transactionValue, wallet, transactionRemarks, toCash);
-            			lineResults.put("Withdrawal", withdrawalResult);
-            		}
+            		// get the transaction type
+            		transactionType = transactionType.substring(0,1).toUpperCase() + transactionType.substring(1);
+            		TransactionType type = transactionTypeRepository.findByType(transactionType);
+            		
+            		
+            		// create a transaction
+            		String transactionResult = this.createTransaction(transactionDate, transactionAmount, transactionValue, wallet, transactionRemarks, toCash, type);
+            		lineResults.put("Transaction", transactionResult);
+            		
+            		
             		            		
             		results.add(lineResults);
             	
@@ -421,53 +442,24 @@ public class UploadService {
 				// get the attached coin symbol
 				String coinSymbol = wallet.getCoin().getCoinMarketCapCoin().getSymbol();
 				
-				// start with the deposits
-				// get the deposits for this wallet
-				List<Deposit> deposits = depositService.findByWallet(wallet);
 				
-				// loop through the deposits
-				for(Deposit deposit : deposits) {
-					// get the deposit values
-					String transactionDate = deposit.getDepositDate().toString();
-					String transactionType = "deposit";
-					String withdrawalToCash = "";
-					String transactionAmount = String.format("%f", deposit.getAmount());
-					String transactionValue = String.format("%f", deposit.getPurchaseValue());
-					String transactionRemarks = deposit.getRemarks();
-					
-					// now add all the values to a list, and parse it to a line
-					List<String> depositLine = new ArrayList<>();
-					depositLine.add(portfolioName);
-					depositLine.add(portfolioDescription);
-					depositLine.add(walletAddress);
-					depositLine.add(walletDescription);
-					depositLine.add(coinSymbol);
-					depositLine.add(transactionDate);
-					depositLine.add(transactionType);
-					depositLine.add(withdrawalToCash);
-					depositLine.add(transactionAmount);
-					depositLine.add(transactionValue);
-					depositLine.add(transactionRemarks);
-					
-					fileContentBuffer += this.createLine(depositLine, separator);
-				}
 				
-				// same trick, but now for the withdrawals
-				List<Withdrawal> withdrawals = withdrawalService.findByWallet(wallet);
-				for(Withdrawal withdrawal : withdrawals) {
+				// Get the transactions for this wallet
+				List<Transaction> transactions = transactionService.findByWallet(wallet);
+				for(Transaction transaction : transactions) {
 					// get the deposit values
-					String transactionDate = withdrawal.getWithdrawalDate().toString();
-					String transactionType = "withdrawal";
+					String transactionDate = transaction.getTransactionDate().toString();
+					String transactionType = transaction.getTransactionType().getType();
 					
 					String withdrawalToCash = "no";
 					// if toCash is true, the values is yes
-					if(withdrawal.isToCash()) {
+					if(transaction.isWithdrawnToCash()) {
 						withdrawalToCash = "yes";
 					}
 					
-					String transactionAmount = String.format("%f", withdrawal.getAmount());
-					String transactionValue = String.format("%f", withdrawal.getWithdrawalValue());
-					String transactionRemarks = withdrawal.getRemarks();
+					String transactionAmount = String.format("%f", transaction.getAmount());
+					String transactionValue = String.format("%f", transaction.getValue());
+					String transactionRemarks = transaction.getRemarks();
 					
 					// now add all the values to a list, and parse it to a line
 					List<String> withdrawalLine = new ArrayList<>();

@@ -31,12 +31,12 @@ public class UploadController {
 	
 	private static String UPLOAD_FOLDER = "/tmp/";
 	 
-	@RequestMapping("/upload")
+	@RequestMapping("/transaction/import")
 	public ModelAndView showUpload() {
 		return new ModelAndView("upload_file");
 	}
 	    
-	@PostMapping("/upload")
+	@PostMapping("/transaction/import")
 	public String fileUpload(
 			@RequestParam("file") MultipartFile file, 
 			@RequestParam("separator") String separator, 
@@ -75,12 +75,12 @@ public class UploadController {
 	
 	
 
-	@RequestMapping("/export")
+	@RequestMapping("/transaction/export")
 	public ModelAndView showDownload() {
 		return new ModelAndView("download_file");
 	}
 	
-	@PostMapping("/export")
+	@PostMapping("/transaction/export")
 	public @ResponseBody void downloadFile(@RequestParam("separator") String separator, 
 			@RequestParam(name = "containsHeader", defaultValue = "false")  boolean containsHeader, 
 			HttpServletResponse response) {

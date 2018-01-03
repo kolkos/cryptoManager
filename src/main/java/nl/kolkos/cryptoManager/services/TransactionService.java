@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.Transaction;
+import nl.kolkos.cryptoManager.TransactionType;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.repositories.TransactionRepository;
@@ -33,10 +34,30 @@ public class TransactionService {
 		transactionRepository.save(transaction);
 	}
 	
-	
+	public Transaction findByTransactionDateAndTransactionTypeAndAmountAndValue(Date transactionDate, TransactionType transactionType, double amount, double value) {
+		return transactionRepository.findByTransactionDateAndTransactionTypeAndAmountAndValue(transactionDate, transactionType, amount, value);
+	}
 	
 	public int countByWalletPortfolioUsersEmail(String email){
 		return transactionRepository.countByWalletPortfolioUsersEmail(email);
+	}
+	
+	public List<Transaction> findByWallet(Wallet wallet){
+		return transactionRepository.findByWallet(wallet);
+	}
+	
+	public void createTransaction(Date transactionDate, double amount, double value, Wallet wallet, String transactionRemarks, boolean toCash, TransactionType transactionType) {
+		Transaction transaction = new Transaction();
+		transaction.setTransactionDate(transactionDate);
+		transaction.setAmount(amount);
+		transaction.setValue(value);
+		transaction.setWallet(wallet);
+		transaction.setRemarks(transactionRemarks);
+		transaction.setWithdrawnToCash(toCash);
+		transaction.setTransactionType(transactionType);
+		
+		// save it
+		transactionRepository.save(transaction);
 	}
 	
 	public List<Transaction> findByWalletPortfolioUsersEmail(String email, String search, String column, String direction){

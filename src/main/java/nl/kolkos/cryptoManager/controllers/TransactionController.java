@@ -70,15 +70,7 @@ public class TransactionController {
 			@RequestParam double value,
 			@RequestParam String remarks,
 			@RequestParam(value="addAnotherTransaction", required=false) boolean addAnotherTransaction,
-			@RequestParam(value="toCash", required=false) boolean toCash,
 			Model model) {
-		
-		
-		// correct the withdrawn to cash, if the transaction type is deposit
-		if(transactionType.getType().equals("Deposit")) {
-			toCash = false;
-		}
-		
 		
 		Transaction transaction = new Transaction();
 		transaction.setTransactionDate(transactionDate);
@@ -87,7 +79,6 @@ public class TransactionController {
 		transaction.setAmount(amount);
 		transaction.setValue(value);
 		transaction.setRemarks(remarks);
-		transaction.setWithdrawnToCash(toCash);
 		
 		// save the transaction
 		transactionService.save(transaction);

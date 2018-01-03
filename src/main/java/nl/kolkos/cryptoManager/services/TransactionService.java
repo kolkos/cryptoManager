@@ -46,14 +46,13 @@ public class TransactionService {
 		return transactionRepository.findByWallet(wallet);
 	}
 	
-	public void createTransaction(Date transactionDate, double amount, double value, Wallet wallet, String transactionRemarks, boolean toCash, TransactionType transactionType) {
+	public void createTransaction(Date transactionDate, double amount, double value, Wallet wallet, String transactionRemarks, TransactionType transactionType) {
 		Transaction transaction = new Transaction();
 		transaction.setTransactionDate(transactionDate);
 		transaction.setAmount(amount);
 		transaction.setValue(value);
 		transaction.setWallet(wallet);
 		transaction.setRemarks(transactionRemarks);
-		transaction.setWithdrawnToCash(toCash);
 		transaction.setTransactionType(transactionType);
 		
 		// save it

@@ -64,7 +64,7 @@ public class UploadService {
 	
 	
 	private Date parseDate(String date) throws IllegalArgumentException, ParseException{
-		if(!date.matches("^\\d{4}\\-\\d{2}\\-\\d{2}$")) {
+		if(!date.matches("^\\d{4}\\-\\d{2}\\-\\d{2}.*$")) {
 			throw new IllegalArgumentException("The transaction date should be in the following format: yyyy-MM-dd");
 		}
 		
@@ -80,7 +80,7 @@ public class UploadService {
 		if(!transactionAmount.matches("(^\\d{1,})(\\,|\\.)(\\d{2,}$)")) {
 			throw new IllegalArgumentException("The value, or amount, may only contain numbers and . or ,.");
 		}
-		
+		transactionAmount = transactionAmount.replace(",", ".");
 		double newAmount = new Double(transactionAmount);
 		
 		return newAmount;
@@ -164,7 +164,7 @@ public class UploadService {
 //		return String.format("Withdrawal of '%f' on '%s' for '€%f' registered", amount, withdrawalDate, withdrawalValue);
 //	}
 	
-	private String createTransaction(Date transactionDate, double amount, double value, Wallet wallet, String transactionRemarks, boolean toCash, TransactionType transactionType) {
+	private String createTransaction(Date transactionDate, double amount, double value, Wallet wallet, String transactionRemarks, TransactionType transactionType) {
 		// check if the deposit already exists
 		// I can't know for sure, but I assume if the date, the amount and the withdrawal value are equal, the withdrawal already exists.
 		Transaction transaction = transactionService.findByTransactionDateAndTransactionTypeAndAmountAndValue(transactionDate, transactionType, amount, value);
@@ -172,7 +172,7 @@ public class UploadService {
 			return "Transaction already exists, skipping...";
 		}
 				
-		transactionService.createTransaction(transactionDate, amount, value, wallet, transactionRemarks, toCash, transactionType);		
+		transactionService.createTransaction(transactionDate, amount, value, wallet, transactionRemarks, transactionType);		
 		
 		
 		return String.format("Transaction of '%f' on '%s' for '€%f' registered", amount, transactionDate, value);
@@ -189,10 +189,10 @@ public class UploadService {
 		 * 		04 Coin Symbol 				-> (Required) String 
 		 * 		05 Transaction date 			-> (Required) Date		-> convert to Date
 		 * 		06 Transaction type 			-> (Required) String		-> must be Deposit or Withdrawal
-		 * 		07 Withdrawal to cash 		-> (Required) String		-> ignored if type is deposit. value must be Yes or No
-		 * 		08 Transaction amount		-> (Required) Double		-> convert to Double, replace comma with point
-		 * 		09 Transaction price			-> (Required) Double 	-> convert to Double, replace comma with point	
-		 * 		10 Trasaction remarks		-> (Optional) String
+
+		 * 		07 Transaction amount		-> (Required) Double		-> convert to Double, replace comma with point
+		 * 		08 Transaction price			-> (Required) Double 	-> convert to Double, replace comma with point	
+		 * 		09 Trasaction remarks		-> (Optional) String
 		 */
 		
 		List<LinkedHashMap<String, String>> results = new ArrayList<>();
@@ -224,8 +224,9 @@ public class UploadService {
             		String[] fields = line.split(separator);
             		
             		// check if the line contains 10 fields
-            		if(fields.length != 11) {
-            			lineResults.put("Error", "Each line needs to have exactly 11 fields.");
+            		if(fields.length != 10) {
+            			lineResults.put("Error", "Each line needs to have exactly 10 fields.");
+            			lineResults.put("Line", line);
             			results.add(lineResults);
             			// skip this line
             			continue;
@@ -250,6 +251,7 @@ public class UploadService {
 					
 					// add to the results
 					lineResults.put("Error", e.getMessage());
+					lineResults.put("Line", line);
 	        			results.add(lineResults);
 	        			// skip this line
 	        			continue;
@@ -260,37 +262,20 @@ public class UploadService {
             		if(! transactionType.equals("withdrawal") && ! transactionType.equals("deposit")) {
             			// unknown transaction type
             			lineResults.put("Error", "Transaction type must be 'deposit' or 'withdrawal'.");
+            			lineResults.put("Line", line);
 	        			results.add(lineResults);
 	        			// skip this line
 	        			continue;
-            		}
-            		            		
-            		boolean toCash = false;
-            		if(transactionType.equals("withdrawal")) {
-            			// if the transaction type is withdrawal (which it is), the field withdrawalToCash plays a part
-            			// check if the value is yes or no
-            			String withdrawalToCash = fields[7].toLowerCase();
-            			if(withdrawalToCash.equals("yes")) {
-            				toCash = true;
-            			}else if(withdrawalToCash.equals("no")){
-            				toCash = false;
-            			}else {
-            				// the value does not equal yes or no, this is an error
-            				// unknown transaction type
-                			lineResults.put("Error", "'Withdrawal to cash' should be 'yes' or 'no'.");
-    	        				results.add(lineResults);
-    	        				// skip this line
-    	        				continue;
-            			}
             		}
             		
             		// try to parse the amount
             		Double transactionAmount = 0D;
             		try {
-            			transactionAmount = this.parseStringToDouble(fields[8]);
+            			transactionAmount = this.parseStringToDouble(fields[7]);
             		} catch(IllegalArgumentException e) {
             			// add to the results
     					lineResults.put("Error", e.getMessage());
+    					lineResults.put("Line", line);
     	        			results.add(lineResults);
     	        			// skip this line
     	        			continue;
@@ -299,16 +284,17 @@ public class UploadService {
             		// same trich for the value
             		Double transactionValue = 0D;
             		try {
-            			transactionValue = this.parseStringToDouble(fields[9]);
+            			transactionValue = this.parseStringToDouble(fields[8]);
             		} catch(IllegalArgumentException e) {
             			// add to the results
     					lineResults.put("Error", e.getMessage());
+    					lineResults.put("Line", line);
     	        			results.add(lineResults);
     	        			// skip this line
     	        			continue;
             		}
             		
-            		String transactionRemarks = fields[10];
+            		String transactionRemarks = fields[9];
             		
             		// get or create the portfolio
             		Portfolio portfolio = this.getOrCreatePortfolio(portfolioName, portfolioDescription);
@@ -319,6 +305,7 @@ public class UploadService {
             		if(! this.checkIfCoinMarketCapSymbolExists(coinSymbol)) {
             			// add to the results
     					lineResults.put("Error", "Unknown coin '" + coinSymbol + "'");
+    					lineResults.put("Line", line);
     	        			results.add(lineResults);
     	        			// skip this line
     	        			continue;
@@ -338,7 +325,7 @@ public class UploadService {
             		
             		
             		// create a transaction
-            		String transactionResult = this.createTransaction(transactionDate, transactionAmount, transactionValue, wallet, transactionRemarks, toCash, type);
+            		String transactionResult = this.createTransaction(transactionDate, transactionAmount, transactionValue, wallet, transactionRemarks, type);
             		lineResults.put("Transaction", transactionResult);
             		
             		
@@ -399,10 +386,10 @@ public class UploadService {
 		 * 		04 Coin Symbol 				-> (Required) String 
 		 * 		05 Transaction date 			-> (Required) Date		-> convert to Date
 		 * 		06 Transaction type 			-> (Required) String		-> must be Deposit or Withdrawal
-		 * 		07 Withdrawal to cash 		-> (Required) String		-> ignored if type is deposit. value must be Yes or No
-		 * 		08 Transaction amount		-> (Required) Double		-> convert to Double, replace comma with point
-		 * 		09 Transaction value			-> (Required) Double 	-> convert to Double, replace comma with point	
-		 * 		10 Trasaction remarks		-> (Optional) String
+		 * 
+		 * 		07 Transaction amount		-> (Required) Double		-> convert to Double, replace comma with point
+		 * 		08 Transaction value			-> (Required) Double 	-> convert to Double, replace comma with point	
+		 * 		09 Trasaction remarks		-> (Optional) String
 		 * 
 		 * These are the same fields as in the import
 		 */
@@ -417,7 +404,7 @@ public class UploadService {
 			titleFields.add("Coin Symbol");
 			titleFields.add("Transaction date");
 			titleFields.add("Transaction type");
-			titleFields.add("Withdrawal to cash");
+
 			titleFields.add("Transaction amount");
 			titleFields.add("Transaction value");
 			titleFields.add("Trasaction remarks");
@@ -451,12 +438,7 @@ public class UploadService {
 					String transactionDate = transaction.getTransactionDate().toString();
 					String transactionType = transaction.getTransactionType().getType();
 					
-					String withdrawalToCash = "no";
-					// if toCash is true, the values is yes
-					if(transaction.isWithdrawnToCash()) {
-						withdrawalToCash = "yes";
-					}
-					
+										
 					String transactionAmount = String.format("%f", transaction.getAmount());
 					String transactionValue = String.format("%f", transaction.getValue());
 					String transactionRemarks = transaction.getRemarks();
@@ -470,7 +452,7 @@ public class UploadService {
 					withdrawalLine.add(coinSymbol);
 					withdrawalLine.add(transactionDate);
 					withdrawalLine.add(transactionType);
-					withdrawalLine.add(withdrawalToCash);
+
 					withdrawalLine.add(transactionAmount);
 					withdrawalLine.add(transactionValue);
 					withdrawalLine.add(transactionRemarks);

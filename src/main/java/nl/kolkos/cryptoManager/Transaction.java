@@ -30,10 +30,7 @@ public class Transaction {
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name = "transaction_type_id")
 	private TransactionType transactionType;
-	
-	// field specific for Withdrawals
-	private boolean withdrawnToCash;
-	
+		
 	// these fields don't need to be in the database since there are calculated
 	@Transient
 	private double currentValue;
@@ -97,14 +94,6 @@ public class Transaction {
 
 	public void setTransactionType(TransactionType transactionType) {
 		this.transactionType = transactionType;
-	}
-
-	public boolean isWithdrawnToCash() {
-		return withdrawnToCash;
-	}
-
-	public void setWithdrawnToCash(boolean withdrawnToCash) {
-		this.withdrawnToCash = withdrawnToCash;
 	}
 
 	public double getCurrentValue() {

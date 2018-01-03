@@ -76,9 +76,6 @@ public class TransactionFilterSortingService {
 		case "difference":
 			transactions = this.sortByDifference(transactions, direction);
 			break;
-		case "withdrawnToCash":
-			transactions = this.sortByWithdrawnToCash(transactions, direction);
-			break;
 		case "remarks":
 			transactions = this.sortByRemarks(transactions, direction);
 			break;
@@ -246,16 +243,6 @@ public class TransactionFilterSortingService {
 		return transactions;
 	}
 	
-	public List<Transaction> sortByWithdrawnToCash(List<Transaction> transactions, String direction) {
-		if(direction.equals("ASC")) {
-			transactions.sort(Comparator.comparing(Transaction::isWithdrawnToCash));
-		}else {
-			transactions.sort(Comparator.comparing(Transaction::isWithdrawnToCash).reversed());
-			
-		}
-		
-		return transactions;
-	}
 	
 	public List<Transaction> sortByRemarks(List<Transaction> transactions, String direction) {
 		if(direction.equals("ASC")) {

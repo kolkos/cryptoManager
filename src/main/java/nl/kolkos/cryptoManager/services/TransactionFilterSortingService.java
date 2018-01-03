@@ -42,7 +42,7 @@ public class TransactionFilterSortingService {
 			
 			if(criteria.containsKey("coin")) {
 				long coinId = Long.parseLong(criteria.get("coin"));
-				transactions = this.filterByPortfolio(transactions, coinId);
+				transactions = this.filterByCoin(transactions, coinId);
 			}
 			
 		}

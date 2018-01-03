@@ -107,7 +107,7 @@
 					<th><span>Difference</span> <span class="buttonHolder difference numeric"></span></th>
 					<th><span>To cash</span> <span class="buttonHolder withdrawnToCash other"></span></th>
 					<th><span>Remarks</span> <span class="buttonHolder remarks alphabet"></span></th>
-					<th>Open withdrawal</th>
+					<th>Open transaction</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -129,7 +129,7 @@
 					</td>
 					<td class="cutoff" th:text="${transaction.remarks}">remarks</td>
 					<td>
-						<a th:href="@{/withdrawal/details/{id}(id=${transaction.id})}">
+						<a th:href="@{/transaction/details/{id}(id=${transaction.id})}">
 							<span class="glyphicon glyphicon-zoom-in"></span>
 						</a>
 					</td>

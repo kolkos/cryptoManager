@@ -37,7 +37,7 @@ public class ApiRequestService {
 	private WalletService walletService;
 	
 	@Autowired
-	private PortfolioRepository portfolioRepository;
+	private PortfolioService portfolioService;
 	
 	@Autowired
 	private CoinValueRepository coinValueRepository;
@@ -56,7 +56,7 @@ public class ApiRequestService {
 	 
 	public boolean checkPortfolioAccessForApiKey(String apiKey, long portfolioId) {
 		ApiKey apiKeyRequester = apiKeyService.findApiKeyByApiKey(apiKey);
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		Portfolio portfolio = portfolioService.findById(portfolioId);
 		
 		boolean access = false;
 		
@@ -81,7 +81,7 @@ public class ApiRequestService {
 	}
 	
 	public Set<Portfolio> getPortfoliosForKey(String apiKey){
-		return portfolioRepository.findByApiKeys_apiKey(apiKey);
+		return portfolioService.findByApiKeys_apiKey(apiKey);
 	}
 	
 	public List<Wallet> findByPortfolioApiKeysApiKey(String apiKey){
@@ -99,7 +99,7 @@ public class ApiRequestService {
 	
 	public ApiPortfolio getPortfolioById(long portfolioId) {
 		// get the normal Portfolio object
-		Portfolio portfolio = portfolioRepository.findById(portfolioId);
+		Portfolio portfolio = portfolioService.findById(portfolioId);
 		
 		// now add it's elements to the ApiPortfolio object
 		ApiPortfolio apiPortfolio = new ApiPortfolio();
@@ -274,18 +274,16 @@ public class ApiRequestService {
 			List<Wallet> historicalWallets = new ArrayList<>();
 			// loop through the wallets
 			for(Wallet wallet : wallets) {
-				wallet = walletService.getWalletHistoricalValues(wallet, startInterval.getTime(), endInterval.getTime());
-				// now get the value and add it to the total
-				currentTotalPortfolioValue += wallet.getCurrentWalletValue();
-				currentTotalPortfolioInvestment += wallet.getCurrentWalletInvestment();
-				
-				// now create a copy of this wallet
+				// create a copy of this wallet
 				Wallet historicalWallet = new Wallet(wallet);
+				historicalWallet = walletService.getWalletHistoricalValues(historicalWallet, startInterval.getTime(), endInterval.getTime());
+				// now get the value and add it to the total
+				currentTotalPortfolioValue += historicalWallet.getCurrentWalletValue();
+				currentTotalPortfolioInvestment += historicalWallet.getCurrentWalletInvestment();
 				
 				// create a copy of the coin
-				Coin historicalCoin = new Coin(wallet.getCoin());
+				Coin historicalCoin = new Coin(historicalWallet.getCoin());
 				historicalWallet.setCoin(historicalCoin);
-				
 				historicalWallets.add(historicalWallet);
 				
 			}

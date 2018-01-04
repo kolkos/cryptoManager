@@ -15,6 +15,7 @@ import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.Transaction;
 import nl.kolkos.cryptoManager.TransactionType;
 import nl.kolkos.cryptoManager.Wallet;
+import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.repositories.TransactionRepository;
 
@@ -43,7 +44,37 @@ public class TransactionService {
 	}
 	
 	public List<Transaction> findByWallet(Wallet wallet){
-		return transactionRepository.findByWallet(wallet);
+		List<Transaction> transactions = transactionRepository.findByWallet(wallet);
+		
+		// get the current values for the transactions
+		for(Transaction transaction : transactions) {
+			transaction = this.getCurrentTransactionValue(transaction);
+		}
+		
+		return transactions;
+	}
+	
+	public Transaction getCurrentTransactionValue(Transaction transaction) {
+		Wallet wallet = transaction.getWallet();
+			
+		// get the coin for this wallet
+		Coin coin = wallet.getCoin();
+		
+		Date date = new Date();
+		double currentCoinValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coin.getId(), date);
+		
+		double currentValue = transaction.getAmount() * currentCoinValue;
+		transaction.setCurrentValue(currentValue);
+		
+		double currentDifference = 0;
+		if(transaction.getTransactionType().getType().equals("Deposit")) {
+			currentDifference = currentValue - transaction.getValue();
+		}else {
+			currentDifference = transaction.getValue() - currentValue;
+		}
+		transaction.setCurrentDifference(currentDifference);
+		
+		return transaction;
 	}
 	
 	public void createTransaction(Date transactionDate, double amount, double value, Wallet wallet, String transactionRemarks, TransactionType transactionType) {
@@ -64,25 +95,7 @@ public class TransactionService {
 				
 		// now add the current values
  		for(Transaction transaction : transactions) {
- 			Wallet wallet = transaction.getWallet();
- 			
- 			// get the coin for this wallet
- 			Coin coin = wallet.getCoin();
- 			
- 			Date date = new Date();
- 			double currentCoinValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coin.getId(), date);
- 			
- 			double currentValue = transaction.getAmount() * currentCoinValue;
- 			transaction.setCurrentValue(currentValue);
- 			
- 			double currentDifference = 0;
- 			if(transaction.getTransactionType().getType().equals("Deposit")) {
- 				currentDifference = currentValue - transaction.getValue();
- 			}else {
- 				currentDifference = transaction.getValue() - currentValue;
- 			}
- 			transaction.setCurrentDifference(currentDifference);
- 			
+ 			transaction = getCurrentTransactionValue(transaction);
  		}
  		
  		// now filter and sort
@@ -91,8 +104,30 @@ public class TransactionService {
 		return transactions;
 	}
 	
+	public double getSumOfAmountForWalletId(long walletId, long transactionTypeId) {
+		return transactionRepository.getSumOfAmountForWalletId(walletId, transactionTypeId);
+	}
 	
+	public double getSumOfValueForWalletId(long walletId, long transactionTypeId) {
+		return transactionRepository.getSumOfValueForWalletId(walletId, transactionTypeId);
+	}
 	
+	public double getSumOfAmountForWalletIdAndBeforeTransactionDate(long walletId, long transactionTypeId, Date transactionDate) {
+		return transactionRepository.getSumOfAmountForWalletIdAndBeforeTransactionDate(walletId, transactionTypeId, transactionDate);
+	}
 	
+	public double getSumOfValueForWalletIdAndBeforeTransactionDate(long walletId, long transactionTypeId, Date transactionDate) {
+		return transactionRepository.getSumOfValueForWalletIdAndBeforeTransactionDate(walletId, transactionTypeId, transactionDate);
+	}
+	
+	public void deleteTransaction(Transaction transaction) {
+		transactionRepository.delete(transaction);
+	}
+	
+	public void deleteWithdrawal(List<Transaction> transactions) {
+		for(Transaction transaction : transactions) {
+			this.deleteTransaction(transaction);
+		}
+	}
 	
 }

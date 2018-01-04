@@ -48,7 +48,7 @@
 
 
 				var options = {
-					title: 'value for ' + [[${walletAddress}]] + ' (' + [[${coinName}]] + ') over time',
+					title: 'value for ' + [[${walletAddress}]] + ' (' + [[${wallet.coin.coinMarketCapCoin.symbol}]] + ') over time',
 					height: 500,
 					curveType: 'function',
 					legend: {
@@ -77,7 +77,7 @@
 	
 	<div class="container">
 		<div class="page-header">
-			<h1 th:text="${walletAddressFull}">coin</h1>
+			<h1 th:text="${wallet.address}">wallet</h1>
 		</div>
 		<p class="lead">See the value for this the wallet over time.</p>
 		

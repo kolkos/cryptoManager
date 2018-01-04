@@ -35,6 +35,7 @@ import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
 import nl.kolkos.cryptoManager.services.PortfolioService;
+import nl.kolkos.cryptoManager.services.TransactionService;
 import nl.kolkos.cryptoManager.services.UserService;
 import nl.kolkos.cryptoManager.services.WalletService;
 
@@ -64,12 +65,7 @@ public class WalletController {
 	private PortfolioService portfolioService;
 	
 	@Autowired
-	@Qualifier(value = "depositRepository")
-	private DepositRepository depositRepository;
-	
-	@Autowired
-	@Qualifier(value = "withdrawalRepository")
-	private WithdrawalRepository withdrawalRepository;
+	private TransactionService transactionService;
 	
 	@Autowired
 	private UserService userService;
@@ -89,11 +85,7 @@ public class WalletController {
 	
 	@GetMapping("/results")
     public String walletResults(Model model) {
-		model.addAttribute("wallet", new Wallet());
-		model.addAttribute("coin", new Coin());
-		model.addAttribute("portfolio", new Portfolio());
 		
-
 		model.addAttribute("walletList", walletService.findByPortfolioUsersEmail(userService.findLoggedInUsername()));
 		
         return "wallet_results";
@@ -235,115 +227,14 @@ public class WalletController {
 			model.addAttribute("object", "wallet");
 			return "error_page";
 		}
-		
-		
 		Wallet wallet = walletService.findById(walletId);
 		
-		// add this wallet to the model
+		// get the values for the wallet
+		wallet = walletService.getWalletValues(wallet);
 		model.addAttribute("wallet", wallet);
 		
-		// get the coin from the wallet
-		Coin coin = wallet.getCoin();
-		
-		// get the cmc coin
-		CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
-		
-		// receive the current value
-		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
-		double currentCoinValue;
-		try {
-			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
-			currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
-			
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			currentCoinValue = 0;
-		}
-		
-		// register this result
-		CoinValue coinValue = new CoinValue();
-		coinValue.setCoin(coin);
-		coinValue.setValue(currentCoinValue);
-		
-		coinValueRepository.save(coinValue);
-		
-		// get the sum of all the deposited coins (amount) for this wallet
-		double currentBalance = 0;
-		double totalAmountDeposited = depositRepository.getSumOfAmountForWalletId(wallet.getId());
-		double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletId(wallet.getId());
-		currentBalance = totalAmountDeposited - totalAmountWithdrawn;
-		// add to the model
-		model.addAttribute("currentBalance", currentBalance);
-		
-		
-		// get the total value for this wallet
-		double currentValue = currentBalance * currentCoinValue;
-		// add to the model
-		model.addAttribute("currentValue", currentValue);
-		
-		// get the sum of all deposits (value) for this wallet
-		double totalDeposited = depositRepository.getSumOfPurchaseValueForWalletId(wallet.getId());
-		// add to the model
-		model.addAttribute("totalDeposited", totalDeposited);
-		
-		// total withdrawn from wallet
-		double totalWithdrawn = withdrawalRepository.getSumOfWithdrawalsForWalletId(wallet.getId());
-		// add to the model
-		model.addAttribute("totalWithdrawn", totalWithdrawn);
-		
-		// total withdrawn from wallet
-		double totalWithdrawnToCash = withdrawalRepository.getSumOfWithdrawalsToCashForWalletId(wallet.getId());
-		// add to the model
-		model.addAttribute("totalWithdrawnToCash", totalWithdrawnToCash);
-		
-		// calculate the investment
-		double totalInvested = totalDeposited - totalWithdrawnToCash;
-		// add to the model
-		model.addAttribute("totalInvested", totalInvested);
-		
-		double profitLoss = currentValue - totalInvested;
-		// add to the model
-		model.addAttribute("profitLoss", profitLoss);
-		
-		
-		// get the deposits for this wallet
-		List<Deposit> deposits = depositRepository.findByWallet(wallet);
-		
-		// loop through the deposits
-		for(Deposit deposit : deposits) {
-			// calculate the current value of the deposit
-			double currentDepositValue = deposit.getAmount() * currentCoinValue;
-			// set this value
-			deposit.setCurrentDepositValue(currentDepositValue);
-			
-			// calculate the difference
-			double currentDepositDifference = currentDepositValue - deposit.getPurchaseValue();
-			// set this value
-			deposit.setCurrentDepositDifference(currentDepositDifference);
-						
-		}
-		
-		// add the deposits to the model
-		model.addAttribute("deposits", deposits);
-		
-		
-		// now get the withdrawals
-		List<Withdrawal> withdrawals = withdrawalRepository.findByWallet(wallet);
-		for(Withdrawal withdrawal : withdrawals) {
-			// calculate the current value of the withdrawal
-			double currentWithdrawalValue = withdrawal.getAmount() * currentCoinValue;
-			withdrawal.setCurrentWithdrawalValue(currentWithdrawalValue);
-			
-			// calculate the difference between the current value and the purchase value
- 			double currentWithdrawalDifference = withdrawal.getWithdrawalValue() - currentWithdrawalValue;
- 			// add this to this deposit
- 			withdrawal.setCurrentWithdrawalDifference(currentWithdrawalDifference);
-			
-		}
-		model.addAttribute("withdrawals", withdrawals);
-		
+		// get the transactions
+		model.addAttribute("transactions", transactionService.findByWallet(wallet));
 		
 		
 		return "wallet_details";
@@ -381,74 +272,35 @@ public class WalletController {
 			intervalInMinutes = 5;
 		}
 		
+		// set the get parameters
+		model.addAttribute("lastHours", lastHours);
+		model.addAttribute("intervalInMinutes", intervalInMinutes);
+		
 		FormOptions formOptions = new FormOptions();
-		
-		
+		// add the periods
 		List<FormOption> hourOptions = formOptions.defaultSetHourOptions();
 		// now add to the model
 		model.addAttribute("hourOptions",hourOptions);
 		
-		
-		// add the minute options
+		// add the interval options
 		List<FormOption> minuteOptions = formOptions.defaultSetMinuteOptions();
-		
-		
 		// now add to the model
 		model.addAttribute("minuteOptions",minuteOptions);
 		
 		// get the wallet
 		Wallet wallet = walletService.findById(walletId);
-		
-		model.addAttribute("walletId",walletId);
-		
-		// get the coin for this wallet
-		Coin coin = wallet.getCoin();
-		long coinId = coin.getId();
-		
-		// nog get the cmc Coin by this coin
-		
-		CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
-		model.addAttribute("coinName",cmcCoin.getName());
-		model.addAttribute("walletAddressFull",wallet.getAddress());
-		model.addAttribute("walletAddress",wallet.getCensoredWalletAddress());
-		
-		// set the get parameters
-		model.addAttribute("lastHours", lastHours);
-		model.addAttribute("intervalInMinutes", intervalInMinutes);
-		
-		// update the coin price
-		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
-		
-		double currentCoinValue;
-		try {
-			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
-			currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
-			
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			currentCoinValue = 0;
-		}
-		
-		// register this result
-		CoinValue coinValue = new CoinValue();
-		coinValue.setCoin(coin);
-		coinValue.setValue(currentCoinValue);
-		
-		coinValueRepository.save(coinValue);
+		model.addAttribute("wallet",wallet);
+		model.addAttribute("walletAddress", wallet.getCensoredWalletAddress());
 		
 		Calendar start = Calendar.getInstance();
 		start.add(Calendar.HOUR_OF_DAY, -lastHours);
 		start.set(Calendar.SECOND, 0);
 		
 		Calendar end = Calendar.getInstance();
-		//end.add(Calendar.HOUR, 1);
 		end.set(Calendar.SECOND, 0);
 		
 		// get the last known value, just to be sure
-		double lastKnownValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coinId, start.getTime());
-		
+		double lastKnownValue = coinValueRepository.findLastKnownValueBeforeRequestDate(wallet.getCoin().getId(), end.getTime());
 		
 		List<WalletChartLine> walletChartLines = new ArrayList<>();
 		
@@ -465,50 +317,29 @@ public class WalletController {
 			lastMinute.add(Calendar.SECOND, -1);
 			
 			
-			// ---- get the totals for deposits
-			// get the total purchase value
-			double totalPurchaseValue = depositRepository.getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(walletId, lastMinute.getTime());
-			
-			// get the amount purchased
-			double totalAmountDeposited = depositRepository.getSumOfAmountForWalletIdAndBeforeDepositDate(walletId, lastMinute.getTime());
-			
-			
-			// --- get the values for the withdrawals
-			// get the to cash value
-			double totalWithDrawnToCashValue = withdrawalRepository.getSumOfWithdrawalToCashValueForWalletIdAndBeforeWithdrawalDate(walletId, lastMinute.getTime());
-			
-			// get the total amount of withdrawals
-			double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletIdAndBeforeWithdrawalDate(walletId, lastMinute.getTime());
-			
-			// get the total amount
-			double totalAmount = totalAmountDeposited - totalAmountWithdrawn;
-			
-			
-			// calculate the investment
-			double totalInvested = totalPurchaseValue - totalWithDrawnToCashValue;
+			// get the historical values for this wallet
+			Wallet historicalWallet = new Wallet(wallet);
+			historicalWallet = walletService.getWalletHistoricalValues(historicalWallet, startInterval.getTime(), lastMinute.getTime());
 			
 			
 			// get the value of the coin for this moment
-			double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), lastMinute.getTime());
+			double walletValue = historicalWallet.getCurrentWalletValue();
 			
-			// if the avg value is 0, then use the last known value
-			if(avgValue == 0) {
-				avgValue = lastKnownValue;
+			// if the value is 0, use the last known value
+			if(walletValue == 0) {
+				walletValue = lastKnownValue;
 			}else {
-				lastKnownValue = avgValue;
+				// set the last know value to the current value
+				lastKnownValue = walletValue;
 			}
-			
-			// calculate the value for this moment
-			double value = avgValue * totalAmount;
 			
 						
 			// add it to a wallet chart line object
 			WalletChartLine walletChartLine = new WalletChartLine();
 			walletChartLine.setDate(lastMinute.getTime());
-			walletChartLine.setValue(value);
-			walletChartLine.setTotalInvested(totalInvested);
-			
-			
+			walletChartLine.setValue(walletValue);
+			walletChartLine.setTotalInvested(historicalWallet.getCurrentWalletInvestment());
+						
 			// add it to the list
 			walletChartLines.add(walletChartLine);
 			

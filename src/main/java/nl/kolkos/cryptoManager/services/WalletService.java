@@ -10,9 +10,12 @@ import org.springframework.stereotype.Service;
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
+import nl.kolkos.cryptoManager.Transaction;
+import nl.kolkos.cryptoManager.TransactionType;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
+import nl.kolkos.cryptoManager.repositories.TransactionTypeRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 
 @Service
@@ -23,11 +26,11 @@ public class WalletService {
 	@Autowired
 	private CoinValueRepository coinValueRepository;
 	
-	@Autowired
-	private DepositService depositService;
+	@Autowired 
+	private TransactionService transactionService;
 	
 	@Autowired
-	private WithdrawalService withdrawalService;
+	private TransactionTypeRepository transactionTypeRepository;
 	
 	public List<Wallet> getWalletsByPortfolio(Portfolio portfolio){
 		List<Wallet> wallets = walletRepository.findByPortfolio(portfolio);
@@ -52,7 +55,14 @@ public class WalletService {
 	}
 	
 	public List<Wallet> findByPortfolioUsersEmail(String email){
-		return walletRepository.findByPortfolioUsersEmail(email);
+		List<Wallet> wallets = walletRepository.findByPortfolioUsersEmail(email);
+		
+		// get the values for each wallet
+		for(Wallet wallet : wallets) {
+			wallet = this.getWalletValues(wallet);
+		}
+		
+		return wallets;
 	}
 	
 	public void saveWallet(Wallet wallet) {
@@ -90,18 +100,23 @@ public class WalletService {
 		double lastKnownValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coin.getId(), now.getTime());
 		coin.setCurrentCoinValue(lastKnownValue);
 		
+		
+		TransactionType deposit = transactionTypeRepository.findByType("Deposit");
+		TransactionType withdrawal = transactionTypeRepository.findByType("Withdrawal");
+		
+		
 		// get the current amount of this wallet
-		double totalAmountDeposited = depositService.getSumOfAmountForWalletId(wallet.getId());
-		double totalAmountWithdrawn = withdrawalService.getSumOfAmountForWalletId(wallet.getId());
+		double totalAmountDeposited = transactionService.getSumOfAmountForWalletId(wallet.getId(), deposit.getId());
+		double totalAmountWithdrawn = transactionService.getSumOfAmountForWalletId(wallet.getId(), withdrawal.getId());
 		double currentBalance = totalAmountDeposited - totalAmountWithdrawn;
 				
 		// calculate the current value for this wallet
 		double currentValue = currentBalance * lastKnownValue;
 		
 		// now get the investment
-		double totalDeposited = depositService.getSumOfPurchaseValueForWalletId(wallet.getId());
-		double totalWithdrawnToCash = withdrawalService.getSumOfWithdrawalsToCashForWalletId(wallet.getId());
-		double totalInvested = totalDeposited - totalWithdrawnToCash;
+		double totalDeposited = transactionService.getSumOfValueForWalletId(wallet.getId(), deposit.getId());
+		double totalWithdrawn = transactionService.getSumOfValueForWalletId(wallet.getId(), withdrawal.getId());
+		double totalInvested = totalDeposited - totalWithdrawn;
 		
 		// the win/loss
 		double profitLoss = currentValue - totalInvested;
@@ -113,6 +128,8 @@ public class WalletService {
 		wallet.setCurrentWalletAmount(currentBalance);
 		wallet.setCurrentWalletValue(currentValue);
 		wallet.setCurrentWalletInvestment(totalInvested);
+		wallet.setCurrentWalletDeposited(totalDeposited);
+		wallet.setCurrentWalletWithdrawn(totalWithdrawn);
 		wallet.setCurrentWalletProfitLoss(profitLoss);
 		wallet.setCurrentWalletROI(roi);
 		
@@ -123,7 +140,10 @@ public class WalletService {
 	public Wallet getWalletHistoricalValues(Wallet wallet, Date dateIntervalStart, Date dateIntervalEnd) {
 		// get the attached coin
 		Coin coin = wallet.getCoin();
-				
+		
+		TransactionType deposit = transactionTypeRepository.findByType("Deposit");
+		TransactionType withdrawal = transactionTypeRepository.findByType("Withdrawal");
+		
 		// get the average value for the coin in the interval
 		double avgCoinValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coin.getId(), dateIntervalStart, dateIntervalEnd);
 		// prevent 0 by using the last known value
@@ -133,10 +153,10 @@ public class WalletService {
 		coin.setCurrentCoinValue(avgCoinValue);
 		
 		// get the amount of deposited coins
-		double totalAmountDeposited = depositService.getSumOfAmountForWalletIdAndBeforeDepositDate(wallet.getId(), dateIntervalEnd);
+		double totalAmountDeposited = transactionService.getSumOfAmountForWalletIdAndBeforeTransactionDate(wallet.getId(), deposit.getId(), dateIntervalEnd);
 		
 		// get the amount of withdrawn coins
-		double totalAmountWithdrawn = withdrawalService.getSumOfAmountForWalletIdAndBeforeWithdrawalDate(wallet.getId(), dateIntervalEnd);
+		double totalAmountWithdrawn = transactionService.getSumOfAmountForWalletIdAndBeforeTransactionDate(wallet.getId(), withdrawal.getId(), dateIntervalEnd);
 		
 		double currentBalance = totalAmountDeposited - totalAmountWithdrawn;
 		
@@ -144,9 +164,9 @@ public class WalletService {
 		double currentValue = currentBalance * avgCoinValue;
 		
 		// now get the investment
-		double totalDeposited = depositService.getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(wallet.getId(), dateIntervalEnd);
-		double totalWithdrawnToCash = withdrawalService.getSumOfWithdrawalToCashValueForWalletIdAndBeforeWithdrawalDate(wallet.getId(), dateIntervalEnd);
-		double totalInvested = totalDeposited - totalWithdrawnToCash;
+		double totalDeposited = transactionService.getSumOfValueForWalletIdAndBeforeTransactionDate(wallet.getId(), deposit.getId(), dateIntervalEnd);
+		double totalWithdrawn = transactionService.getSumOfValueForWalletIdAndBeforeTransactionDate(wallet.getId(), withdrawal.getId(), dateIntervalEnd);
+		double totalInvested = totalDeposited - totalWithdrawn;
 		
 		// the win/loss
 		double profitLoss = currentValue - totalInvested;
@@ -165,13 +185,9 @@ public class WalletService {
 	}
 	
 	public void deleteWallet(Wallet wallet) {
-		// find the deposits
-		List<Deposit> deposits = depositService.findByWallet(wallet);
-		depositService.deleteDeposit(deposits);
-		
-		// find the withdralwas
-		List<Withdrawal> withdrawals = withdrawalService.findByWallet(wallet);
-		withdrawalService.deleteWithdrawal(withdrawals);
+		// find the transactions
+		List<Transaction> transactions = transactionService.findByWallet(wallet);
+		transactionService.deleteWithdrawal(transactions);
 		
 		// now delete the wallet itself
 		walletRepository.delete(wallet);

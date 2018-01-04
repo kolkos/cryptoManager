@@ -48,7 +48,6 @@ public interface WithdrawalRepository extends PagingAndSortingRepository<Withdra
 	@Query(value="SELECT COALESCE((SELECT SUM(withdrawal_value) FROM withdrawal WHERE wallet_id = ?1), 0) AS withdrawnToCash", nativeQuery = true)
 	double getSumOfWithdrawalsForWalletId(long walletId);
 	
-	
 	// get the total of withdrawn coins before a date
 	@Query(value="SELECT COALESCE((SELECT SUM(amount) as totalAmount FROM withdrawal WHERE wallet_id = ?1 AND withdrawal_date <= ?2), 0) AS totalAmount", nativeQuery = true)
 	double getSumOfAmountForWalletIdAndBeforeWithdrawalDate(long walletId, Date depositDate);

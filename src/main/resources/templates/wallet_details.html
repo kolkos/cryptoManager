@@ -72,31 +72,27 @@
 			<tbody>
 				<tr>
 					<td width="20%">Current balance:</td>
-					<td th:text="${#numbers.formatDecimal(currentBalance, 1, 'POINT', 8, 'COMMA')}">currentBalance</td>
+					<td th:text="${#numbers.formatDecimal(wallet.currentWalletAmount, 1, 'POINT', 8, 'COMMA')}">currentBalance</td>
 				</tr>
 				<tr>
 					<td>Current value:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(currentValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
 				</tr>
 				<tr>
 					<td>Total deposited:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(totalDeposited, 1, 'POINT', 2, 'COMMA')}">totalDeposited</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletDeposited, 1, 'POINT', 2, 'COMMA')}">totalDeposited</td>
 				</tr>
 				<tr>
 					<td>Total withdrawn:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(totalWithdrawn, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletWithdrawn, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
 				</tr>
 				<tr>
-					<td>Total withdrawn to cash:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(totalWithdrawnToCash, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
-				</tr>
-				<tr>
-					<td>Total invested:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(totalInvested, 1, 'POINT', 2, 'COMMA')}">totalInvested</td>
+					<td>Investment:</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletInvestment, 1, 'POINT', 2, 'COMMA')}">totalInvested</td>
 				</tr>
 				<tr>
 					<td>Profit/Loss:</td>
-					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(profitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
+					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletProfitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
 				</tr>
 			</tbody>
 		</table>
@@ -113,14 +109,15 @@
 		</form>
 		
 		<div class="page-header">
-			<h2>Deposits</h2>
+			<h2>Transactions</h2>
 		</div>
-		<p class="lead">Deposits for this wallet.</p>
+		<p class="lead">Transactions for this wallet.</p>
 		
 		<table class="table table-striped">
 			<thead>
 				<tr>
 					<th>Date</th>
+					<th>Transaction type</th>
 					<th>Amount</th>
 					<th>Deposit value</th>
 					<th>Current value</th>
@@ -129,49 +126,19 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="deposit : ${deposits}">
-					<td th:text="${#dates.format(deposit.depositDate, 'dd-MM-yyyy')}">depositDate</td>
-					<td th:text="${#numbers.formatDecimal(deposit.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.purchaseValue, 1, 'POINT', 2, 'COMMA')}">purchaseValue</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
-					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(deposit.currentDepositDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
-					<td th:text="${deposit.remarks}">remarks</td>
+				<tr th:each="transaction : ${transactions}">
+					<td th:text="${#dates.format(transaction.transactionDate, 'dd-MM-yyyy')}">depositDate</td>
+					<td th:text="${transaction.transactionType.type}">type</td>
+					<td th:text="${#numbers.formatDecimal(transaction.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(transaction.value, 1, 'POINT', 2, 'COMMA')}">purchaseValue</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(transaction.currentValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
+					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(transaction.currentDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
+					<td th:text="${transaction.remarks}">remarks</td>
 				</tr>
 			</tbody>
 		</table>
 		
-		<div class="page-header">
-			<h2>Withdrawals</h2>
-		</div>
-		<p class="lead">Withdrawals for this wallet.</p>
 		
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th>Date</th>
-					<th>Amount</th>
-					<th>Withdrawal value</th>
-					<th>Current value</th>
-					<th>Difference</th>
-					<th>To cash</th>
-					<th>Remarks</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="withdrawal : ${withdrawals}">
-					<td th:text="${#dates.format(withdrawal.withdrawalDate, 'dd-MM-yyyy')}">withdrawalDate</td>
-					<td th:text="${#numbers.formatDecimal(withdrawal.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(withdrawal.withdrawalValue, 1, 'POINT', 2, 'COMMA')}">withdrawalValue</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(withdrawal.currentWithdrawalValue, 1, 'POINT', 2, 'COMMA')}">currentWithdrawalValue</td>
-					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(withdrawal.currentWithdrawalDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
-					<td>
-						<span th:if="${withdrawal.toCash}" class="glyphicon glyphicon-ok-circle"></span>
-						<span th:unless="${withdrawal.toCash}" class="glyphicon glyphicon-remove-circle"></span>
-					</td>
-					<td th:text="${withdrawal.remarks}">remarks</td>
-				</tr>
-			</tbody>
-		</table>
 		
 		
     </div>

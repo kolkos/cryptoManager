@@ -40,6 +40,12 @@ public class Wallet {
 	private double currentWalletInvestment;
 	
 	@Transient
+	private double currentWalletDeposited;
+	
+	@Transient
+	private double currentWalletWithdrawn;
+	
+	@Transient
 	private double currentWalletProfitLoss;
 	
 	@Transient
@@ -146,6 +152,22 @@ public class Wallet {
 		String censoredWallet = firstPart + "xxx" + lastPart;
 		
 		return censoredWallet;
+	}
+
+	public double getCurrentWalletWithdrawn() {
+		return currentWalletWithdrawn;
+	}
+
+	public void setCurrentWalletWithdrawn(double currentWalletWithdrawn) {
+		this.currentWalletWithdrawn = currentWalletWithdrawn;
+	}
+
+	public double getCurrentWalletDeposited() {
+		return currentWalletDeposited;
+	}
+
+	public void setCurrentWalletDeposited(double currentWalletDeposited) {
+		this.currentWalletDeposited = currentWalletDeposited;
 	}
 	
 	

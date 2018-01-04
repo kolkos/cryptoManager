@@ -35,6 +35,7 @@
 		<p class="lead">With this page you can link a wallet to a portfolio. </p>
 		
 		<p>
+			<a th:href="@{/wallet/details/{id}(id=${wallet.id})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-zoom-in"></span> Return to details</a>
 			<a href="/wallet/results" class="btn btn-info" role="button"><span class="glyphicon glyphicon-list"></span> Return to list</a>
 		</p>
 		

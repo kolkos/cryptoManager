@@ -29,19 +29,26 @@ public class PortfolioService {
 	
 	// the portfolio repository methods
 	public Portfolio findById(Long id) {
-		return portfolioRepository.findById(id);
+		Portfolio portfolio = portfolioRepository.findById(id);
+		portfolio = this.getPortfolioValue(portfolio);
+		return portfolio;
 	}
 	
 	public Portfolio findByName(String name) {
-		return portfolioRepository.findByName(name);
+		Portfolio portfolio = portfolioRepository.findByName(name);
+		return portfolio;
 	}
 	
 	public Set<Portfolio> findByUsers_email(String email){
-		return portfolioRepository.findByUsers_email(email);
+		Set<Portfolio> portfolios = portfolioRepository.findByUsers_email(email);
+		portfolios = this.getPortfolioValue(portfolios);
+		return portfolios;
 	}
 	
 	public Set<Portfolio> findByApiKeys_apiKey(String apiKey){
-		return portfolioRepository.findByApiKeys_apiKey(apiKey);
+		Set<Portfolio> portfolios = portfolioRepository.findByApiKeys_apiKey(apiKey);
+		portfolios = this.getPortfolioValue(portfolios);
+		return portfolios;
 	}
 	
 	// default functions
@@ -49,8 +56,51 @@ public class PortfolioService {
 		portfolioRepository.save(portfolio);
 	}
 	
-	public Iterable<Portfolio> findAll() {
-		return portfolioRepository.findAll();
+//	public Iterable<Portfolio> findAll() {
+//		return portfolioRepository.findAll();
+//	}
+	
+	public Set<Portfolio> getPortfolioValue(Set<Portfolio> portfolios){
+		// loop through portfolios
+		for(Portfolio portfolio : portfolios) {
+			portfolio = this.getPortfolioValue(portfolio);
+		}
+		
+		return portfolios;
+	}
+	
+	public Portfolio getPortfolioValue(Portfolio portfolio) {
+		// get the wallets for this portfolio
+		List<Wallet> wallets = walletService.getWalletsByPortfolio(portfolio);
+		double portfolioTotalValue = 0;
+		double portfolioTotalDeposited = 0;
+		double portfolioTotalWithdrawn = 0;
+		double portfolioTotalInvestment = 0;
+				
+		// get the wallet values (using the wallet service)
+		wallets = walletService.getWalletValues(wallets);
+		
+		// now loop through the wallets to calculate the values
+		for(Wallet wallet : wallets) {
+			portfolioTotalValue += wallet.getCurrentWalletValue();
+			portfolioTotalDeposited += wallet.getCurrentWalletDeposited();
+			portfolioTotalWithdrawn += wallet.getCurrentWalletWithdrawn();
+			portfolioTotalInvestment += wallet.getCurrentWalletInvestment();
+		}
+		
+		double portfolioProfitLoss = portfolioTotalValue - portfolioTotalInvestment;
+		double portfolioROI = portfolioProfitLoss / portfolioTotalInvestment;
+		
+		
+		// now set the calculated values
+		portfolio.setPortfolioTotalValue(portfolioTotalValue);
+		portfolio.setPortfolioTotalDeposited(portfolioTotalDeposited);
+		portfolio.setPortfolioTotalWithdrawn(portfolioTotalWithdrawn);
+		portfolio.setPortfolioTotalInvestment(portfolioTotalInvestment);
+		portfolio.setPortfolioProfitLoss(portfolioProfitLoss);
+		portfolio.setPortfolioROI(portfolioROI);
+		
+		return portfolio;
 	}
 	
 	public boolean checkIfPortfolioExists(long portfolioId) {

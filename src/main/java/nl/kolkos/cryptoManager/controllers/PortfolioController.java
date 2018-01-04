@@ -34,14 +34,14 @@ import nl.kolkos.cryptoManager.PortfolioPieChartValue;
 import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
-import nl.kolkos.cryptoManager.repositories.DepositRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.UserRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
-import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
 import nl.kolkos.cryptoManager.services.ApiKeyService;
 import nl.kolkos.cryptoManager.services.PortfolioService;
+import nl.kolkos.cryptoManager.services.TransactionService;
 import nl.kolkos.cryptoManager.services.UserService;
+import nl.kolkos.cryptoManager.services.WalletService;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/portfolio") // This means URL's start with /portfolio (after Application path)
@@ -50,8 +50,7 @@ public class PortfolioController {
 	private PortfolioService portfolioService;
 	
 	@Autowired
-	@Qualifier(value = "walletRepository")
-	private WalletRepository walletRepository;
+	private WalletService walletService;
 	
 	@Autowired
 	@Qualifier(value = "coinValueRepository")
@@ -59,6 +58,9 @@ public class PortfolioController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private TransactionService transactionService;
 	
 	@Autowired
 	private ApiKeyService apiKeyService;
@@ -177,94 +179,15 @@ public class PortfolioController {
 		Portfolio portfolio = portfolioService.findById(portfolioId);
 		// add to model		
 		model.addAttribute("portfolio", portfolio);
-		model.addAttribute("portfolioId", portfolioId);
+		
 		
 		// now get the attached wallets
-		List<Wallet> wallets = walletRepository.findByPortfolio(portfolio);
+		List<Wallet> wallets = walletService.getWalletsByPortfolio(portfolio);
 		
 		// get the amount of wallets
 		int countWallets = wallets.size();
 		// add to the model
 		model.addAttribute("countWallets", countWallets);
-		
-		// create the api request object
-		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
-		
-		// loop the wallets to get their values
-		double totalInvestment = 0;			// this is the value of all ivestments
-		double totalPortfolioValue = 0;		// this is the total value of the portfolio (the value of all the coins + the amount withdrawn)
-		double totalWithdrawnToCash = 0;		// the total value withdrawn to cash
-		double totalValueInWallets = 0;		// this is the value of the coins inside the attached wallets
-		
-		
-		for(Wallet wallet : wallets) {
-			// get the coin from this wallet
-			Coin coin = wallet.getCoin();
-			
-			// get the cmc coin
-			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
-			
-			
-			// ---- get the totals for deposits
-			// get the total purchase value
-			double totalPurchaseValue = depositRepository.getSumOfPurchaseValueForWalletId(wallet.getId());
-			// get the amount purchased
-			double totalAmountDeposited = depositRepository.getSumOfAmountForWalletId(wallet.getId());
-			
-			// --- get the values for the withdrawals
-			// get the to cash value
-			
-			// get the total amount of withdrawals
-			double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletId(wallet.getId());
-			
-			// get the total amount
-			double currentWalletAmount = totalAmountDeposited - totalAmountWithdrawn;
-			
-			// get the value withdrawn to cash
-			double totalWithDrawnToCashValue = withdrawalRepository.getSumOfWithdrawalsForWalletId(wallet.getId());
-			
-					
-			
-			// get the current market value for this coin
-			double currentCoinValue = 0;
-			
-			try {
-				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
-				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			// calculate the value of this wallet
-			double currentWalletValue = currentWalletAmount * currentCoinValue;
-			
-			// total wallet value (current value + withdrawn to cash)
-			double totalWalletValue = currentWalletValue + totalWithDrawnToCashValue;
-			
-			// add this value to the totalPortfolioValue
-			totalPortfolioValue += totalWalletValue;
-			totalInvestment += totalPurchaseValue;
-			totalWithdrawnToCash += totalWithDrawnToCashValue;
-			totalValueInWallets += currentWalletValue;
-			
-			// add this values to the wallet
-			wallet.setCurrentWalletAmount(currentWalletAmount);
-			wallet.setCurrentWalletValue(currentWalletValue);
-			
-			
-			// save the coin values for future reference
-			CoinValue coinValue = new CoinValue();
-			coinValue.setCoin(coin);
-			coinValue.setValue(currentCoinValue);
-			coinValueRepository.save(coinValue);
-			
-		}
-		
-		// add the total portfolio value to the model
-		model.addAttribute("totalPortfolioValue", totalPortfolioValue);
-		model.addAttribute("totalInvestment", totalInvestment);
-		model.addAttribute("totalWithdrawnToCash", totalWithdrawnToCash);
-		model.addAttribute("totalValueInWallets", totalValueInWallets);
 		
 		// add the wallets to the model
 		model.addAttribute("wallets", wallets);
@@ -491,7 +414,7 @@ public class PortfolioController {
 		model.addAttribute("portfolioId", portfolioId);
 		
 		// now get the attached wallets
-		List<Wallet> wallets = walletRepository.findByPortfolio(portfolio);
+		List<Wallet> wallets = walletService.getWalletsByPortfolio(portfolio);
 		model.addAttribute("wallets", wallets);
 		
 		
@@ -593,41 +516,13 @@ public class PortfolioController {
 		}
 		
 		// get the wallets
-		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
-		
-		List<String> walletAddresses = new ArrayList<>();
+		List<Wallet> wallets = walletService.findByPortfolio_Id(portfolioId);
 		
 		// loop the wallets to update the current coin value
-		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
+		List<String> walletAddresses = new ArrayList<>();
 		for(Wallet wallet : wallets) {
 			// add the wallet name to the list
 			walletAddresses.add(wallet.getCensoredWalletAddress() + " (" + wallet.getCoin().getCoinMarketCapCoin().getSymbol() + ")");
-			
-			
-			// get the coin for this wallet
-			Coin coin = wallet.getCoin();
-			
-			
-			// nog get the cmc Coin by this coin
-			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
-			
-			double currentCoinValue;
-			try {
-				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
-				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
-				
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				currentCoinValue = 0;
-			}
-			// register this result
-			CoinValue coinValue = new CoinValue();
-			coinValue.setCoin(coin);
-			coinValue.setValue(currentCoinValue);
-			
-			coinValueRepository.save(coinValue);
 		}
 		
 		// now determine the begin and end time
@@ -658,42 +553,16 @@ public class PortfolioController {
 			
 			// loop through the wallets again
 			for(Wallet wallet : wallets) {
-				long walletId = wallet.getId();
-				long coinId = wallet.getCoin().getId();
-				
-				// ---- get the totals for deposits
-				// get the total purchase value
-				double totalPurchaseValue = depositRepository.getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(walletId, endInterval.getTime());
-				// get the amount purchased
-				double totalAmountDeposited = depositRepository.getSumOfAmountForWalletIdAndBeforeDepositDate(walletId, endInterval.getTime());
-				
-				// --- get the values for the withdrawals
-				// get the to cash value
-				double totalWithDrawnToCashValue = withdrawalRepository.getSumOfWithdrawalToCashValueForWalletIdAndBeforeWithdrawalDate(walletId, endInterval.getTime());
-				// get the total amount of withdrawals
-				double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletIdAndBeforeWithdrawalDate(walletId, endInterval.getTime());
-				
-				// get the total amount
-				double totalAmount = totalAmountDeposited - totalAmountWithdrawn;
-				
-				
-				// get the value of the coin for this moment
-				double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), endInterval.getTime());
-				
-				// prevent 0 by using the last known value
-				if(avgValue == 0) {
-					avgValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coinId, startInterval.getTime());
-				}
-				
+				Wallet historicalWallet = new Wallet(wallet);
+				historicalWallet = walletService.getWalletHistoricalValues(historicalWallet, startInterval.getTime(), endInterval.getTime());
 				
 				// add this investment to the total investment
-				totalInvestment += totalPurchaseValue;
+				totalInvestment += historicalWallet.getCurrentWalletInvestment();
 				
-				// add the total withdrawn to cash to the wallet value
-				double value = (avgValue * totalAmount) + totalWithDrawnToCashValue;
+				double value = historicalWallet.getCurrentWalletValue();
 				
 				PortfolioChartLineWallet portfolioChartLineWallet = new PortfolioChartLineWallet();
-				portfolioChartLineWallet.setWalletName(wallet.getCensoredWalletAddress() + " (" + wallet.getCoin().getCoinMarketCapCoin().getSymbol() + ")");
+				portfolioChartLineWallet.setWalletName(historicalWallet.getCensoredWalletAddress() + " (" + wallet.getCoin().getCoinMarketCapCoin().getSymbol() + ")");
 				portfolioChartLineWallet.setWalletValue(value);
 				
 				// now push it to the portfolioChartLine
@@ -734,52 +603,17 @@ public class PortfolioController {
 		Portfolio portfolio = portfolioService.findById(portfolioId);
 		
 		// get the wallets
-		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
+		List<Wallet> wallets = walletService.findByPortfolio_Id(portfolioId);
 		
 		
 		List<PortfolioPieChartValue> portfolioPieChartValues = new ArrayList<>();
 		
-		
-		// loop the wallets to update the current coin value
-		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
 		for(Wallet wallet : wallets) {
-			
-			// get the coin for this wallet
-			Coin coin = wallet.getCoin();
-			
-			// nog get the cmc Coin by this coin
-			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
-			
-			double currentCoinValue;
-			try {
-				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
-				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
-				
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				currentCoinValue = 0;
-			}
-			// register this result
-			CoinValue coinValue = new CoinValue();
-			coinValue.setCoin(coin);
-			coinValue.setValue(currentCoinValue);
-			
-			coinValueRepository.save(coinValue);
-			
-			// get the current amount
-			double totalAmountDeposited = depositRepository.getSumOfAmountForWalletId(wallet.getId());
-			double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletId(wallet.getId());
-			double totalAmount = totalAmountDeposited - totalAmountWithdrawn;
-			
-			// calculate the total value
-			double currentWalletValue = totalAmount * currentCoinValue;
 			
 			// now add to the PortfolioPieChartValue object
 			PortfolioPieChartValue portfolioPieChartValue = new PortfolioPieChartValue();
-			portfolioPieChartValue.setWalletAddress(wallet.getCensoredWalletAddress() + " (" + cmcCoin.getSymbol() + ")");
-			portfolioPieChartValue.setCurrentWalletValue(currentWalletValue);
+			portfolioPieChartValue.setWalletAddress(wallet.getCensoredWalletAddress() + " (" + wallet.getCoin().getCoinMarketCapCoin().getSymbol() + ")");
+			portfolioPieChartValue.setCurrentWalletValue(wallet.getCurrentWalletValue());
 			
 			// add to the list
 			portfolioPieChartValues.add(portfolioPieChartValue);
@@ -808,40 +642,10 @@ public class PortfolioController {
 		}
 		
 		// get the wallets
-		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
+		List<Wallet> wallets = walletService.findByPortfolio_Id(portfolioId);
 		
 		// get the portfolio
 		Portfolio portfolio = portfolioService.findById(portfolioId);
-		
-		// loop the wallets to update the current coin value
-		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
-		for(Wallet wallet : wallets) {
-						
-			// get the coin for this wallet
-			Coin coin = wallet.getCoin();
-			
-			
-			// nog get the cmc Coin by this coin
-			CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
-			
-			double currentCoinValue;
-			try {
-				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
-				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
-				
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				currentCoinValue = 0;
-			}
-			// register this result
-			CoinValue coinValue = new CoinValue();
-			coinValue.setCoin(coin);
-			coinValue.setValue(currentCoinValue);
-			
-			coinValueRepository.save(coinValue);
-		}
 		
 		// now determine the begin and end time
 		Calendar start = Calendar.getInstance();
@@ -871,46 +675,18 @@ public class PortfolioController {
 			double totalValue = 0;			// the total value of the portfolio
 			double totalInvestment = 0; 		// the total amount of investment
 			
-			
 			// loop through the wallets again
 			for(Wallet wallet : wallets) {
-				long walletId = wallet.getId();
-				long coinId = wallet.getCoin().getId();
-				
-				// ---- get the totals for deposits
-				// ---- get the totals for deposits
-				// get the total purchase value
-				double totalPurchaseValue = depositRepository.getSumOfPurchaseValueForWalletIdAndBeforeDepositDate(walletId, endInterval.getTime());
-				// get the amount purchased
-				double totalAmountDeposited = depositRepository.getSumOfAmountForWalletIdAndBeforeDepositDate(walletId, endInterval.getTime());
-				
-				// --- get the values for the withdrawals
-				// get the to cash value
-				double totalWithDrawnToCashValue = withdrawalRepository.getSumOfWithdrawalToCashValueForWalletIdAndBeforeWithdrawalDate(walletId, endInterval.getTime());
-				// get the total amount of withdrawals
-				double totalAmountWithdrawn = withdrawalRepository.getSumOfAmountForWalletIdAndBeforeWithdrawalDate(walletId, endInterval.getTime());
-				
-				// get the total amount
-				double totalAmount = totalAmountDeposited - totalAmountWithdrawn;
+				Wallet historicalWallet = new Wallet(wallet);
+				historicalWallet = walletService.getWalletHistoricalValues(historicalWallet, startInterval.getTime(), endInterval.getTime());
 				
 				
-				double avgValue = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coinId, startInterval.getTime(), endInterval.getTime());
-				
-				// prevent 0 by using the last known value
-				if(avgValue == 0) {
-					
-					avgValue = coinValueRepository.findLastKnownValueBeforeRequestDate(coinId, startInterval.getTime());
-				}
-				
-				// calculate the value
-				// in this case the withdrawals to cash are added to the current portfolio value
-				// so it is the wallet value + the value withdrawn to cash
-				double value = (avgValue * totalAmount) + totalWithDrawnToCashValue;
+				double value = historicalWallet.getCurrentWalletValue();
 				// add to the totalValue
 				totalValue += value;
 				
 				// calculate the investment for this wallet
-				totalInvestment += totalPurchaseValue;
+				totalInvestment += historicalWallet.getCurrentWalletInvestment();
 			}
 			
 			// add to the portfolioLineChartRoiValue

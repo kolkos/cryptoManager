@@ -45,6 +45,7 @@
 				<tr>
 					<th>Portfolio name</th>
 					<th>Description</th>
+					<th>Value</th>
 					<th>Open portfolio</th>
 					<th>Show chart</th>
 				</tr>
@@ -53,6 +54,7 @@
 				<tr th:each="portfolio : ${portfolioList}">
 					<td th:text="${portfolio.name}">name</td>
 					<td th:text="${portfolio.description}">description</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioTotalValue, 1, 'POINT', 2, 'COMMA')}">value</td>
 					<td>
 						<a th:href="@{/portfolio/details/{id}(id=${portfolio.id})}">
 							<span class="glyphicon glyphicon-zoom-in"></span>

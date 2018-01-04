@@ -30,7 +30,7 @@
 	
 	<div class="container">
 		<div class="page-header">
-			<h1 th:text="${portfolio.name}">portfolio details</h1>
+			<h1 th:text="${portfolio.name}">Portfolio details</h1>
 		</div>
 		<p class="lead">See the details for the portfolio '<span th:text="${portfolio.name}">name</span>'.</p>
 		
@@ -53,20 +53,28 @@
 					<td th:text="${countWallets}">countWallets</td>
 				</tr>
 				<tr>
-					<td>Total value investment:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(totalInvestment, 1, 'POINT', 2, 'COMMA')}">totalInvestment</td>
+					<td>Total deposited:</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioTotalDeposited, 1, 'POINT', 2, 'COMMA')}">totalDeposited</td>
 				</tr>
 				<tr>
-					<td>Total withdrawn to cash:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(totalWithdrawnToCash, 1, 'POINT', 2, 'COMMA')}">totalWithdrawnToCash</td>
+					<td>Total withdrawn:</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioTotalWithdrawn, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
 				</tr>
 				<tr>
-					<td>Total value in wallets:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(totalValueInWallets, 1, 'POINT', 2, 'COMMA')}">totalValueInWallets</td>
+					<td>Total investment:</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioTotalInvestment, 1, 'POINT', 2, 'COMMA')}">totalInvested</td>
 				</tr>
 				<tr>
-					<td>Total portfolio value:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(totalPortfolioValue, 1, 'POINT', 2, 'COMMA')}">totalPortfolioValue</td>
+					<td>Total value:</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioTotalValue, 1, 'POINT', 2, 'COMMA')}">totalValue</td>
+				</tr>
+				<tr>
+					<td>Total profit/loss:</td>
+					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioProfitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
+				</tr>
+				<tr>
+					<td>Return on Investment:</td>
+					<td th:text="${#numbers.formatDecimal(portfolio.portfolioROI * 100, 1, 'POINT', 2, 'COMMA') + '%'}">ROI</td>
 				</tr>
 			</tbody>
 		</table>
@@ -117,6 +125,7 @@
     <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/loadMenu.js"></script>
+    <script src="/js/profitLossFix.js"></script>
 
 </body>
 </html>

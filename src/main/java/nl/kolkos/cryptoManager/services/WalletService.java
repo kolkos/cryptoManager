@@ -33,6 +33,10 @@ public class WalletService {
 	
 	public List<Wallet> getWalletsByPortfolio(Portfolio portfolio){
 		List<Wallet> wallets = walletRepository.findByPortfolio(portfolio);
+		
+		// get the actual values
+		wallets = this.getWalletValues(wallets);
+		
 		return wallets;
 	}
 	
@@ -42,7 +46,10 @@ public class WalletService {
 	}
 	
 	public List<Wallet> findByPortfolio_Id(Long portfolioId){
-		return walletRepository.findByPortfolio_Id(portfolioId);
+		List<Wallet> wallets = walletRepository.findByPortfolio_Id(portfolioId);
+		// get the actual values
+		wallets = this.getWalletValues(wallets);
+		return wallets;
 	}
 	
 	public Wallet findById(long walletId) {
@@ -134,6 +141,15 @@ public class WalletService {
 		
 		
 		return wallet;
+	}
+	
+	public List<Wallet> getWalletValues(List<Wallet> wallets){
+		// loop through wallets
+		for(Wallet wallet : wallets) {
+			wallet = this.getWalletValues(wallet);
+		}
+		
+		return wallets;
 	}
 	
 	public Wallet getWalletHistoricalValues(Wallet wallet, Date dateIntervalStart, Date dateIntervalEnd) {

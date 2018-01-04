@@ -343,6 +343,8 @@ public class WalletController {
 			// add it to the list
 			walletChartLines.add(walletChartLine);
 			
+			// done, destroy the historical wallet
+			historicalWallet = null;
 		}
 		
 		model.addAttribute("walletChartLines", walletChartLines);

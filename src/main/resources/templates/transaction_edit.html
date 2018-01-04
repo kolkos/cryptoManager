@@ -5,7 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-	<title>cryotoManager::Withdrawal::Register</title>
+	<title>cryotoManager::Transaction::Edit</title>
 	
 	<!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.css" rel="stylesheet">
@@ -30,21 +30,26 @@
 	
 	<div class="container">
 		<div class="page-header">
-			<h1>Register a transaction</h1>
+			<h1>Edit transaction</h1>
 		</div>
-		<p class="lead">This page let's you register a transaction.</p>
+		<p class="lead">On this page you can edit the chosen transaction.</p>
+		
+		<p>
+			<a th:href="@{/transaction/details/{id}(id=${transaction.id})}" class="btn btn-info" role="button"><span class="glyphicon glyphicon-zoom-in"></span> Return to details</a>
+			<a href="/transaction/results" class="btn btn-info" role="button"><span class="glyphicon glyphicon-list"></span> Return to list</a>
+		</p>
 		
 		<div class="panel panel-default">
 			<div class="panel-heading">
-	    			<h3 class="panel-title">Register Transaction</h3>
+	    			<h3 class="panel-title">Edit transaction</h3>
 	  		</div>
 	  		<div class="panel-body">
-		  		<form action="#" th:action="@{/transaction/add}" th:object="${transaction}" method="post">
+		  		<form action="#" th:action="@{/transaction/edit/{id}(id=${transaction.id})}" th:object="${transaction}" method="post" id="addDeposit">
 					
 					<label for="transactionDate">Transaction date</label>
 					<div class="input-group">
 			        		<span class="input-group-addon" id="datePrefix"><span class="glyphicon glyphicon-calendar"></span></span>
-		            		<input type='date' class="form-control" th:field="*{transactionDate}" aria-describedby="datePrefix" required="required"/>
+		            		<input type='date' class="form-control" th:field="*{transactionDate}" aria-describedby="datePrefix" th:pattern="dd-MM-yyyy" required="required"/>
 			    		</div>
 					<br/>
 					
@@ -52,7 +57,7 @@
 					<div class="form-group">
 						<select th:field="*{transactionType}" required="required" class="form-control">
 							<option value="">-Select type-</option>
-							<option th:each="transactionType : ${transactionTypes}" th:value="${transactionType.id}" th:text="${transactionType.type}">type</option>
+							<option th:each="transactionType : ${transactionTypes}" th:value="${transaction.transactionType.id}" th:text="${transactionType.type}">type</option>
 						</select>
 			    		</div>
 					
@@ -86,21 +91,9 @@
 					<br />
 										
 					<div class="btn-group">
-  						<button type="button" class="btn btn-primary" id="submitForm">Submit</button>
-  						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    							<span class="caret"></span>
-    							<span class="sr-only">Toggle Dropdown</span>
-  						</button>
-					  	<ul class="dropdown-menu">
-					    		<li><a href="#" id="submitForm">Submit</a></li>
-					    		<li><a href="#" id="submitFormAndReloadPage">Submit and add another transaction</a></li>
-					  	</ul>
+  						<button type="submit" class="btn btn-warning" id="submitForm">Update</button>
+  						
 					</div>
-					
-
-					<!-- Hidden input items, these are used for the 'add another ... functionality' -->
-					<input type="checkbox" name="addAnotherTransaction" id="addAnotherTransaction" value="true" style="display: none;"/>
-					<button type="submit" id="actualSubmitFormButton" style="display: none;">This button should be hidden</button>
 
 				</form>
 			</div>
@@ -116,11 +109,11 @@
     
     <script type="text/javascript">
 		$('#submitFormAndReloadPage').click(function(){
-			$('#addAnotherTransaction').prop('checked', true);
+			$('#addAnotherDeposit').prop('checked', true);
 			$('#actualSubmitFormButton').trigger('click');
 		});
 		$('#submitForm').click(function(){
-			$('#addAnotherTransaction').prop('checked', false);
+			$('#addAnotherDeposit').prop('checked', false);
 			$('#actualSubmitFormButton').trigger('click');
 		});
     </script>

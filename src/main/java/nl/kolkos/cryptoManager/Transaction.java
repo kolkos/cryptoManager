@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 public class Transaction {
 	@Id
@@ -18,6 +20,7 @@ public class Transaction {
     private Long id;
 	
 	// general fields (for Deposit and Withdrawal)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date transactionDate;
 	private double amount;
 	private double value;

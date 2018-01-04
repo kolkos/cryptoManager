@@ -13,8 +13,9 @@ public interface UserService {
 	public String findLoggedInUsername();
 	public boolean checkIfCurrentUserIsAuthorizedToPortfolio(long portfolioId);
 	public boolean checkIfCurrentUserIsAuthorizedToWallet(long walletId);
-	public boolean checkIfCurrentUserIsAuthorizedToDeposit(long depositId);
-	public boolean checkIfCurrentUserIsAuthorizedToWithdrawal(long withdrawalId);
+//	public boolean checkIfCurrentUserIsAuthorizedToDeposit(long depositId);
+//	public boolean checkIfCurrentUserIsAuthorizedToWithdrawal(long withdrawalId);
+	public boolean checkIfCurrentUserIsAuthorizedToTransaction(long transactionId);
 	public long countByEmail(String email);
 	public Set<User> findByPortfolios_Id(Long portfolioId);
 }

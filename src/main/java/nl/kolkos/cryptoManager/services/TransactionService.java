@@ -43,6 +43,14 @@ public class TransactionService {
 		return transactionRepository.countByWalletPortfolioUsersEmail(email);
 	}
 	
+	public Transaction findById(long transactionId) {
+		return transactionRepository.findById(transactionId);
+	}
+	
+	public void delete(Transaction transaction) {
+		transactionRepository.delete(transaction);
+	}
+	
 	public List<Transaction> findByWallet(Wallet wallet){
 		List<Transaction> transactions = transactionRepository.findByWallet(wallet);
 		
@@ -128,6 +136,17 @@ public class TransactionService {
 		for(Transaction transaction : transactions) {
 			this.deleteTransaction(transaction);
 		}
+	}
+	
+	public boolean checkIfTransactionExists(long transactionId) {
+		boolean exists = true;
+		
+		Transaction transaction = transactionRepository.findById(transactionId);
+		if (transaction == null) {
+			exists = false;
+		}
+		transaction = null;
+		return exists;
 	}
 	
 }

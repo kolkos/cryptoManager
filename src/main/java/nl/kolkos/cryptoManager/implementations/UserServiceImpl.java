@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Role;
+import nl.kolkos.cryptoManager.Transaction;
 import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.Withdrawal;
@@ -25,6 +26,7 @@ import nl.kolkos.cryptoManager.repositories.RoleRepository;
 import nl.kolkos.cryptoManager.repositories.UserRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
 import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
+import nl.kolkos.cryptoManager.services.TransactionService;
 import nl.kolkos.cryptoManager.services.UserService;
 
 @Service("userService")
@@ -46,6 +48,9 @@ public class UserServiceImpl implements UserService{
     
     @Autowired
 	private WithdrawalRepository withdrawalRepository;
+    
+    @Autowired
+    private TransactionService transactionService;
     
     
     public String findLoggedInUsername() {
@@ -128,22 +133,27 @@ public class UserServiceImpl implements UserService{
 		return this.checkIfCurrentUserIsAuthorizedToPortfolio(portfolioId);
 	}
 	
-	public boolean checkIfCurrentUserIsAuthorizedToDeposit(long depositId) {
-		// get the deposit object
-		Deposit deposit = depositRepository.findById(depositId);
-		
-		// get the wallet -> portfolio -> id
-		return this.checkIfCurrentUserIsAuthorizedToPortfolio(deposit.getWallet().getPortfolio().getId());
-	}
+//	public boolean checkIfCurrentUserIsAuthorizedToDeposit(long depositId) {
+//		// get the deposit object
+//		Deposit deposit = depositRepository.findById(depositId);
+//		
+//		// get the wallet -> portfolio -> id
+//		return this.checkIfCurrentUserIsAuthorizedToPortfolio(deposit.getWallet().getPortfolio().getId());
+//	}
+//	
+//	public boolean checkIfCurrentUserIsAuthorizedToWithdrawal(long withdrawalId) {
+//		// get the deposit object
+//		Withdrawal withdrawal = withdrawalRepository.findById(withdrawalId);
+//		
+//		// get the wallet -> portfolio -> id
+//		return this.checkIfCurrentUserIsAuthorizedToPortfolio(withdrawal.getWallet().getPortfolio().getId());
+//	}
 	
-	public boolean checkIfCurrentUserIsAuthorizedToWithdrawal(long withdrawalId) {
-		// get the deposit object
-		Withdrawal withdrawal = withdrawalRepository.findById(withdrawalId);
+	public boolean checkIfCurrentUserIsAuthorizedToTransaction(long transactionId) {
+		Transaction transaction = transactionService.findById(transactionId);
 		
-		// get the wallet -> portfolio -> id
-		return this.checkIfCurrentUserIsAuthorizedToPortfolio(withdrawal.getWallet().getPortfolio().getId());
+		return this.checkIfCurrentUserIsAuthorizedToPortfolio(transaction.getWallet().getPortfolio().getId());
 	}
-	
 	
 	public long countByEmail(String email) {
 		return userRepository.countByEmail(email);

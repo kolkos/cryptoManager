@@ -9,13 +9,16 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Transaction;
 import nl.kolkos.cryptoManager.TransactionType;
+import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.TransactionRepository;
@@ -111,15 +114,138 @@ public class TransactionController {
         model.addAttribute("direction", direction);
         model.addAttribute("search", search);
         
-        
-        
-        	model.addAttribute("transactions", transactionService.findByWalletPortfolioUsersEmail(usersEmail, search, sortBy, direction));
-        	
-        
-		
-        
+        model.addAttribute("transactions", transactionService.findByWalletPortfolioUsersEmail(usersEmail, search, sortBy, direction));
         
 		return "transaction_results";
 	}
 	
+	@RequestMapping(value = "/details/{transactionId}", method = RequestMethod.GET)
+	public String showTransactionDetails(@PathVariable("transactionId") long transactionId, Model model) {
+		// check if the deposit exists
+		if(!transactionService.checkIfTransactionExists(transactionId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "transaction");
+			return "error_page";
+		}
+		
+		// check if the current user has access to this deposit
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToTransaction(transactionId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "transaction");
+			return "error_page";
+		}
+		
+		
+		// get the entity
+		Transaction transaction = transactionService.findById(transactionId);
+		
+		model.addAttribute("transaction", transaction);
+		
+		return "transaction_details";
+	}
+	
+	@PostMapping(path="/delete") // Map ONLY POST Requests
+	public String deleteTransaction (
+			@RequestParam(value="transactionId", required=true) long transactionId,
+			@RequestParam(value="confirmDelete", required=true) boolean confirmDelete,
+			Model model) {
+		// check if the deposit exists
+		if(!transactionService.checkIfTransactionExists(transactionId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "transaction");
+			return "error_page";
+		}
+		
+		// check if the current user has access to this deposit
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToTransaction(transactionId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "transaction");
+			return "error_page";
+		}
+		
+		// get the entity
+		Transaction transaction = transactionService.findById(transactionId);
+		
+		if(confirmDelete) {
+			transactionService.delete(transaction);
+		}
+		
+		
+		return "redirect:/transaction/results";
+	}
+	
+	@RequestMapping(value = "/edit/{transactionId}", method = RequestMethod.GET)
+	public String showTransactionEditForm(@PathVariable("transactionId") long transactionId, Model model) {
+		// check if the deposit exists
+		if(!transactionService.checkIfTransactionExists(transactionId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "transaction");
+			return "error_page";
+		}
+		
+		// check if the current user has access to this deposit
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToTransaction(transactionId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "transaction");
+			return "error_page";
+		}
+		
+		
+		// get the entity
+		Transaction transaction = transactionService.findById(transactionId);
+		
+		model.addAttribute("transaction", transaction);
+		model.addAttribute("transactionTypes", transactionTypeRepository.findAll());
+        model.addAttribute("walletList", walletService.findByPortfolioUsersEmail(userService.findLoggedInUsername()));
+		
+		return "transaction_edit";
+	}
+	
+	@RequestMapping(value = "/edit/{transactionId}", method = RequestMethod.POST)
+    public String updateDeposit(@PathVariable("transactionId") long transactionId, 
+    		@RequestParam Date transactionDate,
+		@RequestParam TransactionType transactionType,
+		@RequestParam Wallet wallet,
+		@RequestParam double amount,
+		@RequestParam double value,
+		@RequestParam String remarks,
+    		Model model) {
+		// check if the deposit exists
+		if(!transactionService.checkIfTransactionExists(transactionId)) {
+			model.addAttribute("notFoundError", true);
+			model.addAttribute("object", "transaction");
+			return "error_page";
+		}
+		
+		// check if the current user has access to this deposit
+		boolean access = userService.checkIfCurrentUserIsAuthorizedToTransaction(transactionId);
+		if(!access) {
+			User user = userService.findUserByEmail(userService.findLoggedInUsername());
+			model.addAttribute("authorizationError", true);
+			model.addAttribute("firstName", user.getName());
+			model.addAttribute("object", "transaction");
+			return "error_page";
+		}
+		
+		Transaction transaction = transactionService.findById(transactionId);
+		transaction.setTransactionDate(transactionDate);
+		transaction.setTransactionType(transactionType);
+		transaction.setWallet(wallet);
+		transaction.setAmount(amount);
+		transaction.setValue(value);
+		transaction.setRemarks(remarks);
+		
+		transactionService.save(transaction);
+		
+        return "redirect:/transaction/details/" + transactionId;
+    }
 }

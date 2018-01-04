@@ -1,21 +1,15 @@
 package nl.kolkos.cryptoManager.services;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.Transaction;
 import nl.kolkos.cryptoManager.TransactionType;
 import nl.kolkos.cryptoManager.Wallet;
-import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.repositories.TransactionRepository;
 

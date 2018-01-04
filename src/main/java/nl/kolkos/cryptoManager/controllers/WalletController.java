@@ -14,44 +14,32 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
-import nl.kolkos.cryptoManager.CoinMarketCapCoin;
-import nl.kolkos.cryptoManager.CoinValue;
-import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.FormOption;
 import nl.kolkos.cryptoManager.FormOptions;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.WalletChartLine;
-import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
-import nl.kolkos.cryptoManager.repositories.DepositRepository;
-import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
-import nl.kolkos.cryptoManager.repositories.WalletRepository;
-import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
+
 import nl.kolkos.cryptoManager.services.PortfolioService;
 import nl.kolkos.cryptoManager.services.TransactionService;
 import nl.kolkos.cryptoManager.services.UserService;
 import nl.kolkos.cryptoManager.services.WalletService;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/wallet") // This means URL's start with /demo (after Application path)
 public class WalletController {
-
 	
 	@Autowired
 	private WalletService walletService;
-	
 	
 	@Autowired
 	@Qualifier(value = "coinRepository")

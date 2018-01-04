@@ -1,11 +1,8 @@
 package nl.kolkos.cryptoManager.controllers;
 
 import java.sql.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Transaction;
 import nl.kolkos.cryptoManager.TransactionType;
 import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.Wallet;
-import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.TransactionRepository;
 import nl.kolkos.cryptoManager.repositories.TransactionTypeRepository;
 import nl.kolkos.cryptoManager.services.CoinService;

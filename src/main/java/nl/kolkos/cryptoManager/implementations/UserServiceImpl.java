@@ -2,7 +2,6 @@ package nl.kolkos.cryptoManager.implementations;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,19 +12,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Role;
 import nl.kolkos.cryptoManager.Transaction;
 import nl.kolkos.cryptoManager.User;
 import nl.kolkos.cryptoManager.Wallet;
-import nl.kolkos.cryptoManager.Withdrawal;
-import nl.kolkos.cryptoManager.repositories.DepositRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;
 import nl.kolkos.cryptoManager.repositories.RoleRepository;
 import nl.kolkos.cryptoManager.repositories.UserRepository;
 import nl.kolkos.cryptoManager.repositories.WalletRepository;
-import nl.kolkos.cryptoManager.repositories.WithdrawalRepository;
 import nl.kolkos.cryptoManager.services.TransactionService;
 import nl.kolkos.cryptoManager.services.UserService;
 
@@ -42,13 +37,7 @@ public class UserServiceImpl implements UserService{
     
     @Autowired
 	private WalletRepository walletRepository;
-    
-    @Autowired
-	private DepositRepository depositRepository;
-    
-    @Autowired
-	private WithdrawalRepository withdrawalRepository;
-    
+       
     @Autowired
     private TransactionService transactionService;
     

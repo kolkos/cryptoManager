@@ -54,14 +54,6 @@ public class PortfolioController {
 	private WalletRepository walletRepository;
 	
 	@Autowired
-	@Qualifier(value = "depositRepository")
-	private DepositRepository depositRepository;
-	
-	@Autowired
-	@Qualifier(value = "withdrawalRepository")
-	private WithdrawalRepository withdrawalRepository;
-	
-	@Autowired
 	@Qualifier(value = "coinValueRepository")
 	private CoinValueRepository coinValueRepository;
 	

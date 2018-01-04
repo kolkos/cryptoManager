@@ -21,12 +21,10 @@ import org.springframework.stereotype.Service;
 
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinMarketCapCoin;
-import nl.kolkos.cryptoManager.Deposit;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Transaction;
 import nl.kolkos.cryptoManager.TransactionType;
 import nl.kolkos.cryptoManager.Wallet;
-import nl.kolkos.cryptoManager.Withdrawal;
 import nl.kolkos.cryptoManager.repositories.CoinMarketCapCoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.PortfolioRepository;

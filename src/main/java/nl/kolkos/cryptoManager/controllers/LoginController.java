@@ -153,27 +153,22 @@ public class LoginController {
 	@RequestMapping(value = "/install", method = RequestMethod.GET)
 	public @ResponseBody String initialInstall() {
 		// check if the ADMIN role exists
-		Role testAdminRole = roleRepository.findByRole("ADMIN");
-		if (testAdminRole != null) {
-			return "The initial installation has already been done...";
-		}
-
 		String usernameAdministrator = "admin@localhost";
 		String passwordAdministrator = "admin";
 
 		String usernameUser = "user@localhost";
 		String passwordUser = "user";
+		
+		// check if the initial installation has been done
+		User testAdmin = userService.findUserByEmail(usernameAdministrator);
+		if(testAdmin != null) {
+			return "The initial installation has been done.";
+		}
+		
 
-		// create roles
-		Role userRole = new Role();
-		userRole.setRole("USER");
-
-		// create roles
-		Role adminRole = new Role();
-		adminRole.setRole("ADMIN");
-
-		roleRepository.save(userRole);
-		roleRepository.save(adminRole);
+		Role userRole = roleRepository.findByRole("USER");
+		Role adminRole = roleRepository.findByRole("ADMIN");
+				
 
 		// create a two users
 		User admin = new User();

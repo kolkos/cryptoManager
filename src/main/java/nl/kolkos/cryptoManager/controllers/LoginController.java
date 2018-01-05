@@ -77,6 +77,31 @@ public class LoginController {
 		modelAndView.setViewName("registration");
 		return modelAndView;
 	}
+	
+	@RequestMapping(value = "/registration", method = RequestMethod.POST)
+	public ModelAndView createNewUser(@Valid User user, BindingResult bindingResult) {
+		ModelAndView modelAndView = new ModelAndView();
+		User userExists = userService.findUserByEmail(user.getEmail());
+		if (userExists != null) {
+			bindingResult.rejectValue("email", "error.user",
+					"There is already a user registered with the email provided");
+		}
+		if (!user.getPassword().equals(user.getRepeatPassword())) {
+			bindingResult.rejectValue("password", "error.user", "The passwords are not equal");
+			bindingResult.rejectValue("repeatPassword", "error.user", "The passwords are not equal");
+		}
+		if (bindingResult.hasErrors()) {
+			modelAndView.setViewName("registration");
+		} else {
+			userService.saveUser(user);
+			modelAndView.addObject("successMessage",
+					"<strong>Registration successfull!<strong>. You can now <a href='/login'>login</a>.");
+			modelAndView.addObject("user", new User());
+			modelAndView.setViewName("registration");
+
+		}
+		return modelAndView;
+	}
 
 	@RequestMapping(value = "/profile/edit", method = RequestMethod.GET)
 	public ModelAndView editProfile() {
@@ -196,31 +221,6 @@ public class LoginController {
 		returnMessage += "Password: " + passwordUser + "</p>";
 
 		return returnMessage;
-	}
-
-	@RequestMapping(value = "/registration", method = RequestMethod.POST)
-	public ModelAndView createNewUser(@Valid User user, BindingResult bindingResult) {
-		ModelAndView modelAndView = new ModelAndView();
-		User userExists = userService.findUserByEmail(user.getEmail());
-		if (userExists != null) {
-			bindingResult.rejectValue("email", "error.user",
-					"There is already a user registered with the email provided");
-		}
-		if (!user.getPassword().equals(user.getRepeatPassword())) {
-			bindingResult.rejectValue("password", "error.user", "The passwords are not equal");
-			bindingResult.rejectValue("repeatPassword", "error.user", "The passwords are not equal");
-		}
-		if (bindingResult.hasErrors()) {
-			modelAndView.setViewName("registration");
-		} else {
-			userService.saveUser(user);
-			modelAndView.addObject("successMessage",
-					"<strong>Registration successfull!<strong>. You can now <a href='/login'>login</a>.");
-			modelAndView.addObject("user", new User());
-			modelAndView.setViewName("registration");
-
-		}
-		return modelAndView;
 	}
 
 	@RequestMapping(value = "/forgotPassword", method = RequestMethod.GET)

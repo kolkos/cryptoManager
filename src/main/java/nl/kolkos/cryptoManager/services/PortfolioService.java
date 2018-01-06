@@ -89,7 +89,7 @@ public class PortfolioService {
 		}
 		
 		double portfolioProfitLoss = portfolioTotalValue - portfolioTotalInvestment;
-		double portfolioROI = portfolioProfitLoss / portfolioTotalInvestment;
+		double portfolioROI = portfolioProfitLoss / portfolioTotalDeposited;
 		
 		
 		// now set the calculated values

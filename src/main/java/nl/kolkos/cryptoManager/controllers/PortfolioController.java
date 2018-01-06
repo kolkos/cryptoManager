@@ -674,6 +674,7 @@ public class PortfolioController {
 			// portfolio values
 			double totalValue = 0;			// the total value of the portfolio
 			double totalInvestment = 0; 		// the total amount of investment
+			double totalDeposited = 0;
 			
 			// loop through the wallets again
 			for(Wallet wallet : wallets) {
@@ -687,6 +688,7 @@ public class PortfolioController {
 				
 				// calculate the investment for this wallet
 				totalInvestment += historicalWallet.getCurrentWalletInvestment();
+				totalDeposited += historicalWallet.getCurrentWalletDeposited();
 			}
 			
 			// add to the portfolioLineChartRoiValue
@@ -694,7 +696,7 @@ public class PortfolioController {
 			
 			// calculate the roi
 			double profitLoss = totalValue - totalInvestment;
-			double roi = profitLoss / totalInvestment;
+			double roi = profitLoss / totalDeposited;
 			
 			portfolioLineChartRoiValue.setRoi(roi);
 			

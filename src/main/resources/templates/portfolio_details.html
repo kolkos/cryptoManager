@@ -69,7 +69,7 @@
 					<td th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioTotalValue, 1, 'POINT', 2, 'COMMA')}">totalValue</td>
 				</tr>
 				<tr>
-					<td>Total profit/loss:</td>
+					<td>Gain from investment:</td>
 					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioProfitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
 				</tr>
 				<tr>

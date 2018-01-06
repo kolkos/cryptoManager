@@ -9,7 +9,6 @@ $(function() {
 		var fixedNrInt = parseFloat(fixedNrStr);
 		
 		if(fixedNrInt < -0){
-			console.log(valueHtml + " - " + fixedNrStr + " - " + fixedNrInt)
 			$(this).css('color', 'red');
 		}else{
 			$(this).css('color', '#33cc33');

@@ -128,7 +128,7 @@ public class WalletService {
 		double profitLoss = currentValue - totalInvested;
 		
 		// calculate the roi
-		double roi = profitLoss / totalInvested;
+		double roi = profitLoss / totalDeposited;
 		
 				
 		wallet.setCurrentWalletAmount(currentBalance);
@@ -187,12 +187,14 @@ public class WalletService {
 		double profitLoss = currentValue - totalInvested;
 		
 		// calculate the roi
-		double roi = profitLoss / totalInvested;
+		double roi = profitLoss / totalDeposited;
 		
 		wallet.setCoin(coin);
 		wallet.setCurrentWalletAmount(currentBalance);
 		wallet.setCurrentWalletValue(currentValue);
 		wallet.setCurrentWalletInvestment(totalInvested);
+		wallet.setCurrentWalletDeposited(totalDeposited);
+		wallet.setCurrentWalletWithdrawn(totalWithdrawn);
 		wallet.setCurrentWalletProfitLoss(profitLoss);
 		wallet.setCurrentWalletROI(roi);
 		

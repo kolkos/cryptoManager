@@ -154,10 +154,10 @@ public class LoginController {
 	public @ResponseBody String initialInstall() {
 		// check if the ADMIN role exists
 		String usernameAdministrator = "admin@localhost";
-		String passwordAdministrator = "admin";
+		String passwordAdministrator = "password123";
 
 		String usernameUser = "user@localhost";
-		String passwordUser = "user";
+		String passwordUser = "password123";
 		
 		// check if the initial installation has been done
 		User testAdmin = userService.findUserByEmail(usernameAdministrator);

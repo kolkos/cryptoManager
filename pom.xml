@@ -44,15 +44,15 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
-		
+
 		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-        </dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+		</dependency>
 
 		<!-- JPA Data (We are going to use Repositories, Entities, Hibernate, etc...) -->
 
@@ -67,7 +67,10 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -78,25 +81,25 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 		</dependency>
-		
+
 		<!-- Security -->
-		
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-		
+
 		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/net.sourceforge.nekohtml/nekohtml -->
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.nekohtml/nekohtml -->
 		<dependency>
 			<groupId>net.sourceforge.nekohtml</groupId>
 			<artifactId>nekohtml</artifactId>
-			<version>1.9.21</version><!--$NO-MVN-MAN-VER$-->
+			<version>1.9.21</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
 
 	</dependencies>
@@ -107,7 +110,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			
+
 		</plugins>
 	</build>
 

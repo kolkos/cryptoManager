@@ -32,7 +32,11 @@
 		<div class="page-header">
 			<h1 th:text="${coin.coinMarketCapCoin.name}">Coin details</h1>
 		</div>
-		<p class="lead">This page shows the details for the coin '<span th:text="${coin.coinMarketCapCoin.name}">name</span>'. Return to the list by clicking <a href="/coin/results">here</a>.</p>
+		<p class="lead">This page shows the details for the coin '<span th:text="${coin.coinMarketCapCoin.name}">name</span>'.</p>
+		
+		<p>
+			<a href="/coin/results" class="btn btn-info" role="button"><span class="glyphicon glyphicon-list"></span> Return to list</a>
+		</p>
 		
 		<table class="table table-striped">
 			<tbody>
@@ -45,12 +49,12 @@
 					<td th:text="${coin.coinMarketCapCoin.symbol}">symbol</td>
 				</tr>
 				<tr>
-					<td>id:</td>
+					<td>ID:</td>
 					<td th:text="${coin.coinMarketCapCoin.id}">id</td>
 				</tr>
 				<tr>
 					<td>Current value:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(currentCoinValue, 1, 'POINT', 2, 'COMMA')}">walletAddress</td>
+					<td th:text="${'€ ' + #numbers.formatDecimal(coin.currentCoinValue, 1, 'POINT', 2, 'COMMA')}">walletAddress</td>
 				</tr>
 			</tbody>
 		</table>
@@ -60,25 +64,7 @@
 			
 		</p>
 
-		<div class="page-header">
-			<h2>Last values</h2>
-		</div>
 		
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th>Date	</th>
-					<th>Value</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="coinValue : ${coinValues}">
-					<td th:text="${#dates.format(coinValue.requestDate, 'dd-MM-yyyy HH:mm:ss')}">request_date</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(coinValue.value, 1, 'POINT', 2, 'COMMA')}">value</td>
-				</tr>
-			</tbody>
-		
-		</table>
 		
     </div>
     

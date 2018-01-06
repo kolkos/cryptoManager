@@ -30,13 +30,14 @@ import nl.kolkos.cryptoManager.Wallet;
 import nl.kolkos.cryptoManager.repositories.CoinMarketCapCoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
+import nl.kolkos.cryptoManager.services.CoinService;
 
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/coin") // This means URL's start with /demo (after Application path)
 public class CoinController {
 	@Autowired
-	private CoinRepository coinRepository;
+	private CoinService coinService;
 	
 	@Autowired
 	@Qualifier(value = "coinValueRepository")
@@ -56,6 +57,15 @@ public class CoinController {
         return "coin_form";
     }
 	
+	// send the form
+	@GetMapping("/update")
+    public String updateCoinValues(Model model) {
+		// update coin values
+		coinService.updateCoinValues();
+		
+		return "redirect:/coin/results";
+    }
+	
 	// handle the form
 	@PostMapping(path="/add") // Map ONLY Post Requests
 	public String addNewCoin (
@@ -65,11 +75,8 @@ public class CoinController {
 		Coin coin = new Coin();
 		coin.setCoinMarketCapCoin(coinMarketCapCoin);
 		
-		coinRepository.save(coin);
-				
-		
+		coinService.save(coin);
 		return "redirect:/coin/results";
-		
 	}
 	
 	
@@ -79,195 +86,24 @@ public class CoinController {
     		@RequestParam(name = "direction", defaultValue = "ASC") String direction,
     		Model model) {
 		
-		List<Coin> coinList = coinRepository.findAllByOrderByCoinMarketCapCoinSymbol();
-		
 		model.addAttribute("sortBy", sortBy);
         model.addAttribute("direction", direction);
 		
-		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
+        List<Coin> coinList = coinService.listAllCoins(sortBy, direction);
 		
-		// loop through list
-		for(Coin coin : coinList) {
-			double currentCoinValue;
-			try {
-				org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(coin.getCoinMarketCapCoin().getId(), "EUR");
-				currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				currentCoinValue = 0;
-			}
-			
-			// register this value
-			CoinValue coinValue = new CoinValue();
-			coinValue.setCoin(coin);
-			coinValue.setValue(currentCoinValue);
-			coinValueRepository.save(coinValue);
-			
-			// set the value into the coin object
-			coin.setCurrentCoinValue(currentCoinValue);
-			
-			// now get the following values from the database
-			// - average last hour
-			// - average last 24 hours
-			// - average last 7 days
-			
-			// now determine the begin and end time
-			Calendar now = Calendar.getInstance();
-			
-			Calendar nowMinus1hour = Calendar.getInstance();
-			nowMinus1hour.add(Calendar.HOUR_OF_DAY, -1);
-			
-			Calendar nowMinus24hours = Calendar.getInstance();
-			nowMinus24hours.add(Calendar.HOUR_OF_DAY, -24);
-			
-			Calendar nowMinus1week = Calendar.getInstance();
-			nowMinus1week.add(Calendar.DAY_OF_WEEK, -7);
-			
-			// get the average values for the periods
-			double avgValueLast1Hour = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coin.getId(), nowMinus1hour.getTime(), now.getTime());
-			double avgValueLast24Hours = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coin.getId(), nowMinus24hours.getTime(), now.getTime());
-			double avgValueLast1Week = coinValueRepository.findAvgByCoin_IdAndRequestDateBetween(coin.getId(), nowMinus1week.getTime(), now.getTime());
-			
-			// now calculate the percentages
-			
-			double winLoss1h = ((currentCoinValue - avgValueLast1Hour)*100)/currentCoinValue;
-			double winLoss1d = ((currentCoinValue - avgValueLast24Hours)*100)/currentCoinValue;
-			double winLoss1w = ((currentCoinValue - avgValueLast1Week)*100)/currentCoinValue;
-			
-			// finally set these values in the object
-			coin.setWinLoss1h(winLoss1h);
-			coin.setWinLoss1d(winLoss1d);
-			coin.setWinLoss1w(winLoss1w);
-			
-		}
-		
-		// now sort the coins
-		switch (sortBy) {
-			case "name":
-				coinList = this.sortByCoinName(coinList, direction);
-				break;
-			case "symbol":
-				coinList = this.sortByCoinSymbol(coinList, direction);
-				break;
-			case "currentValue":
-				coinList = this.sortByCurrentCoinValue(coinList, direction);
-				break;
-			case "winLoss1h":
-				coinList = this.sortByWinLoss1h(coinList, direction);
-				break;
-			case "winLoss1d":
-				coinList = this.sortByWinLoss1d(coinList, direction);
-				break;
-			case "winLoss1w":
-				coinList = this.sortByWinLoss1w(coinList, direction);
-				break;
-			default:
-				coinList = this.sortByCoinName(coinList, "ASC");
-				break;
-		}
-		
-		
-		//model.addAttribute("coin", new Coin());
 		model.addAttribute("coinList", coinList);
 		
         return "coin_results";
     }
 	
-	public List<Coin> sortByCoinName(List<Coin> coinList, String direction){
-		if(direction.equals("ASC")) {
-			return coinList.stream()
-					.sorted((coin1, coin2) -> coin1.getCoinMarketCapCoin().getName().compareTo(coin2.getCoinMarketCapCoin().getName()))
-					.collect(Collectors.toCollection(ArrayList::new));
-		}else {
-			return coinList.stream()
-					.sorted((coin1, coin2) -> coin2.getCoinMarketCapCoin().getName().compareTo(coin1.getCoinMarketCapCoin().getName()))
-					.collect(Collectors.toCollection(ArrayList::new));
-		}
-	}
-	
-	public List<Coin> sortByCoinSymbol(List<Coin> coinList, String direction){
-		if(direction.equals("ASC")) {
-			return coinList.stream()
-					.sorted((coin1, coin2) -> coin1.getCoinMarketCapCoin().getSymbol().compareTo(coin2.getCoinMarketCapCoin().getSymbol()))
-					.collect(Collectors.toCollection(ArrayList::new));
-		}else {
-			return coinList.stream()
-					.sorted((coin1, coin2) -> coin2.getCoinMarketCapCoin().getSymbol().compareTo(coin1.getCoinMarketCapCoin().getSymbol()))
-					.collect(Collectors.toCollection(ArrayList::new));
-		}
-	}
-	
-	public List<Coin> sortByCurrentCoinValue(List<Coin> coinList, String direction){
-		if(direction.equals("ASC")) {
-			coinList.sort(Comparator.comparingDouble(Coin::getCurrentCoinValue));
-		}else {
-			coinList.sort(Comparator.comparingDouble(Coin::getCurrentCoinValue).reversed());
-		}
-		return coinList;
-	}
-	
-	public List<Coin> sortByWinLoss1h(List<Coin> coinList, String direction){
-		if(direction.equals("ASC")) {
-			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1h));
-		}else {
-			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1h).reversed());
-		}
-		return coinList;
-	}
-	
-	public List<Coin> sortByWinLoss1d(List<Coin> coinList, String direction){
-		if(direction.equals("ASC")) {
-			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1d));
-		}else {
-			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1d).reversed());
-		}
-		return coinList;
-	}
-	
-	public List<Coin> sortByWinLoss1w(List<Coin> coinList, String direction){
-		if(direction.equals("ASC")) {
-			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1w));
-		}else {
-			coinList.sort(Comparator.comparingDouble(Coin::getWinLoss1w).reversed());
-		}
-		return coinList;
-	}
-	
 	
 	// get coin details
-	@RequestMapping(value = "/showCoin/{coinId}", method = RequestMethod.GET)
-	public String getWalletsByPortfolioId(@PathVariable("coinId") long coinId, Model model) {
-		Coin coin = coinRepository.findById(coinId);
-		
-		// get the cmc coin
-		CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
-		
-		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
-		double currentCoinValue;
-		try {
-			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
-			currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
-			
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			currentCoinValue = 0;
-		}
-		
-		// register this result
-		CoinValue coinValue = new CoinValue();
-		coinValue.setCoin(coin);
-		coinValue.setValue(currentCoinValue);
-		
-		coinValueRepository.save(coinValue);
+	@RequestMapping(value = "/details/{coinId}", method = RequestMethod.GET)
+	public String getPortfolioDetailsForId(@PathVariable("coinId") long coinId, Model model) {
+		Coin coin = coinService.findById(coinId);
 		
 		
 		model.addAttribute("coin", coin);
-		model.addAttribute("coinId", coinId);
-		model.addAttribute("currentCoinValue", currentCoinValue);
-		model.addAttribute("coinValues", coinValueRepository.findTop10ByCoinOrderByRequestDateDesc(coin));
 		
 		
 		return "coin_details";
@@ -288,51 +124,22 @@ public class CoinController {
 			intervalInMinutes = 5;
 		}
 		
-		
-		FormOptions formOptions = new FormOptions();
-		
-		
-		List<FormOption> hourOptions = formOptions.defaultSetHourOptions();
-		// now add to the model
-		model.addAttribute("hourOptions",hourOptions);
-		
-		
-		// add the minute options
-		List<FormOption> minuteOptions = formOptions.defaultSetMinuteOptions();
-		
-		// now add to the model
-		model.addAttribute("minuteOptions",minuteOptions);
-		
-		// get the name of the coin
-		Coin coin = coinRepository.findById(coinId);
-		CoinMarketCapCoin cmcCoin = coin.getCoinMarketCapCoin();
-		model.addAttribute("coinName",cmcCoin.getName());
-		
-		// update the coin price
-		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
-		
-		double currentCoinValue;
-		try {
-			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(cmcCoin.getId(), "EUR");
-			currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
-			
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			currentCoinValue = 0;
-		}
-		
-		// register this result
-		CoinValue coinValue = new CoinValue();
-		coinValue.setCoin(coin);
-		coinValue.setValue(currentCoinValue);
-		
-		coinValueRepository.save(coinValue);
-		
 		// set the get parameters
 		model.addAttribute("lastHours", lastHours);
 		model.addAttribute("intervalInMinutes", intervalInMinutes);
+		
+		
+		FormOptions formOptions = new FormOptions();
+				
+		List<FormOption> hourOptions = formOptions.defaultSetHourOptions();
+		// now add to the model
+		model.addAttribute("hourOptions",hourOptions);
+				
+		// add the minute options
+		List<FormOption> minuteOptions = formOptions.defaultSetMinuteOptions();
+		// now add to the model
+		model.addAttribute("minuteOptions",minuteOptions);
+		
 		
 		
 		

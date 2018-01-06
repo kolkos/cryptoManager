@@ -34,7 +34,12 @@
 		<div class="page-header">
 			<h1>Registered coins</h1>
 		</div>
-		<p class="lead">This page shows the registered coins. You can add a new coin <a href="/coin/add">here</a>.</p>
+		<p class="lead">This page shows the registered coins.</p>
+		
+		<p>
+			<a href="/coin/add" class="btn btn-success" role="button"><span class="glyphicon glyphicon-asterisk"></span> Register new coin</a>
+			<a href="/coin/update" class="btn btn-success" role="button"><span class="glyphicon glyphicon-refresh"></span> Update coin values</a>
+		</p>
 		
 		<table class="table table-striped">
 			<thead>
@@ -42,9 +47,9 @@
 					<th><span>Coin name</span> <span class="buttonHolder name alphabet"></span></th>
 					<th><span>Symbol</span> <span class="buttonHolder symbol alphabet"></span></th>
 					<th><span>Current value</span> <span class="buttonHolder currentValue numeric"></span></th>
-					<th><span>Price last hour</span> <span class="buttonHolder winLoss1h numeric"></span></th>
-					<th><span>Price last day</span> <span class="buttonHolder winLoss1d numeric"></span></th>
-					<th><span>Price last week</span> <span class="buttonHolder winLoss1w numeric"></span></th>
+					<th><span>Change last hour</span> <span class="buttonHolder winLoss1h numeric"></span></th>
+					<th><span>Change last day</span> <span class="buttonHolder winLoss1d numeric"></span></th>
+					<th><span>Change last week</span> <span class="buttonHolder winLoss1w numeric"></span></th>
 					<th>Open coin</th>
 					<th>Show chart</th>
 				</tr>
@@ -58,7 +63,7 @@
 					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1d, 1, 'POINT', 2, 'COMMA') + '%'}">1d</td>
 					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1w, 1, 'POINT', 2, 'COMMA') + '%'}">1w</td>
 					<td>
-						<a th:href="@{/coin/showCoin/{id}(id=${coin.id})}">
+						<a th:href="@{/coin/details/{id}(id=${coin.id})}">
 							<span class="glyphicon glyphicon-zoom-in"></span>
 							
 						</a>

@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -24,6 +26,7 @@ import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinMarketCapCoin;
 import nl.kolkos.cryptoManager.CoinValue;
+import nl.kolkos.cryptoManager.Currency;
 import nl.kolkos.cryptoManager.FormOption;
 import nl.kolkos.cryptoManager.FormOptions;
 import nl.kolkos.cryptoManager.Portfolio;
@@ -60,11 +63,10 @@ public class PortfolioController {
 	private UserService userService;
 	
 	@Autowired
-	private TransactionService transactionService;
-	
-	@Autowired
 	private ApiKeyService apiKeyService;
-			
+	
+	@Resource(name = "currency")
+	private Currency currency;
 
 	// send the form
 	@GetMapping("/add")
@@ -147,6 +149,7 @@ public class PortfolioController {
 		// get the portfolios for the logged in user
 		Set<Portfolio> portfolioList = portfolioService.findByUsers_email(userService.findLoggedInUsername());
 		
+		model.addAttribute("currency", currency);
 		model.addAttribute("portfolioList", portfolioList);
 		
 		
@@ -179,7 +182,7 @@ public class PortfolioController {
 		Portfolio portfolio = portfolioService.findById(portfolioId);
 		// add to model		
 		model.addAttribute("portfolio", portfolio);
-		
+		model.addAttribute("currency", currency);
 		
 		// now get the attached wallets
 		List<Wallet> wallets = walletService.getWalletsByPortfolio(portfolio);

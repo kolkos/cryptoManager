@@ -54,7 +54,7 @@
 				<tr th:each="portfolio : ${portfolioList}">
 					<td th:text="${portfolio.name}">name</td>
 					<td th:text="${portfolio.description}">description</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioTotalValue, 1, 'POINT', 2, 'COMMA')}">value</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(portfolio.portfolioTotalValue, 1, 'POINT', 2, 'COMMA')}">value</td>
 					<td>
 						<a th:href="@{/portfolio/details/{id}(id=${portfolio.id})}">
 							<span class="glyphicon glyphicon-zoom-in"></span>

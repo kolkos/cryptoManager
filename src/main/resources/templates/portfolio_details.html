@@ -54,23 +54,23 @@
 				</tr>
 				<tr>
 					<td>Total deposited:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioTotalDeposited, 1, 'POINT', 2, 'COMMA')}">totalDeposited</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(portfolio.portfolioTotalDeposited, 1, 'POINT', 2, 'COMMA')}">totalDeposited</td>
 				</tr>
 				<tr>
 					<td>Total withdrawn:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioTotalWithdrawn, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(portfolio.portfolioTotalWithdrawn, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
 				</tr>
 				<tr>
 					<td>Total investment:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioTotalInvestment, 1, 'POINT', 2, 'COMMA')}">totalInvested</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(portfolio.portfolioTotalInvestment, 1, 'POINT', 2, 'COMMA')}">totalInvested</td>
 				</tr>
 				<tr>
 					<td>Total value:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioTotalValue, 1, 'POINT', 2, 'COMMA')}">totalValue</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(portfolio.portfolioTotalValue, 1, 'POINT', 2, 'COMMA')}">totalValue</td>
 				</tr>
 				<tr>
 					<td>Gain from investment:</td>
-					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(portfolio.portfolioProfitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
+					<td class="profitLoss" th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(portfolio.portfolioProfitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
 				</tr>
 				<tr>
 					<td>Return on Investment:</td>
@@ -109,7 +109,7 @@
 					<td th:text="${wallet.description}">description</td>
 					<td th:text="${wallet.coin.coinMarketCapCoin.symbol}">coinName</td>
 					<td th:text="${#numbers.formatDecimal(wallet.currentWalletAmount, 1, 'POINT', 8, 'COMMA')}">currentWalletAmount</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletValue, 1, 'POINT', 2, 'COMMA')}">currentWalletValue</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(wallet.currentWalletValue, 1, 'POINT', 2, 'COMMA')}">currentWalletValue</td>
 					<td>
 						<a th:href="@{/wallet/details/{id}(id=${wallet.id})}">
 							<span class="glyphicon glyphicon-zoom-in"></span>

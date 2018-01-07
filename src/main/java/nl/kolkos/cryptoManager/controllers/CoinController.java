@@ -53,15 +53,10 @@ public class CoinController {
 	@Qualifier(value = "coinMarketCapCoinRepository")
 	private CoinMarketCapCoinRepository coinMarketCapCoinRepository;
 	
-//	@Autowired
-//	private CustomPropertiesConfiguration customProperties;
-	
+
 	@Resource(name = "currency")
 	private Currency currency;
 	
-	// global?
-	
-		
 	// send the form
 	@GetMapping("/add")
     public String coinForm(Model model) {

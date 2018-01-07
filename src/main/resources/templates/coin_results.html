@@ -58,7 +58,7 @@
 				<tr th:each="coin : ${coinList}">
 					<td th:text="${coin.coinMarketCapCoin.name}">name</td>
 					<td th:text="${coin.coinMarketCapCoin.symbol}">symbol</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(coin.currentCoinValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(coin.currentCoinValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
 					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1h, 1, 'POINT', 2, 'COMMA') + '%'}">1h</td>
 					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1d, 1, 'POINT', 2, 'COMMA') + '%'}">1d</td>
 					<td class="profitLoss" th:text="${#numbers.formatDecimal(coin.winLoss1w, 1, 'POINT', 2, 'COMMA') + '%'}">1w</td>

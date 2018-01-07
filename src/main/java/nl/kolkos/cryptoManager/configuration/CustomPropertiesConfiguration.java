@@ -8,6 +8,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import nl.kolkos.cryptoManager.Currency;
+import nl.kolkos.cryptoManager.services.CurrencyService;
+
 @Configuration
 @ComponentScan(basePackages = { "nl.kolkos.cryptoManager.*" })
 @PropertySource("classpath:application.yml")
@@ -15,18 +18,18 @@ public class CustomPropertiesConfiguration {
 	@Autowired
 	private Environment env;
 	
+	@Autowired
+	private CurrencyService currencyService;
+	
 	public void config() {
         env.getProperty("custom.mail.send.from");
+        env.getProperty("custom.currency");
     }
 	
-//	@Bean
-//    public JavaMailSenderImpl mailSender() {
-//        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-//
-//        javaMailSender.setProtocol("SMTP");
-//        javaMailSender.setHost("127.0.0.1");
-//        javaMailSender.setPort(25);
-//
-//        return javaMailSender;
-//    }
+	@Bean
+	public Currency currency() {
+		Currency currency = currencyService.findByCurrencyISOCode(env.getProperty("custom.currency"));
+		return currency;
+	}
+
 }

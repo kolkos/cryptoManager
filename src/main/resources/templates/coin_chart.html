@@ -47,7 +47,7 @@
 
 	
 					var options = {
-						title: [[${coinName}]] + ' value over time',
+						title: [[${coin.coinMarketCapCoin.name}]] + ' value over time',
 						height: 500,
 						
 						curveType: 'function',
@@ -77,9 +77,9 @@
 	
 	<div class="container">
 		<div class="page-header">
-			<h1 th:text="${coinName}">coin</h1>
+			<h1 th:text="${coin.coinMarketCapCoin.name}">coin</h1>
 		</div>
-		<p class="lead">See the value for this the coin over time. Return to the details page by clicking <a th:href="@{/coin/showCoin/{id}(id=${coinId})}">here</a>.</p>
+		<p class="lead">See the value for this the coin over time. Return to the details page by clicking <a th:href="@{/coin/details/{id}(id=${coinId})}">here</a>.</p>
 		
 		
 		<form action="#" method="get">

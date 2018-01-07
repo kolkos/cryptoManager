@@ -61,3 +61,4 @@ custom:
   mail:
     send:
       from: noreply@yourhost.com
+  currency: EUR

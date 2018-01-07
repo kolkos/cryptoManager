@@ -54,7 +54,7 @@
 				</tr>
 				<tr>
 					<td>Current value:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(coin.currentCoinValue, 1, 'POINT', 2, 'COMMA')}">walletAddress</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(coin.currentCoinValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
 				</tr>
 			</tbody>
 		</table>

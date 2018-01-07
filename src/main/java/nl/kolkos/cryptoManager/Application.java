@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import nl.kolkos.cryptoManager.repositories.RoleRepository;
 import nl.kolkos.cryptoManager.repositories.TransactionTypeRepository;
+import nl.kolkos.cryptoManager.services.CurrencyService;
 
 
 
@@ -28,6 +29,10 @@ public class Application {
 	
 	@Autowired
 	private RoleRepository roleRepository;
+	
+	@Autowired
+	private CurrencyService currencyService;
+	
 	
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -85,6 +90,32 @@ public class Application {
     			withdrawal = new TransactionType();
     			withdrawal.setType("Withdrawal");
     			transactionTypeRepository.save(withdrawal);
+    		}
+    		
+    		// create the Euro currency
+    		Currency euro = currencyService.findByCurrencyISOCode("EUR");
+    		if(euro == null) {
+    			System.out.println("Create the EUR currency");
+    			// does not exist, create it
+    			euro = new Currency();
+    			euro.setCurrencyName("Euro");
+    			euro.setCurrencyISOCode("EUR");
+    			euro.setCurrencySymbol("&euro;"); // HTML code
+    			euro.setCurrencyGlyph("glyphicon glyphicon-eur");
+    			currencyService.save(euro);
+    		}
+    		
+    		// create the Dollar currency
+    		Currency dollar = currencyService.findByCurrencyISOCode("USD");
+    		if(dollar == null) {
+    			System.out.println("Create the USD currency");
+    			// does not exist, create it
+    			dollar = new Currency();
+    			dollar.setCurrencyName("Dollar");
+    			dollar.setCurrencyISOCode("USD");
+    			dollar.setCurrencySymbol("&dollar;"); // HTML code
+    			dollar.setCurrencyGlyph("glyphicon glyphicon-usd");
+    			currencyService.save(dollar);
     		}
     		
     }

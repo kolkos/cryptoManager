@@ -7,8 +7,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,14 +26,17 @@ import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinMarketCapCoin;
 import nl.kolkos.cryptoManager.CoinValue;
+import nl.kolkos.cryptoManager.Currency;
 import nl.kolkos.cryptoManager.FormOption;
 import nl.kolkos.cryptoManager.FormOptions;
 import nl.kolkos.cryptoManager.Portfolio;
 import nl.kolkos.cryptoManager.Wallet;
+import nl.kolkos.cryptoManager.configuration.CustomPropertiesConfiguration;
 import nl.kolkos.cryptoManager.repositories.CoinMarketCapCoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.services.CoinService;
+import nl.kolkos.cryptoManager.services.CurrencyService;
 
 
 @Controller    // This means that this class is a Controller
@@ -46,6 +52,15 @@ public class CoinController {
 	@Autowired
 	@Qualifier(value = "coinMarketCapCoinRepository")
 	private CoinMarketCapCoinRepository coinMarketCapCoinRepository;
+	
+//	@Autowired
+//	private CustomPropertiesConfiguration customProperties;
+	
+	@Resource(name = "currency")
+	private Currency currency;
+	
+	// global?
+	
 		
 	// send the form
 	@GetMapping("/add")
@@ -55,15 +70,6 @@ public class CoinController {
 		model.addAttribute("coin", new Coin());
 		model.addAttribute("cmcCoinList", coinMarketCapCoinRepository.findAllByOrderBySymbolAsc());
         return "coin_form";
-    }
-	
-	// send the form
-	@GetMapping("/update")
-    public String updateCoinValues(Model model) {
-		// update coin values
-		coinService.updateCoinValues();
-		
-		return "redirect:/coin/results";
     }
 	
 	// handle the form
@@ -79,6 +85,15 @@ public class CoinController {
 		return "redirect:/coin/results";
 	}
 	
+	// send the form
+	@GetMapping("/update")
+    public String updateCoinValues(Model model) {
+		// update coin values
+		coinService.updateCoinValues();
+		
+		return "redirect:/coin/results";
+    }
+	
 	
 	@GetMapping("/results")
     public String coinResults(
@@ -86,6 +101,7 @@ public class CoinController {
     		@RequestParam(name = "direction", defaultValue = "ASC") String direction,
     		Model model) {
 		
+		model.addAttribute("currency", currency);
 		model.addAttribute("sortBy", sortBy);
         model.addAttribute("direction", direction);
 		
@@ -102,7 +118,7 @@ public class CoinController {
 	public String getPortfolioDetailsForId(@PathVariable("coinId") long coinId, Model model) {
 		Coin coin = coinService.findById(coinId);
 		
-		
+		model.addAttribute("currency", currency);
 		model.addAttribute("coin", coin);
 		
 		
@@ -140,8 +156,8 @@ public class CoinController {
 		// now add to the model
 		model.addAttribute("minuteOptions",minuteOptions);
 		
-		
-		
+		Coin coin = coinService.findById(coinId);
+		model.addAttribute("coin",coin);
 		
 		Calendar start = Calendar.getInstance();
 		start.add(Calendar.HOUR_OF_DAY, -lastHours);

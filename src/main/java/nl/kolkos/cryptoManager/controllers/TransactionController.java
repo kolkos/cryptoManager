@@ -81,6 +81,7 @@ public class TransactionController {
 		transaction.setAmount(amount);
 		transaction.setValue(value);
 		transaction.setRemarks(remarks);
+		transaction.setCurrency(currency);
 		
 		// save the transaction
 		transactionService.save(transaction);
@@ -313,6 +314,7 @@ public class TransactionController {
 		transaction.setAmount(amount);
 		transaction.setValue(value);
 		transaction.setRemarks(remarks);
+		transaction.setCurrency(currency);
 		
 		transactionService.save(transaction);
 		

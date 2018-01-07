@@ -33,6 +33,10 @@ public class Transaction {
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name = "transaction_type_id")
 	private TransactionType transactionType;
+	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name = "currency_id")
+	private Currency currency;
 		
 	// these fields don't need to be in the database since there are calculated
 	@Transient
@@ -113,6 +117,14 @@ public class Transaction {
 
 	public void setCurrentDifference(double currentDifference) {
 		this.currentDifference = currentDifference;
+	}
+
+	public Currency getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(Currency currency) {
+		this.currency = currency;
 	}
 	
 }

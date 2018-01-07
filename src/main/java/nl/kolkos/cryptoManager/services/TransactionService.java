@@ -1,12 +1,21 @@
 package nl.kolkos.cryptoManager.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.Resource;
+import javax.transaction.Transactional;
+
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
+import nl.kolkos.cryptoManager.Currency;
 import nl.kolkos.cryptoManager.Transaction;
 import nl.kolkos.cryptoManager.TransactionType;
 import nl.kolkos.cryptoManager.Wallet;
@@ -24,6 +33,10 @@ public class TransactionService {
 	
 	@Autowired
 	private TransactionFilterSortingService transactionFilterSortingService;
+	
+	@Resource(name = "currency")
+	private Currency currency;
+
 	
 	public void save(Transaction transaction) {
 		transactionRepository.save(transaction);
@@ -87,6 +100,7 @@ public class TransactionService {
 		transaction.setWallet(wallet);
 		transaction.setRemarks(transactionRemarks);
 		transaction.setTransactionType(transactionType);
+		transaction.setCurrency(currency);
 		
 		// save it
 		transactionRepository.save(transaction);
@@ -141,6 +155,85 @@ public class TransactionService {
 		}
 		transaction = null;
 		return exists;
+	}
+	
+	@Transactional
+	public void transactionMaintenanceFixMissingCurrency() {
+		// get the transactions
+		List<Transaction> transactions = transactionRepository.findByCurrencyIsNull();
+		// loop throught the transactions
+		for(Transaction transaction : transactions) {
+			System.out.println(String.format("%s: Setting currency '%s' to transaction %d", new Date(), currency.getCurrencyISOCode(), transaction.getId()));
+			transaction.setCurrency(currency);
+			transactionRepository.save(transaction);
+		}
+	}
+	
+	@Transactional
+	public void transactionMaintenanceConvertCurrency() {
+		// get the transactions with another currency then the current
+		List<Transaction> transactions = transactionRepository.findByCurrencyNot(currency);
+		
+		HashMap<String, Double> currencyValues = new HashMap<>();
+		ApiRequestHandler apiHandler = new ApiRequestHandler();
+		
+		for(Transaction transaction : transactions) {
+			
+			String registeredCurrency = transaction.getCurrency().getCurrencyISOCode();
+			String currentCurrency = currency.getCurrencyISOCode();
+			
+			// check if the registered currency is already in the hash
+			// if not, register the value
+			boolean runConversion = true;
+			if(!currencyValues.containsKey(registeredCurrency)) {
+				// does not exist, get the transfer rate
+				try {
+					JSONObject jsonObject = apiHandler.requestCurrencyConversion(registeredCurrency, currentCurrency);
+					
+					// get the value
+					double rate = jsonObject.getJSONObject("rates").getDouble(currentCurrency);
+					
+					System.out.println(String.format("Using conversion rate (%s-%s): %f", registeredCurrency, currentCurrency, rate));
+					
+					// register this rate
+					currencyValues.put(registeredCurrency, rate);
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					runConversion = false;
+				}
+			}
+			if(runConversion) {
+				String logLine = String.format("%s: Converting value from transaction %d from '%s' to '%s'", 
+						new Date(),
+						transaction.getId(),
+						registeredCurrency,
+						currentCurrency);
+				System.out.println(logLine);
+				
+				// calculate the new coin value
+				double newTransactionValue = transaction.getValue() * currencyValues.get(registeredCurrency);
+				BigDecimal bd = new BigDecimal(newTransactionValue);
+				bd = bd.setScale(2, RoundingMode.HALF_UP);
+				double roundedTransactionValue = bd.doubleValue();
+				
+				logLine = String.format("%s: %s-%s: %f * %f = %f", 
+						new Date(),
+						registeredCurrency,
+						currentCurrency, 
+						transaction.getValue(),
+						currencyValues.get(registeredCurrency),
+						roundedTransactionValue);
+				
+				System.out.println(logLine);
+				
+				transaction.setCurrency(currency);
+				transaction.setValue(roundedTransactionValue);
+				transactionRepository.save(transaction);	
+			}
+		}
+		
 	}
 	
 }

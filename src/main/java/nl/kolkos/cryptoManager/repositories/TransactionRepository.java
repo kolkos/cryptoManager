@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import nl.kolkos.cryptoManager.Currency;
 import nl.kolkos.cryptoManager.Transaction;
 import nl.kolkos.cryptoManager.TransactionType;
 import nl.kolkos.cryptoManager.Wallet;
@@ -47,5 +48,7 @@ public interface TransactionRepository extends PagingAndSortingRepository<Transa
 	@Query(value="SELECT COALESCE((SELECT SUM(value) as totalAmount FROM transaction WHERE wallet_id = ?1 AND transaction_type_id = ?2 AND transaction_date <= ?3), 0) AS totalAmount", nativeQuery = true)
 	double getSumOfValueForWalletIdAndBeforeTransactionDate(long walletId, long transactionTypeId, Date transactionDate);
 	
+	List<Transaction> findByCurrencyIsNull();
 	
+	List<Transaction> findByCurrencyNot(Currency currency);
 }

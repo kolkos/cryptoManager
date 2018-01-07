@@ -1,5 +1,7 @@
 package nl.kolkos.cryptoManager.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +89,9 @@ public class CoinValueService {
 				
 				// calculate the new coin value
 				double newCoinValue = coinValue.getValue() * currencyValues.get(registeredCurrency);
+				BigDecimal bd = new BigDecimal(newCoinValue);
+				bd = bd.setScale(2, RoundingMode.HALF_UP);
+				double roundedTransactionValue = bd.doubleValue();
 				
 				logLine = String.format("%s: %s-%s: %f * %f = %f", 
 						new Date(),
@@ -94,13 +99,13 @@ public class CoinValueService {
 						currency.getCurrencyISOCode(), 
 						coinValue.getValue(),
 						currencyValues.get(registeredCurrency),
-						newCoinValue);
+						roundedTransactionValue);
 				
 				System.out.println(logLine);
 				
 				// save the new values
 				coinValue.setCurrency(currency);
-				coinValue.setValue(newCoinValue);
+				coinValue.setValue(roundedTransactionValue);
 				coinValueRepository.save(coinValue);
 			}
 			

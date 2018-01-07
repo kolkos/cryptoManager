@@ -17,6 +17,7 @@ import nl.kolkos.cryptoManager.repositories.RoleRepository;
 import nl.kolkos.cryptoManager.repositories.TransactionTypeRepository;
 import nl.kolkos.cryptoManager.services.CoinValueService;
 import nl.kolkos.cryptoManager.services.CurrencyService;
+import nl.kolkos.cryptoManager.services.TransactionService;
 
 @SpringBootApplication
 @EnableScheduling
@@ -34,6 +35,9 @@ public class Application {
 	
 	@Autowired
 	private CoinValueService coinValueService;
+	
+	@Autowired
+	private TransactionService transactionService;
 	
     public static void main(String[] args) {
     		SpringApplication.run(Application.class, args);
@@ -55,8 +59,16 @@ public class Application {
             // create the required objects
             this.createRequiredObjects();
             
+            // fix the missing currencies for coin_value
             coinValueService.coinValueMaintenanceMissingCurrency();
+            // if necessary convert the currencies for coin values
             coinValueService.coinValueMaintenanceChangedCurrency();
+            
+            // fix the missing Currency for the transactions
+            transactionService.transactionMaintenanceFixMissingCurrency();
+            // if necessary convert the currencies for the transactions
+            transactionService.transactionMaintenanceConvertCurrency();
+            
         };
     }
      

@@ -9,6 +9,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import nl.kolkos.cryptoManager.Currency;
+import nl.kolkos.cryptoManager.services.CoinValueService;
 import nl.kolkos.cryptoManager.services.CurrencyService;
 
 @Configuration
@@ -31,5 +32,6 @@ public class CustomPropertiesConfiguration {
 		Currency currency = currencyService.findByCurrencyISOCode(env.getProperty("custom.currency"));
 		return currency;
 	}
+	
 
 }

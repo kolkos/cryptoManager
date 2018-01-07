@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import nl.kolkos.cryptoManager.ApiRequestHandler;
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinValue;
+import nl.kolkos.cryptoManager.Currency;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 
@@ -23,6 +26,9 @@ public class CoinService {
 	
 	@Autowired
 	private CoinValueRepository coinValueRepository;
+	
+	@Resource(name = "currency")
+	private Currency currency;
 	
 	public Coin findById(Long id) {
 		return coinRepository.findById(id);
@@ -66,10 +72,13 @@ public class CoinService {
 		ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
 		String status = "OK";
 		
+		String currentValueField = String.format("price_%s", currency.getCurrencyISOCode().toLowerCase());
+		
+		
 		double currentCoinValue;
 		try {
-			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(coin.getCoinMarketCapCoin().getId(), "EUR");
-			currentCoinValue = Double.parseDouble((String) json.get("price_eur"));
+			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(coin.getCoinMarketCapCoin().getId(), currency.getCurrencyISOCode());
+			currentCoinValue = Double.parseDouble((String) json.get(currentValueField));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,6 +90,7 @@ public class CoinService {
 		CoinValue coinValue = new CoinValue();
 		coinValue.setCoin(coin);
 		coinValue.setValue(currentCoinValue);
+		coinValue.setCurrency(currency);
 		coinValueRepository.save(coinValue);
 		
 		return status;

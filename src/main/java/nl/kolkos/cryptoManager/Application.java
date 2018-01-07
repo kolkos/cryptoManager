@@ -3,6 +3,7 @@ package nl.kolkos.cryptoManager;
 
 import java.util.Arrays;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,10 +15,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import nl.kolkos.cryptoManager.repositories.RoleRepository;
 import nl.kolkos.cryptoManager.repositories.TransactionTypeRepository;
+import nl.kolkos.cryptoManager.services.CoinValueService;
 import nl.kolkos.cryptoManager.services.CurrencyService;
-
-
-
 
 @SpringBootApplication
 @EnableScheduling
@@ -33,14 +32,17 @@ public class Application {
 	@Autowired
 	private CurrencyService currencyService;
 	
+	@Autowired
+	private CoinValueService coinValueService;
 	
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+    		SpringApplication.run(Application.class, args);
     }
 
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
+
+    		return args -> {
 
             System.out.println("Let's inspect the beans provided by Spring Boot:");
 
@@ -50,11 +52,14 @@ public class Application {
                 System.out.println(beanName);
             }
             
+            // create the required objects
             this.createRequiredObjects();
-
+            
+            coinValueService.coinValueMaintenanceMissingCurrency();
+            coinValueService.coinValueMaintenanceChangedCurrency();
         };
     }
-    
+     
     public void createRequiredObjects() {
     		// check if the role ADMIN exists
     		Role adminRole = roleRepository.findByRole("ADMIN");
@@ -118,6 +123,7 @@ public class Application {
     			currencyService.save(dollar);
     		}
     		
+        
     }
 
     

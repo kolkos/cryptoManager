@@ -27,6 +27,10 @@ public class CoinValue {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name = "coin_id")
 	private Coin coin;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name = "currency_id")
+	private Currency currency;
 
 	public Integer getId() {
 		return id;
@@ -58,6 +62,14 @@ public class CoinValue {
 
 	public void setCoin(Coin coin) {
 		this.coin = coin;
+	}
+
+	public Currency getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(Currency currency) {
+		this.currency = currency;
 	}
 		
 	

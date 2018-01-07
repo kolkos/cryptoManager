@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import nl.kolkos.cryptoManager.Coin;
 import nl.kolkos.cryptoManager.CoinValue;
+import nl.kolkos.cryptoManager.Currency;
 
 //This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 //CRUD refers Create, Read, Update, Delete
@@ -31,4 +32,7 @@ public interface CoinValueRepository extends CrudRepository<CoinValue, Long> {
 	@Query(value="SELECT COALESCE((SELECT value FROM coin_value WHERE coin_id = ?1 AND request_date < ?2 AND value > 0 ORDER BY request_date DESC LIMIT 1),0) as lastKnownValue;", nativeQuery = true)
 	double findLastKnownValueBeforeRequestDate(long coinId, Date dateIntervalStart);
 	
+	List<CoinValue> findByCurrencyNot(Currency currency);
+	
+	List<CoinValue> findByCurrencyIsNull();
 }

@@ -36,6 +36,7 @@ import nl.kolkos.cryptoManager.repositories.CoinMarketCapCoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinRepository;
 import nl.kolkos.cryptoManager.repositories.CoinValueRepository;
 import nl.kolkos.cryptoManager.services.CoinService;
+import nl.kolkos.cryptoManager.services.CoinValueService;
 import nl.kolkos.cryptoManager.services.CurrencyService;
 
 
@@ -52,6 +53,7 @@ public class CoinController {
 	@Autowired
 	@Qualifier(value = "coinMarketCapCoinRepository")
 	private CoinMarketCapCoinRepository coinMarketCapCoinRepository;
+	
 	
 
 	@Resource(name = "currency")
@@ -103,6 +105,8 @@ public class CoinController {
         List<Coin> coinList = coinService.listAllCoins(sortBy, direction);
 		
 		model.addAttribute("coinList", coinList);
+		
+		
 		
         return "coin_results";
     }

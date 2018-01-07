@@ -53,6 +53,13 @@ public class ApiRequestHandler {
 	    return jsonObject;
 	}
 	
+	public JSONObject requestCurrencyConversion(String fromSymbol, String toSymbol) throws Exception {
+		String urlString = String.format("http://api.fixer.io/latest?base=%s&symbols=%s", fromSymbol, toSymbol);
+		JSONObject jsonObject = this.doAPIRequest(urlString);
+		
+		return jsonObject;
+	}
+	
 	private JSONArray jsonArrayRequest(String urlString) throws IOException, JSONException {
 		URL url = new URL(urlString);
 		

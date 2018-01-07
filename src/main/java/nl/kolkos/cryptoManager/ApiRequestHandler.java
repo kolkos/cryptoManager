@@ -76,7 +76,7 @@ public class ApiRequestHandler {
 	}
 	
 	public JSONArray getAllCMCCoins() throws IOException, JSONException {
-		String url = "https://api.coinmarketcap.com/v1/ticker/";
+		String url = "https://api.coinmarketcap.com/v1/ticker/?limit=250";
 		JSONArray result = this.jsonArrayRequest(url);
 		return result;
 		

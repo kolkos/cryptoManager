@@ -2,6 +2,8 @@ package nl.kolkos.cryptoManager.controllers;
 
 import java.sql.Date;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import nl.kolkos.cryptoManager.Currency;
 import nl.kolkos.cryptoManager.Transaction;
 import nl.kolkos.cryptoManager.TransactionType;
 import nl.kolkos.cryptoManager.User;
@@ -43,11 +46,11 @@ public class TransactionController {
 	@Autowired
 	private TransactionTypeRepository transactionTypeRepository;
 	
-	@Autowired TransactionRepository transactionRepository;
-	
 	@Autowired
 	private TransactionService transactionService;
 	
+	@Resource(name = "currency")
+	private Currency currency;
 
 	
 	@GetMapping("/add")
@@ -55,6 +58,7 @@ public class TransactionController {
 		model.addAttribute("transaction", new Transaction());
 		model.addAttribute("transactionTypes", transactionTypeRepository.findAll());
         model.addAttribute("walletList", walletService.findByPortfolioUsersEmail(userService.findLoggedInUsername()));
+        model.addAttribute("currency", currency);
         
         return "transaction_form";
     }
@@ -96,6 +100,7 @@ public class TransactionController {
 		model.addAttribute("transaction", new Transaction());
 		model.addAttribute("transactionTypes", transactionTypeRepository.findAll());
         model.addAttribute("walletList", walletService.findByPortfolioUsersEmail(userService.findLoggedInUsername()));
+        
         
         return "transaction_form_advanced";
     }
@@ -176,6 +181,7 @@ public class TransactionController {
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("direction", direction);
         model.addAttribute("search", search);
+        model.addAttribute("currency", currency);
         
         model.addAttribute("transactions", transactionService.findByWalletPortfolioUsersEmail(usersEmail, search, sortBy, direction));
         
@@ -206,6 +212,7 @@ public class TransactionController {
 		Transaction transaction = transactionService.findById(transactionId);
 		
 		model.addAttribute("transaction", transaction);
+		model.addAttribute("currency", currency);
 		
 		return "transaction_details";
 	}
@@ -265,7 +272,7 @@ public class TransactionController {
 		
 		// get the entity
 		Transaction transaction = transactionService.findById(transactionId);
-		
+		model.addAttribute("currency", currency);
 		model.addAttribute("transaction", transaction);
 		model.addAttribute("transactionTypes", transactionTypeRepository.findAll());
         model.addAttribute("walletList", walletService.findByPortfolioUsersEmail(userService.findLoggedInUsername()));

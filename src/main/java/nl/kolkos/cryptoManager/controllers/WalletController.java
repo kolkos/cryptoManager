@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import nl.kolkos.cryptoManager.Coin;
+import nl.kolkos.cryptoManager.Currency;
 import nl.kolkos.cryptoManager.FormOption;
 import nl.kolkos.cryptoManager.FormOptions;
 import nl.kolkos.cryptoManager.Portfolio;
@@ -58,6 +61,9 @@ public class WalletController {
 	@Autowired
 	private UserService userService;
 	
+	@Resource(name = "currency")
+	private Currency currency;
+	
 		
 	@GetMapping("/add")
     public String walletForm(Model model) {
@@ -75,6 +81,7 @@ public class WalletController {
     public String walletResults(Model model) {
 		
 		model.addAttribute("walletList", walletService.findByPortfolioUsersEmail(userService.findLoggedInUsername()));
+		model.addAttribute("currency", currency);
 		
         return "wallet_results";
     }
@@ -219,6 +226,7 @@ public class WalletController {
 		
 		// get the values for the wallet
 		wallet = walletService.getWalletValues(wallet);
+		model.addAttribute("currency", currency);
 		model.addAttribute("wallet", wallet);
 		
 		// get the transactions

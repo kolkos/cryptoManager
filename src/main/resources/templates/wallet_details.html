@@ -76,23 +76,23 @@
 				</tr>
 				<tr>
 					<td>Current value:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(wallet.currentWalletValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
 				</tr>
 				<tr>
 					<td>Total deposited:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletDeposited, 1, 'POINT', 2, 'COMMA')}">totalDeposited</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(wallet.currentWalletDeposited, 1, 'POINT', 2, 'COMMA')}">totalDeposited</td>
 				</tr>
 				<tr>
 					<td>Total withdrawn:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletWithdrawn, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(wallet.currentWalletWithdrawn, 1, 'POINT', 2, 'COMMA')}">totalWithdrawn</td>
 				</tr>
 				<tr>
 					<td>Investment:</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletInvestment, 1, 'POINT', 2, 'COMMA')}">totalInvested</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(wallet.currentWalletInvestment, 1, 'POINT', 2, 'COMMA')}">totalInvested</td>
 				</tr>
 				<tr>
 					<td>Profit/Loss:</td>
-					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletProfitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
+					<td class="profitLoss" th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(wallet.currentWalletProfitLoss, 1, 'POINT', 2, 'COMMA')}">profitLoss</td>
 				</tr>
 			</tbody>
 		</table>
@@ -129,10 +129,10 @@
 				<tr th:each="transaction : ${transactions}">
 					<td th:text="${#dates.format(transaction.transactionDate, 'dd-MM-yyyy')}">depositDate</td>
 					<td th:text="${transaction.transactionType.type}">type</td>
-					<td th:text="${#numbers.formatDecimal(transaction.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(transaction.value, 1, 'POINT', 2, 'COMMA')}">purchaseValue</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(transaction.currentValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
-					<td class="profitLoss" th:text="${'€ ' + #numbers.formatDecimal(transaction.currentDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
+					<td th:utext="${#numbers.formatDecimal(transaction.amount, 1, 'POINT', 8, 'COMMA')}">amount</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(transaction.value, 1, 'POINT', 2, 'COMMA')}">purchaseValue</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(transaction.currentValue, 1, 'POINT', 2, 'COMMA')}">currentDepositValue</td>
+					<td class="profitLoss" th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(transaction.currentDifference, 1, 'POINT', 2, 'COMMA')}">currentDepositDifference</td>
 					<td th:text="${transaction.remarks}">remarks</td>
 				</tr>
 			</tbody>

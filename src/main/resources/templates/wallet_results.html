@@ -56,7 +56,7 @@
 					<td th:text="${wallet.description}">description</td>
 					<td th:text="${wallet.coin.coinMarketCapCoin.symbol}">coinName</td>
 					<td th:text="${wallet.portfolio.name}">portfolioName</td>
-					<td th:text="${'€ ' + #numbers.formatDecimal(wallet.currentWalletValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
+					<td th:utext="${currency.currencySymbol + ' ' + #numbers.formatDecimal(wallet.currentWalletValue, 1, 'POINT', 2, 'COMMA')}">currentValue</td>
 					<td>
 						<a th:href="@{/wallet/details/{id}(id=${wallet.id})}">
 							<span class="glyphicon glyphicon-zoom-in"></span>

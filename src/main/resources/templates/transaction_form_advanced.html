@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>cryotoManager::Withdrawal::Register</title>
+	
+	<!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="/css/bootstrap_fixes.css" rel="stylesheet">
+	
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	
+	<nav class="navbar navbar-inverse" id="menuHodler">
+		
+	</nav>
+
+	
+	<div class="container">
+		<div class="page-header">
+			<h1>Register a transaction</h1>
+		</div>
+		<p class="lead">This page let's you register an advanced transaction. This means you purchased coins with another coin.</p>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+	    			<h3 class="panel-title">Advanced Transaction</h3>
+	  		</div>
+	  		<div class="panel-body">
+		  		<form action="#" th:action="@{/transaction/advanced}" method="post">
+					
+					 <div class="form-group row">
+						
+						<div class="col-sm-2 col-form-label">
+							<label for="transactionDate">Transaction date</label>
+						</div>
+						<div class="col-sm-10">
+				            		<input type='date' class="form-control" name="transactionDate" id="transactionDate" required="required" placeholder="Transaction date"/>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<div class="col-sm-2 col-form-label">
+							<label for="fromWallet">From Wallet</label>
+						</div>
+						<div class="col-sm-4">
+			            		<select id="fromWallet" name="fromWallet" required="required" class="form-control">
+								<option value="">-Select a wallet-</option>
+								<option th:each="wallet : ${walletList}" th:value="${wallet.id}" th:text="${wallet.address + ' (' + wallet.coin.coinMarketCapCoin.symbol + ')'}">address (coinName)</option>
+							</select>
+						</div>
+						<div class="col-sm-2 col-form-label">
+							<label for="amountSold">Amount sold</label>
+						</div>
+						<div class="col-sm-4">
+			            		<input type="number" step="0.00000001" class="form-control" name="amountSold" id="amountSold" required="required" value="0.00000000"/>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<div class="col-sm-2 col-form-label">
+							<label for="toWallet">To Wallet</label>
+						</div>
+						<div class="col-sm-4">
+			            		<select id="toWallet" name="toWallet" required="required" class="form-control">
+								<option value="">-Select a wallet-</option>
+								<option th:each="wallet : ${walletList}" th:value="${wallet.id}" th:text="${wallet.address + ' (' + wallet.coin.coinMarketCapCoin.symbol + ')'}">address (coinName)</option>
+							</select>
+						</div>
+						<div class="col-sm-2 col-form-label">
+							<label for="amountBought">Amount bought</label>
+						</div>
+						<div class="col-sm-4">
+			            		<input type="number" step="0.00000001" class="form-control" name="amountBought" id="amountBought" required="required" value="0.00000000"/>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						
+						<div class="col-sm-2 col-form-label">
+							<label for="transactionValue">Value</label>
+						</div>
+						<div class="col-sm-10">
+				            	<input type="number" step="0.01" class="form-control" id="transactionValue" name="transactionValue" required="required" value="0.00"/>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						
+						<div class="col-sm-2 col-form-label">
+							<label for="remarks">Remarks</label>
+						</div>
+						<div class="col-sm-10">
+				            <input type="text" class="form-control" id="remarks" name="remarks" />
+						</div>
+					</div>
+					
+										
+					<div class="btn-group">
+  						<button type="button" class="btn btn-primary" id="submitForm">Register transaction</button>
+  						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    							<span class="caret"></span>
+    							<span class="sr-only">Toggle Dropdown</span>
+  						</button>
+					  	<ul class="dropdown-menu">
+					    		<li><a href="#" id="submitForm">Register transaction</a></li>
+					    		<li><a href="#" id="submitFormAndReloadPage">Submit and add another transaction</a></li>
+					  	</ul>
+					</div>
+					
+
+					<!-- Hidden input items, these are used for the 'add another ... functionality' -->
+					<input type="checkbox" name="addAnotherTransaction" id="addAnotherTransaction" value="true" style="display: none;"/>
+					<button type="submit" id="actualSubmitFormButton" style="display: none;">This button should be hidden</button>
+
+				</form>
+			</div>
+	  	</div>
+		
+		
+      
+    </div>
+    
+    <script src="/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/loadMenu.js"></script>
+    
+    <script type="text/javascript">
+		$('#submitFormAndReloadPage').click(function(){
+			$('#addAnotherTransaction').prop('checked', true);
+			$('#actualSubmitFormButton').trigger('click');
+		});
+		$('#submitForm').click(function(){
+			$('#addAnotherTransaction').prop('checked', false);
+			$('#actualSubmitFormButton').trigger('click');
+		});
+    </script>
+
+</body>
+</html>

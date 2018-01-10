@@ -32,7 +32,7 @@ public class TomcatRedirectHttpToHttpsConfig {
     private Connector redirectConnector(){
         Connector connector = new Connector(TomcatEmbeddedServletContainerFactory.DEFAULT_PROTOCOL);
         connector.setScheme("http");
-        connector.setPort(8080);
+        connector.setPort(8090);
         connector.setSecure(false);
         connector.setRedirectPort(8443);
         return connector;

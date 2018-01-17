@@ -3,6 +3,7 @@ package nl.kolkos.cryptoManager.services;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,7 +75,7 @@ public class CoinService {
 		
 		String currentValueField = String.format("price_%s", currency.getCurrencyISOCode().toLowerCase());
 		
-		
+		System.out.println(String.format("%s: Getting coin value for %s", new Date(), coin.getCoinMarketCapCoin().getSymbol()));
 		double currentCoinValue;
 		try {
 			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(coin.getCoinMarketCapCoin().getId(), currency.getCurrencyISOCode());

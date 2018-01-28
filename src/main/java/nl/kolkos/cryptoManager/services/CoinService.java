@@ -80,19 +80,20 @@ public class CoinService {
 		try {
 			org.json.JSONObject json = apiRequestHandler.currentCoinValueApiRequest(coin.getCoinMarketCapCoin().getId(), currency.getCurrencyISOCode());
 			currentCoinValue = Double.parseDouble((String) json.get(currentValueField));
+			
+			// register this value
+			CoinValue coinValue = new CoinValue();
+			coinValue.setCoin(coin);
+			coinValue.setValue(currentCoinValue);
+			coinValue.setCurrency(currency);
+			coinValueRepository.save(coinValue);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			currentCoinValue = 0;
 			status = "ERROR";
 		}
-		
-		// register this value
-		CoinValue coinValue = new CoinValue();
-		coinValue.setCoin(coin);
-		coinValue.setValue(currentCoinValue);
-		coinValue.setCurrency(currency);
-		coinValueRepository.save(coinValue);
 		
 		return status;
 	}
